@@ -23,15 +23,15 @@ export default function RunwayConditionCreate() {
         },
         {
             title: 'Runway type 1',
-            content: <RunwayTypeStep type={1} />,
+            content: <RunwayTypeStep value={value} setValue={setValue} type={1} />,
         },
         {
             title: 'Runway type 2',
-            content: <RunwayTypeStep type={2} />,
+            content: <RunwayTypeStep value={value} setValue={setValue} type={2} />,
         },
         {
             title: 'Runway type 3',
-            content: <RunwayTypeStep type={3} />,
+            content: <RunwayTypeStep value={value} setValue={setValue} type={3} />,
         },
         {
             title: 'Situational alert',

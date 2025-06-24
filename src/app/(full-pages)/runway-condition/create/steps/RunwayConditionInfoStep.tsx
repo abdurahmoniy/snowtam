@@ -10,7 +10,7 @@ interface RunwayConditionInfoStepProps {
 
 export default function RunwayConditionInfoStep({ form, value, setValue }: RunwayConditionInfoStepProps) {
     return (
-        <div className="w-full flex gap-2">
+        <div className="w-full flex gap-2 justify-center">
             <div className="bg-white w-1/2 dark:bg-dark-2 p-6 rounded shadow flex gap-4">
                 <div className="w-1/2">
                     <Form.Item
@@ -74,7 +74,7 @@ export default function RunwayConditionInfoStep({ form, value, setValue }: Runwa
                     </Form.Item>
                 </div>
             </div>
-            <div className="bg-white w-1/2 dark:bg-dark-2 p-6 rounded shadow flex flex-col gap-4">
+            {/* <div className="bg-white w-1/2 dark:bg-dark-2 p-6 rounded shadow flex flex-col gap-4">
                 <div>Evaluate the % coverage of runway contamination for each third of the runway</div>
                 <div className="flex flex-col gap-2">
                     <div
@@ -112,7 +112,7 @@ export default function RunwayConditionInfoStep({ form, value, setValue }: Runwa
                     <span className="text-red-500">Note: </span>
                     RCR report is not required when the coverage of the runway third is {"<10 %"} (except when a report about a clean runway is issued)
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 } 

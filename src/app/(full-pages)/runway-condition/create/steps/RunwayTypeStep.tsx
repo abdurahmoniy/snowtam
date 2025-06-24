@@ -1,10 +1,14 @@
 import { Divider, Input, Radio, Select } from "antd";
+import { CircleDot } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 
 interface RunwayTypeStepProps {
     type: 1 | 2 | 3;
+    value: number;
+    setValue: Dispatch<SetStateAction<number>>;
 }
 
-export default function RunwayTypeStep({ type }: RunwayTypeStepProps) {
+export default function RunwayTypeStep({ type, value, setValue }: RunwayTypeStepProps) {
     return (
         <div className="flex gap-2 p-8 bg-white dark:bg-dark-2 rounded shadow">
             <div className="w-1/2">
@@ -70,8 +74,44 @@ export default function RunwayTypeStep({ type }: RunwayTypeStepProps) {
                     </div>
                 </div>
             </div>
-            <div className="w-1/2">
-
+            <div className="bg-white w-1/2 dark:bg-dark-2 px-6 rounded shadow flex flex-col gap-4">
+                <div>Evaluate the % coverage of runway contamination for each third of the runway</div>
+                <div className="flex flex-col gap-2">
+                    <div
+                        onClick={() => setValue(1)}
+                        className={`border rounded-md ${value === 1 && "border-[#3C50E0]"} p-2 flex flex-col gap-2 max-w-[400px] cursor-pointer`}
+                    >
+                        <div className="flex items-center gap-2">
+                            <CircleDot color={value === 1 ? `#3C50E0` : "#fff"} />
+                            <div className="text-green-500">{"< 10% Coverage"}</div>
+                        </div>
+                        <div>RWYCC – 6 for this third, no contamination reported</div>
+                    </div>
+                    <div
+                        onClick={() => setValue(2)}
+                        className={`border rounded-md ${value === 2 && "border-[#3C50E0]"} p-2 flex flex-col max-w-[400px] cursor-pointer`}
+                    >
+                        <div className="flex items-center gap-2">
+                            <CircleDot color={value === 2 ? `#3C50E0` : "#fff"} />
+                            <div className="text-red-500">{"≥ 10% - ≤ 25% Coverage"}</div>
+                        </div>
+                        <div>RWYCC – 6 for this third. Report contamination for 25% coverage zone</div>
+                    </div>
+                    <div
+                        onClick={() => setValue(3)}
+                        className={`border rounded-md ${value === 3 && "border-[#3C50E0]"} p-2 flex flex-col max-w-[400px] cursor-pointer`}
+                    >
+                        <div className="flex items-center gap-2">
+                            <CircleDot color={value === 3 ? `#3C50E0` : "#fff"} />
+                            <div className="text-green-500">{"> 25% Coverage"}</div>
+                        </div>
+                        <div>Assign RWYCC based on presence of contaminants and temperature</div>
+                    </div>
+                </div>
+                <div>
+                    <span className="text-red-500">Note: </span>
+                    RCR report is not required when the coverage of the runway third is {"<10 %"} (except when a report about a clean runway is issued)
+                </div>
             </div>
         </div >
     );
