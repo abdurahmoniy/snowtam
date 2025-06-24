@@ -23,7 +23,10 @@ const nextConfig = {
         port: ""
       }
     ]
-  }
+  },
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+  },
 };
 
 export default nextConfig;
