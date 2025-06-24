@@ -37,10 +37,10 @@ export default function RunwayConditionCreate() {
             title: 'Situational alert',
             content: <SituationalAlertStep />,
         },
-        {
-            title: 'Procedures',
-            content: <ProceduresStep />,
-        },
+        // {
+        //     title: 'Procedures',
+        //     content: <ProceduresStep />,
+        // },
     ];
 
     const next = () => {

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import SigninWithPassword from "../SigninWithPassword";
 
 export default function Signin() {
@@ -18,14 +17,14 @@ export default function Signin() {
         <SigninWithPassword />
       </div>
 
-      <div className="mt-6 text-center">
+      {/* <div className="mt-6 text-center">
         <p>
           Hisobingiz yo&apos;qmi?{" "}
           <Link href="/auth/sign-up" className="text-primary">
             Ro&apos;yxatdan o&apos;tish
           </Link>
         </p>
-      </div>
+      </div> */}
     </>
   );
 }
