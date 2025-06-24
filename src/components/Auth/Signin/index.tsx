@@ -1,5 +1,4 @@
 import Link from "next/link";
-import GoogleSigninButton from "../GoogleSigninButton";
 import SigninWithPassword from "../SigninWithPassword";
 
 export default function Signin() {
@@ -21,9 +20,9 @@ export default function Signin() {
 
       <div className="mt-6 text-center">
         <p>
-          Hisobingiz yo'qmi?{" "}
+          Hisobingiz yo&apos;qmi?{" "}
           <Link href="/auth/sign-up" className="text-primary">
-            Ro'yxatdan o'tish
+            Ro&apos;yxatdan o&apos;tish
           </Link>
         </p>
       </div>

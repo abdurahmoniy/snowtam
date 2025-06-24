@@ -9,10 +9,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Avatar } from 'antd';
 import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
+import { LogOutIcon } from "./icons";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +62,7 @@ export function UserInfo() {
         className="border border-stroke bg-white shadow-md dark:border-dark-3 dark:bg-gray-dark min-[230px]:min-w-[17.5rem]"
         align="end"
       >
-        <h2 className="sr-only">Foydalanuvchi ma'lumotlari</h2>
+        <h2 className="sr-only">Foydalanuvchi ma&apos;lumotlari</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
           {/* <Image

@@ -53,7 +53,7 @@ export function Sidebar() {
         });
       }
     });
-  }, [pathname]);
+  }, [pathname, expandedItems]);
 
   return (
     <>

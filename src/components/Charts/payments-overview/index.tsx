@@ -24,7 +24,7 @@ export async function PaymentsOverview({
     >
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
-          To'lovlar bo'yicha ma'lumot
+          To&apos;lovlar bo&apos;yicha ma&apos;lumot
         </h2>
 
         <PeriodPicker defaultValue={timeFrame} sectionKey="payments_overview" />
