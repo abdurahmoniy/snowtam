@@ -49,7 +49,7 @@ export default function SigninWithPassword() {
           fullname: apires.meta.user.fullname,
           status: apires.meta.user.status,
           role: JSON.stringify(apires.meta.user.role), // ["ADMIN", "USER"]
-          callbackUrl: "/dashboard",
+          callbackUrl: "/",
         });
 
 
