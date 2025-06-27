@@ -1,5 +1,6 @@
 import { httpClient } from "@/consts/http";
-import { RunwayConditionCreateRequest, RunwayConditionCreateResponse } from "@/types/runway-condition";
+import { MainResponse } from "@/types/auth";
+import { RunwayCondition, RunwayConditionCreateRequest, RunwayConditionCreateResponse } from "@/types/runway-condition";
 import { AxiosRequestConfig } from "axios";
 
 export async function createRunwayCondition(
@@ -13,3 +14,20 @@ export async function createRunwayCondition(
   );
   return res.data;
 } 
+
+export async function GetAllRunWayCondition({
+  page, size
+}:{
+  page: number;
+  size: number;
+}){
+  const searchParams = new URLSearchParams();
+  page && searchParams.set("page", String(page));
+  size && searchParams.set("size", String(size));
+
+  const res = await httpClient.private.get<MainResponse<RunwayCondition[]>>(
+    `/runwayCondition/getAll?${searchParams.toString()}`
+  );
+  return res.data;
+
+}

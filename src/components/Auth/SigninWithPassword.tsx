@@ -17,7 +17,6 @@ export default function SigninWithPassword() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -31,7 +30,6 @@ export default function SigninWithPassword() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
     try {
       // Call backend login API
       const apires = await Login({ email: data.email, password: data.password });
@@ -51,16 +49,17 @@ export default function SigninWithPassword() {
           role: JSON.stringify(apires.meta.user.role), // ["ADMIN", "USER"]
           callbackUrl: "/",
         });
+        toast.success(apires.message);
 
 
         if (res?.error) {
-          setError(res.error);
+          toast.error(res.error);
         }
       } else {
         toast.error(apires.message)
       }
     } catch (err: any) {
-      setError(err?.message || "Login failed");
+      toast.error(err?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -124,7 +123,6 @@ export default function SigninWithPassword() {
       </div>
 
       <div className="mb-4.5">
-        {error && <div className="text-red-500 mb-2">{error}</div>}
         <button
           type="submit"
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"

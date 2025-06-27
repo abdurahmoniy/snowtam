@@ -37,4 +37,6 @@ export interface MainResponse<Data>{
     message: string;
     status: string;
     data: Data;
+    pages: number;
+    elements: number;
 }

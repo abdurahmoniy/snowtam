@@ -1,5 +1,4 @@
 import { DatePicker, Form, Input, InputNumber } from "antd";
-import { CircleDot } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
 interface RunwayConditionInfoStepProps {
@@ -35,7 +34,6 @@ export default function RunwayConditionInfoStep({ form, value, setValue }: Runwa
                         <DatePicker
                             showTime
                             style={{ width: "100%" }}
-                            format="YYYY-MM-DDTHH:mm"
                             placeholder="Select date and time"
                         />
                     </Form.Item>

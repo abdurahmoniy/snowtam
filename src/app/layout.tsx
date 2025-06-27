@@ -1,6 +1,9 @@
 import "@/css/satoshi.css";
 import "@/css/style.css";
 
+import dayjs from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
+dayjs.extend(weekday);
 
 import "flatpickr/dist/flatpickr.min.css";
 import "jsvectormap/dist/jsvectormap.css";

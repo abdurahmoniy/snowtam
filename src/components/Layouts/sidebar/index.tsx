@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_DATA } from "./data";
-import { ArrowLeftIcon, ChevronUp } from "./icons";
+import { ChevronUp } from "./icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 
@@ -84,20 +84,19 @@ export function Sidebar() {
               className="px-0 min-[850px]:py-0 text-lg"
             >
               <h1 className="mb-0.5 text-heading-6 font-bold text-dark dark:text-white">
-                Boshqaruv Paneli
+                Dashboard
               </h1>
             </Link>
 
-            {isMobile && (
-              <button
-                onClick={toggleSidebar}
-                className="absolute left-3/4 right-4.5 top-1/2 -translate-y-1/2 text-right"
-              >
-                <span className="sr-only">Menuni yopish</span>
+            {/* <button
+              onClick={toggleSidebar}
+              className="absolute left-3/4 right-4.5 top-1/2 -translate-y-1/2 text-right"
+            >
+              <span className="sr-only">Menuni yopish</span>
 
-                <ArrowLeftIcon className="ml-auto size-7" />
-              </button>
-            )}
+              <ArrowLeftIcon className="ml-auto size-7" />
+            </button> */}
+
           </div>
 
           {/* Navigation */}
