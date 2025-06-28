@@ -2,13 +2,14 @@
 
 import { RunwayConditionCreateRequest } from "@/types/runway-condition";
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, RadioChangeEvent, Steps } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { Button, DatePicker, Form, Input, RadioChangeEvent, Select, Steps } from "antd";
 import { useState } from "react";
+import { GetAlertTypes, GetProcedureTypes } from "../../../../services/enums";
 import { useCreateRunwayCondition } from "./fetch";
 import ReviewStep from "./steps/ReviewStep";
 import RunwayConditionInfoStep from "./steps/RunwayConditionInfoStep";
 import RunwayTypeStep from "./steps/RunwayTypeStep";
-import SituationalAlertStep from "./steps/SituationalAlertStep";
 
 export default function RunwayConditionCreate() {
     const [form] = Form.useForm<RunwayConditionCreateRequest>();
@@ -18,6 +19,17 @@ export default function RunwayConditionCreate() {
     const [currentStep, setCurrentStep] = useState(0);
     const [formValues, setFormValues] = useState(form.getFieldsValue());
     const [coverageSelections, setCoverageSelections] = useState<{ [key: number]: string }>({});
+
+    const AlertTypesData = useQuery({
+        queryFn: () => GetAlertTypes(),
+        queryKey: ['alert-types']
+    });
+
+    const ProcedureTypesData = useQuery({
+        queryFn: () => GetProcedureTypes(),
+        queryKey: ['procedure-types']
+    });
+
     const steps = [
         {
             title: 'Runway Condition Info',
@@ -60,17 +72,23 @@ export default function RunwayConditionCreate() {
                         <div>
                             {fields.map(({ key, name, ...restField }) => (
                                 <div key={key} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                                    <Form.Item {...restField} name={[name, 'notificationType']} label="Type" rules={[{ required: true }]}>
-                                        <input placeholder="REDUCED_RUNWAY_LENGTH" />
+                                    <Form.Item {...restField} name={[name, 'notificationType']} label="Type" rules={[{ required: true, message: 'Please select notification type' }]}>
+                                        <Select size="large" placeholder="Choose notification type">
+                                            {AlertTypesData.data?.data.map((item, i) => (
+                                                <Select.Option key={i} value={item}>
+                                                    {item}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
                                     </Form.Item>
-                                    <Form.Item {...restField} name={[name, 'runwayLengthReductionM']} label="Length Reduction (m)" rules={[{ required: true }]}>
-                                        <input type="number" />
+                                    <Form.Item {...restField} name={[name, 'runwayLengthReductionM']} label="Length Reduction (m)" rules={[{ required: true, message: 'Please enter length reduction' }, { type: 'number', min: 0, message: 'Length must be positive' }]}>
+                                        <Input size="large" type="number" />
                                     </Form.Item>
                                     <Form.Item {...restField} name={[name, 'isActive']} label="Active" valuePropName="checked">
                                         <input type="checkbox" />
                                     </Form.Item>
                                     <Form.Item {...restField} name={[name, 'additionalDetails']} label="Details">
-                                        <input />
+                                        <Input size="large" />
                                     </Form.Item>
                                     <Button icon={<MinusCircleOutlined />} onClick={() => remove(name)} />
                                 </div>
@@ -89,17 +107,23 @@ export default function RunwayConditionCreate() {
                         <div>
                             {fields.map(({ key, name, ...restField }) => (
                                 <div key={key} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                                    <Form.Item {...restField} name={[name, 'procedureType']} label="Type" rules={[{ required: true }]}>
-                                        <input placeholder="MECHANICAL_CLEANING" />
+                                    <Form.Item {...restField} name={[name, 'procedureType']} label="Type" rules={[{ required: true, message: 'Please select procedure type' }]}>
+                                        <Select size="large" placeholder="Choose procedure type">
+                                            {ProcedureTypesData.data?.data.map((item, i) => (
+                                                <Select.Option key={i} value={item}>
+                                                    {item}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
                                     </Form.Item>
-                                    <Form.Item {...restField} name={[name, 'applicationTime']} label="Time" rules={[{ required: true }]}>
-                                        <input type="datetime-local" />
+                                    <Form.Item {...restField} name={[name, 'applicationTime']} label="Time" rules={[{ required: true, message: 'Please select application time' }]}>
+                                        <DatePicker size="large" showTime />
                                     </Form.Item>
                                     <Form.Item {...restField} name={[name, 'isApplied']} label="Applied" valuePropName="checked">
                                         <input type="checkbox" />
                                     </Form.Item>
-                                    <Form.Item {...restField} name={[name, 'effectivenessRating']} label="Effectiveness" rules={[{ required: true }]}>
-                                        <input type="number" />
+                                    <Form.Item {...restField} name={[name, 'effectivenessRating']} label="Effectiveness" rules={[{ required: true, message: 'Please enter effectiveness rating' }, { type: 'number', min: 1, max: 10, message: 'Rating must be between 1-10' }]}>
+                                        <Input size="large" type="number" />
                                     </Form.Item>
                                     <Button icon={<MinusCircleOutlined />} onClick={() => remove(name)} />
                                 </div>
@@ -111,37 +135,133 @@ export default function RunwayConditionCreate() {
             )
         },
         {
-            title: 'Situational alert',
-            content: <SituationalAlertStep />,
-        },
-        {
             title: 'Review',
             content: <ReviewStep values={formValues} />
         },
     ];
 
-    const next = () => {
-        if (currentStep === steps.length - 2) {
-            setFormValues(form.getFieldsValue(true));
+    const next = async () => {
+        try {
+            // Validate current step before proceeding
+            if (currentStep === 0) {
+                // Validate Runway Condition Info step
+                await form.validateFields([
+                    'airportCode',
+                    'runwayDesignation',
+                    'reportDateTime',
+                    'ambientTemperature',
+                    'initials',
+                    'rwycCode',
+                    'overallConditionCode'
+                ]);
+            } else if (currentStep === 1) {
+                // Validate Runway Thirds step
+                const runwayThirds = form.getFieldValue('runwayThirds') || [];
+                if (runwayThirds.length === 0) {
+                    throw new Error('At least one runway third is required');
+                }
+
+                // Check if at least one runway third has all required fields
+                let hasValidThird = false;
+                for (let i = 0; i < runwayThirds.length; i++) {
+                    const third = runwayThirds[i];
+                    if (third &&
+                        third.partNumber &&
+                        third.contaminationCoverage &&
+                        third.surfaceCondition &&
+                        third.depthMm !== null && third.depthMm !== undefined &&
+                        third.frictionCoefficient !== null && third.frictionCoefficient !== undefined &&
+                        third.rwycValue !== null && third.rwycValue !== undefined &&
+                        third.temperatureCelsius !== null && third.temperatureCelsius !== undefined) {
+                        hasValidThird = true;
+                        break;
+                    }
+                }
+
+                if (!hasValidThird) {
+                    throw new Error('At least one runway third must have all required fields filled');
+                }
+
+                // Validate all filled runway thirds
+                for (let i = 0; i < runwayThirds.length; i++) {
+                    const third = runwayThirds[i];
+                    if (third && third.partNumber) { // Only validate if third exists and has partNumber
+                        await form.validateFields([
+                            ['runwayThirds', i, 'partNumber'],
+                            ['runwayThirds', i, 'contaminationCoverage'],
+                            ['runwayThirds', i, 'surfaceCondition'],
+                            ['runwayThirds', i, 'depthMm'],
+                            ['runwayThirds', i, 'frictionCoefficient'],
+                            ['runwayThirds', i, 'rwycValue'],
+                            ['runwayThirds', i, 'temperatureCelsius']
+                        ]);
+                    }
+                }
+            } else if (currentStep === 2) {
+                // Validate Situational Notifications step
+                const notifications = form.getFieldValue('situationalNotifications') || [];
+                for (let i = 0; i < notifications.length; i++) {
+                    await form.validateFields([
+                        ['situationalNotifications', i, 'notificationType'],
+                        ['situationalNotifications', i, 'runwayLengthReductionM']
+                    ]);
+                }
+            } else if (currentStep === 3) {
+                // Validate Improvement Procedures step
+                const procedures = form.getFieldValue('improvementProcedures') || [];
+                for (let i = 0; i < procedures.length; i++) {
+                    await form.validateFields([
+                        ['improvementProcedures', i, 'procedureType'],
+                        ['improvementProcedures', i, 'applicationTime'],
+                        ['improvementProcedures', i, 'effectivenessRating']
+                    ]);
+                }
+            }
+
+            // If validation passes, proceed to next step
+            if (currentStep === steps.length - 2) {
+                setFormValues(form.getFieldsValue(true));
+            }
+            setCurrentStep(currentStep + 1);
+        } catch (error) {
+            console.error('Validation failed:', error);
+            // Form validation errors will be displayed automatically by Ant Design
         }
-        setCurrentStep(currentStep + 1);
     };
     const prev = () => {
         setCurrentStep(currentStep - 1);
     };
 
     const handleFinish = (values: any) => {
-        // Convert date to ISO string
-        const payload = {
+        console.log('Form values:', values);
+
+        // Process dates and convert to ISO strings
+        const processedValues = {
             ...values,
             reportDateTime: values.reportDateTime?.toISOString?.() || new Date().toISOString(),
-            ambientTemperature: Number(values.ambientTemperature),
-            overallConditionCode: Number(values.overallConditionCode),
-            runwayThirds: values.runwayThirds || [],
-            situationalNotifications: values.situationalNotifications || [],
-            improvementProcedures: values.improvementProcedures || [],
+            runwayThirds: (values.runwayThirds || []).map((third: any) => ({
+                ...third,
+                partNumber: Number(third.partNumber),
+                depthMm: Number(third.depthMm),
+                frictionCoefficient: Number(third.frictionCoefficient),
+                rwycValue: Number(third.rwycValue),
+                temperatureCelsius: Number(third.temperatureCelsius)
+            })),
+            situationalNotifications: (values.situationalNotifications || []).map((notification: any) => ({
+                ...notification,
+                runwayLengthReductionM: Number(notification.runwayLengthReductionM),
+                isActive: Boolean(notification.isActive)
+            })),
+            improvementProcedures: (values.improvementProcedures || []).map((procedure: any) => ({
+                ...procedure,
+                applicationTime: procedure.applicationTime?.toISOString?.() || new Date().toISOString(),
+                isApplied: Boolean(procedure.isApplied),
+                effectivenessRating: Number(procedure.effectivenessRating)
+            }))
         };
-        mutate(payload);
+
+        console.log('Processed payload:', processedValues);
+        mutate(processedValues);
     };
 
     const onChange = (e: RadioChangeEvent) => {
@@ -160,14 +280,32 @@ export default function RunwayConditionCreate() {
                     airportCode: "",
                     runwayDesignation: "",
                     reportDateTime: "",
-                    ambientTemperature: 0,
+                    ambientTemperature: null,
                     initials: "",
                     rwycCode: "",
-                    overallConditionCode: 0,
+                    overallConditionCode: null,
                     remarks: "",
-                    runwayThirds: [],
-                    situationalNotifications: [],
-                    improvementProcedures: [],
+                    runwayThirds: [{
+                        partNumber: 1,
+                        contaminationCoverage: "LESS_THAN_10_PERCENT",
+                        surfaceCondition: "DRY",
+                        depthMm: 0,
+                        frictionCoefficient: 1,
+                        rwycValue: 6,
+                        temperatureCelsius: 0
+                    }],
+                    situationalNotifications: [{
+                        notificationType: "",
+                        runwayLengthReductionM: 0,
+                        isActive: false,
+                        additionalDetails: ""
+                    }],
+                    improvementProcedures: [{
+                        procedureType: "",
+                        applicationTime: "",
+                        isApplied: false,
+                        effectivenessRating: 0
+                    }],
                 }}
                 className=""
             >

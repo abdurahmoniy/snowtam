@@ -39,7 +39,6 @@ export default function ReviewStep({ values }: { values: any }) {
                         className="mb-4">
                         <Descriptions.Item label="Type">{item.notificationType}</Descriptions.Item>
                         <Descriptions.Item label="Length Reduction (m)">{item.runwayLengthReductionM}</Descriptions.Item>
-                        <Descriptions.Item label="Active">{item.isActive ? "Yes" : "No"}</Descriptions.Item>
                         <Descriptions.Item label="Details">{item.additionalDetails}</Descriptions.Item>
                     </Descriptions>
                 ))}
@@ -51,7 +50,6 @@ export default function ReviewStep({ values }: { values: any }) {
                         className="mb-4">
                         <Descriptions.Item label="Type">{item.procedureType}</Descriptions.Item>
                         <Descriptions.Item label="Time">{item.applicationTime?.toString()}</Descriptions.Item>
-                        <Descriptions.Item label="Applied">{item.isApplied ? "Yes" : "No"}</Descriptions.Item>
                         <Descriptions.Item label="Effectiveness">{item.effectivenessRating}</Descriptions.Item>
                     </Descriptions>
                 ))}
