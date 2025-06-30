@@ -53,7 +53,7 @@ export default function RunwayTypeStep({ field, fieldKey, remove, value, setValu
                             {...field}
                             name={[field.name, 'depthMm']}
                             label="Depth (mm)"
-                            rules={[{ required: true, message: 'Please enter depth' }, { type: 'number', min: 0, message: 'Depth must be 0 or greater' }]}
+                            rules={[{ required: true, message: 'Please enter depth' }]}
                         >
                             <Input type="number" />
                         </Form.Item>
@@ -80,7 +80,7 @@ export default function RunwayTypeStep({ field, fieldKey, remove, value, setValu
                             {...field}
                             name={[field.name, 'temperatureCelsius']}
                             label="Temp (C)"
-                            rules={[{ required: true, message: 'Please enter temperature' }, { type: 'number', min: -50, max: 50, message: 'Temperature must be between -50 and 50' }]}
+                            rules={[{ required: true, message: 'Please enter temperature' }, { min: -50, max: 50, message: 'Temperature must be between -50 and 50' }]}
                         >
                             <Input type="number" />
                         </Form.Item>

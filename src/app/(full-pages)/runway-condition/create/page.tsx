@@ -79,13 +79,10 @@ export default function RunwayConditionCreate() {
                                                     {item}
                                                 </Select.Option>
                                             ))}
-                                        </Select>
+                                        </Select>{" "}
                                     </Form.Item>
-                                    <Form.Item {...restField} name={[name, 'runwayLengthReductionM']} label="Length Reduction (m)" rules={[{ required: true, message: 'Please enter length reduction' }, { type: 'number', min: 0, message: 'Length must be positive' }]}>
+                                    <Form.Item {...restField} name={[name, 'runwayLengthReductionM']} label="Length Reduction (m)" rules={[{ required: true, message: 'Please enter length reduction' }, { min: 0, message: 'Length must be positive' }]}>
                                         <Input size="large" type="number" />
-                                    </Form.Item>
-                                    <Form.Item {...restField} name={[name, 'isActive']} label="Active" valuePropName="checked">
-                                        <input type="checkbox" />
                                     </Form.Item>
                                     <Form.Item {...restField} name={[name, 'additionalDetails']} label="Details">
                                         <Input size="large" />
@@ -119,10 +116,7 @@ export default function RunwayConditionCreate() {
                                     <Form.Item {...restField} name={[name, 'applicationTime']} label="Time" rules={[{ required: true, message: 'Please select application time' }]}>
                                         <DatePicker size="large" showTime />
                                     </Form.Item>
-                                    <Form.Item {...restField} name={[name, 'isApplied']} label="Applied" valuePropName="checked">
-                                        <input type="checkbox" />
-                                    </Form.Item>
-                                    <Form.Item {...restField} name={[name, 'effectivenessRating']} label="Effectiveness" rules={[{ required: true, message: 'Please enter effectiveness rating' }, { type: 'number', min: 1, max: 10, message: 'Rating must be between 1-10' }]}>
+                                    <Form.Item {...restField} name={[name, 'effectivenessRating']} label="Effectiveness" rules={[{ required: true, message: 'Please enter effectiveness rating' }, { min: 1, max: 10, message: 'Rating must be between 1-10' }]}>
                                         <Input size="large" type="number" />
                                     </Form.Item>
                                     <Button icon={<MinusCircleOutlined />} onClick={() => remove(name)} />
@@ -232,36 +226,48 @@ export default function RunwayConditionCreate() {
         setCurrentStep(currentStep - 1);
     };
 
-    const handleFinish = (values: any) => {
-        console.log('Form values:', values);
+    const handleFinish = async (values: any) => {
+        console.log('handleFinish called with values:', values);
 
-        // Process dates and convert to ISO strings
-        const processedValues = {
-            ...values,
-            reportDateTime: values.reportDateTime?.toISOString?.() || new Date().toISOString(),
-            runwayThirds: (values.runwayThirds || []).map((third: any) => ({
-                ...third,
-                partNumber: Number(third.partNumber),
-                depthMm: Number(third.depthMm),
-                frictionCoefficient: Number(third.frictionCoefficient),
-                rwycValue: Number(third.rwycValue),
-                temperatureCelsius: Number(third.temperatureCelsius)
-            })),
-            situationalNotifications: (values.situationalNotifications || []).map((notification: any) => ({
-                ...notification,
-                runwayLengthReductionM: Number(notification.runwayLengthReductionM),
-                isActive: Boolean(notification.isActive)
-            })),
-            improvementProcedures: (values.improvementProcedures || []).map((procedure: any) => ({
-                ...procedure,
-                applicationTime: procedure.applicationTime?.toISOString?.() || new Date().toISOString(),
-                isApplied: Boolean(procedure.isApplied),
-                effectivenessRating: Number(procedure.effectivenessRating)
-            }))
-        };
+        try {
+            // Get all form values including nested arrays
+            const allFormValues = form.getFieldsValue(true);
+            console.log('All form values from form.getFieldsValue(true):', allFormValues);
 
-        console.log('Processed payload:', processedValues);
-        mutate(processedValues);
+            // Use the complete form values instead of just the passed values
+            const formData = allFormValues || values;
+            console.log('Form data to process:', formData);
+
+            // Process dates and convert to ISO strings
+            const processedValues = {
+                ...formData,
+                reportDateTime: formData.reportDateTime?.toISOString?.() || new Date().toISOString(),
+                ambientTemperature: Number(formData.ambientTemperature) || 0,
+                overallConditionCode: Number(formData.overallConditionCode) || 0,
+                runwayThirds: (formData.runwayThirds || []).map((third: any) => ({
+                    ...third,
+                    partNumber: Number(third.partNumber) || 0,
+                    depthMm: Number(third.depthMm) || 0,
+                    frictionCoefficient: Number(third.frictionCoefficient) || 0,
+                    rwycValue: Number(third.rwycValue) || 0,
+                    temperatureCelsius: Number(third.temperatureCelsius) || 0
+                })),
+                situationalNotifications: (formData.situationalNotifications || []).map((notification: any) => ({
+                    ...notification,
+                    runwayLengthReductionM: Number(notification.runwayLengthReductionM) || 0,
+                })),
+                improvementProcedures: (formData.improvementProcedures || []).map((procedure: any) => ({
+                    ...procedure,
+                    applicationTime: procedure.applicationTime?.toISOString?.() || new Date().toISOString(),
+                    effectivenessRating: Number(procedure.effectivenessRating) || 0
+                }))
+            };
+
+            console.log('Final processed payload:', processedValues);
+            mutate(processedValues);
+        } catch (error) {
+            console.error('Error processing form values:', error);
+        }
     };
 
     const onChange = (e: RadioChangeEvent) => {
@@ -297,13 +303,11 @@ export default function RunwayConditionCreate() {
                     situationalNotifications: [{
                         notificationType: "",
                         runwayLengthReductionM: 0,
-                        isActive: false,
                         additionalDetails: ""
                     }],
                     improvementProcedures: [{
                         procedureType: "",
                         applicationTime: "",
-                        isApplied: false,
                         effectivenessRating: 0
                     }],
                 }}
