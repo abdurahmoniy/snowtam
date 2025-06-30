@@ -62,7 +62,7 @@ export default function RunwayTypeStep({ field, fieldKey, remove, value, setValu
                             {...field}
                             name={[field.name, 'frictionCoefficient']}
                             label="Friction"
-                            rules={[{ required: true, message: 'Please enter friction coefficient' }, { type: 'number', min: 0, max: 1, message: 'Friction must be between 0 and 1' }]}
+                            rules={[{ required: true, message: 'Please enter friction coefficient' }, { min: 0, max: 1, message: 'Friction must be between 0 and 1' }]}
                         >
                             <Input type="number" step="0.01" />
                         </Form.Item>
@@ -71,7 +71,7 @@ export default function RunwayTypeStep({ field, fieldKey, remove, value, setValu
                             {...field}
                             name={[field.name, 'rwycValue']}
                             label="RWYC Value"
-                            rules={[{ required: true, message: 'Please enter RWYC value' }, { type: 'number', min: 1, max: 6, message: 'RWYC value must be between 1 and 6' }]}
+                            rules={[{ required: true, message: 'Please enter RWYC value' }, { min: 1, max: 6, message: 'RWYC value must be between 1 and 6' }]}
                         >
                             <Input type="number" />
                         </Form.Item>

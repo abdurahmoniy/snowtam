@@ -4,7 +4,9 @@ import { RunwayConditionCreateRequest } from "@/types/runway-condition";
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useQuery } from "@tanstack/react-query";
 import { Button, DatePicker, Form, Input, RadioChangeEvent, Select, Steps } from "antd";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { GetAlertTypes, GetProcedureTypes } from "../../../../services/enums";
 import { useCreateRunwayCondition } from "./fetch";
 import ReviewStep from "./steps/ReviewStep";
@@ -14,7 +16,7 @@ import RunwayTypeStep from "./steps/RunwayTypeStep";
 export default function RunwayConditionCreate() {
     const [form] = Form.useForm<RunwayConditionCreateRequest>();
     const { mutate, isPending, isSuccess, isError, error } = useCreateRunwayCondition();
-
+    const router = useRouter()
     const [value, setValue] = useState(1);
     const [currentStep, setCurrentStep] = useState(0);
     const [formValues, setFormValues] = useState(form.getFieldsValue());
@@ -75,11 +77,11 @@ export default function RunwayConditionCreate() {
                                     <Form.Item {...restField} name={[name, 'notificationType']} label="Type" rules={[{ required: true, message: 'Please select notification type' }]}>
                                         <Select size="large" placeholder="Choose notification type">
                                             {AlertTypesData.data?.data.map((item, i) => (
-                                                <Select.Option key={i} value={item}>
+                                                <Select.Option key={i} value={String(item)}>
                                                     {item}
                                                 </Select.Option>
                                             ))}
-                                        </Select>{" "}
+                                        </Select>
                                     </Form.Item>
                                     <Form.Item {...restField} name={[name, 'runwayLengthReductionM']} label="Length Reduction (m)" rules={[{ required: true, message: 'Please enter length reduction' }, { min: 0, message: 'Length must be positive' }]}>
                                         <Input size="large" type="number" />
@@ -274,6 +276,13 @@ export default function RunwayConditionCreate() {
         setValue(e.target.value);
     };
 
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Runway condition created successfully!");
+            router.push('/')
+        }
+    }, [isSuccess]);
+
     return (
         <div>
             {/* <div className="text-2xl mb-4">Create new runway condition</div> */}
@@ -301,12 +310,12 @@ export default function RunwayConditionCreate() {
                         temperatureCelsius: 0
                     }],
                     situationalNotifications: [{
-                        notificationType: "",
+                        notificationType: null,
                         runwayLengthReductionM: 0,
                         additionalDetails: ""
                     }],
                     improvementProcedures: [{
-                        procedureType: "",
+                        procedureType: null,
                         applicationTime: "",
                         effectivenessRating: 0
                     }],
