@@ -11,14 +11,13 @@ import { GetAlertTypes, GetProcedureTypes } from "../../../../services/enums";
 import NewRunWay3 from "../_components/NewRunWay3";
 import { useCreateRunwayCondition } from "./fetch";
 import ReviewStep from "./steps/ReviewStep";
-import RunwayConditionInfoStep from "./steps/RunwayConditionInfoStep";
 
 export default function RunwayConditionCreate() {
     const [form] = Form.useForm<RunwayConditionCreateRequest>();
     const { mutate, isPending, isSuccess, isError, error } = useCreateRunwayCondition();
     const router = useRouter()
     const [value, setValue] = useState(1);
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(0);
     const [formValues, setFormValues] = useState(form.getFieldsValue());
     const [coverageSelections, setCoverageSelections] = useState<{ [key: number]: string }>({});
 
@@ -33,10 +32,10 @@ export default function RunwayConditionCreate() {
     });
 
     const steps = [
-        {
-            title: 'Runway Condition Info',
-            content: <RunwayConditionInfoStep form={form} value={value} setValue={setValue} />,
-        },
+        // {
+        //     title: 'Runway Condition Info',
+        //     content: <RunwayConditionInfoStep form={form} value={value} setValue={setValue} />,
+        // },
         {
             title: 'Runway Thirds',
             content: (<NewRunWay3 />

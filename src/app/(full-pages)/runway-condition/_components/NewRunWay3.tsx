@@ -1,4 +1,4 @@
-import { Col, Divider, Input, Row } from "antd"
+import { Col, Divider, Input, InputNumber, Row, Select } from "antd"
 import { CircleDot } from "lucide-react"
 import { useState } from "react"
 
@@ -6,7 +6,9 @@ export type type = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 const NewRunWay3 = () => {
     const [value, setValue] = useState(1);
-    const [val, setVal] = useState<type | null>(null)
+    const [val1, setVal1] = useState<type | null>(null)
+    const [val2, setVal2] = useState<type | null>(null)
+    const [val3, setVal3] = useState<type | null>(null)
 
     return (
         <div className="flex flex-col items-center">
@@ -67,11 +69,32 @@ const NewRunWay3 = () => {
                     <div className="flex gap-2">
                         <div className="flex flex-col items-center">
                             <Input
-                                value={val ?? ""}
+                                value={val1 ?? ""}
                                 size="large"
+                                onChange={(e) => {
+                                    const v = Number(e.target.value);
+                                    if ([0, 1, 2, 3, 4, 5, 6].includes(v)) setVal1(v as type);
+                                }}
                                 className="w-[80px]"
                             />
                             <div className="">RWYCC</div>
+                        </div>
+                        <Select
+                            size="large"
+                            value={val1 === 6 ? 100 : null}
+                            placeholder="Choose"
+                            options={[
+                                { value: 25, label: "25%" },
+                                { value: 50, label: "50%" },
+                                { value: 75, label: "75%" },
+                                { value: 100, label: "100%" },
+                            ]}
+                        />
+                        <div className="">
+                            <InputNumber
+                                size="large"
+                                placeholder="Глубина"
+                            />
                         </div>
                     </div>
                     <Divider />
@@ -82,14 +105,14 @@ const NewRunWay3 = () => {
                                     <div className="">Сухая</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(6)}
+                                        onClick={() => setVal1(6)}
                                     >6</div>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="">Мокрая</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal1(5)}
                                     >5</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -97,7 +120,7 @@ const NewRunWay3 = () => {
                                     <div className="">Иней</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal1(5)}
                                     >5</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -112,7 +135,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center gap-2">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal1(3)}
                                     >3</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -130,7 +153,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(2)}
+                                        onClick={() => setVal1(2)}
                                     >2</div>
                                     <div className="">{" > 3 мм"}</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
@@ -139,7 +162,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal1(5)}
                                     >5</div>
                                     <div className="">{" 3мм или < "}</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
@@ -155,7 +178,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal1(3)}
                                     >3</div>
                                     <div className="">{" > 3 мм"}</div>
                                 </div>
@@ -163,7 +186,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal1(5)}
                                     >5</div>
                                     <div className="">{" 3мм или < "}</div>
                                 </div>
@@ -178,7 +201,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center gap-2">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal1(3)}
                                     >3</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -205,7 +228,7 @@ const NewRunWay3 = () => {
                                 <div className="text-gray-6">25/50/75/100</div>
                                 <div
                                     className="border px-4 py-2 cursor-pointer"
-                                    onClick={() => setVal(4)}
+                                    onClick={() => setVal1(4)}
                                 >4</div>
                             </div>
                         </div>
@@ -215,7 +238,7 @@ const NewRunWay3 = () => {
                             <div className="flex items-center gap-2">
                                 <div
                                     className="border px-4 py-2 cursor-pointer"
-                                    onClick={() => setVal(3)}
+                                    onClick={() => setVal1(3)}
                                 >3</div>
                                 <div className="text-gray-6">25/50/75/100</div>
                             </div>
@@ -230,7 +253,7 @@ const NewRunWay3 = () => {
                                     <div className="">Лед</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(1)}
+                                        onClick={() => setVal1(1)}
                                     >1</div>
                                 </div>
                             </div>
@@ -246,7 +269,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(0)}
+                                        onClick={() => setVal1(0)}
                                     >0</div>
                                 </div>
                                 <div className="text-gray-6">25/50/75/100</div>
@@ -271,11 +294,32 @@ const NewRunWay3 = () => {
                     <div className="flex gap-2">
                         <div className="flex flex-col items-center">
                             <Input
-                                value={val ?? ""}
+                                value={val2 ?? ""}
+                                onChange={(e) => {
+                                    const v = Number(e.target.value);
+                                    if ([0, 1, 2, 3, 4, 5, 6].includes(v)) setVal2(v as type);
+                                }}
                                 size="large"
                                 className="w-[80px]"
                             />
                             <div className="">RWYCC</div>
+                        </div>
+                        <Select
+                            size="large"
+                            value={val2 === 6 ? 100 : null}
+                            placeholder="Choose"
+                            options={[
+                                { value: 25, label: "25%" },
+                                { value: 50, label: "50%" },
+                                { value: 75, label: "75%" },
+                                { value: 100, label: "100%" },
+                            ]}
+                        />
+                        <div className="">
+                            <InputNumber
+                                size="large"
+                                placeholder="Глубина"
+                            />
                         </div>
                     </div>
                     <Divider />
@@ -286,14 +330,14 @@ const NewRunWay3 = () => {
                                     <div className="">Сухая</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(6)}
+                                        onClick={() => setVal2(6)}
                                     >6</div>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="">Мокрая</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal2(5)}
                                     >5</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -301,7 +345,7 @@ const NewRunWay3 = () => {
                                     <div className="">Иней</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal2(5)}
                                     >5</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -316,7 +360,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center gap-2">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal2(3)}
                                     >3</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -334,7 +378,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(2)}
+                                        onClick={() => setVal2(2)}
                                     >2</div>
                                     <div className="">{" > 3 мм"}</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
@@ -343,7 +387,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal2(5)}
                                     >5</div>
                                     <div className="">{" 3мм или < "}</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
@@ -359,7 +403,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal2(3)}
                                     >3</div>
                                     <div className="">{" > 3 мм"}</div>
                                 </div>
@@ -367,7 +411,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal2(5)}
                                     >5</div>
                                     <div className="">{" 3мм или < "}</div>
                                 </div>
@@ -382,7 +426,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center gap-2">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal2(3)}
                                     >3</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -409,7 +453,7 @@ const NewRunWay3 = () => {
                                 <div className="text-gray-6">25/50/75/100</div>
                                 <div
                                     className="border px-4 py-2 cursor-pointer"
-                                    onClick={() => setVal(4)}
+                                    onClick={() => setVal2(4)}
                                 >4</div>
                             </div>
                         </div>
@@ -419,7 +463,7 @@ const NewRunWay3 = () => {
                             <div className="flex items-center gap-2">
                                 <div
                                     className="border px-4 py-2 cursor-pointer"
-                                    onClick={() => setVal(3)}
+                                    onClick={() => setVal2(3)}
                                 >3</div>
                                 <div className="text-gray-6">25/50/75/100</div>
                             </div>
@@ -434,7 +478,7 @@ const NewRunWay3 = () => {
                                     <div className="">Лед</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(1)}
+                                        onClick={() => setVal2(1)}
                                     >1</div>
                                 </div>
                             </div>
@@ -450,7 +494,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(0)}
+                                        onClick={() => setVal2(0)}
                                     >0</div>
                                 </div>
                                 <div className="text-gray-6">25/50/75/100</div>
@@ -475,11 +519,32 @@ const NewRunWay3 = () => {
                     <div className="flex gap-2">
                         <div className="flex flex-col items-center">
                             <Input
-                                value={val ?? ""}
+                                value={val3 ?? ""}
+                                onChange={(e) => {
+                                    const v = Number(e.target.value);
+                                    if ([0, 1, 2, 3, 4, 5, 6].includes(v)) setVal3(v as type);
+                                }}
                                 size="large"
                                 className="w-[80px]"
                             />
                             <div className="">RWYCC</div>
+                        </div>
+                        <Select
+                            size="large"
+                            value={val3 === 6 ? 100 : null}
+                            placeholder="Choose"
+                            options={[
+                                { value: 25, label: "25%" },
+                                { value: 50, label: "50%" },
+                                { value: 75, label: "75%" },
+                                { value: 100, label: "100%" },
+                            ]}
+                        />
+                        <div className="">
+                            <InputNumber
+                                size="large"
+                                placeholder="Глубина"
+                            />
                         </div>
                     </div>
                     <Divider />
@@ -490,14 +555,14 @@ const NewRunWay3 = () => {
                                     <div className="">Сухая</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(6)}
+                                        onClick={() => setVal3(6)}
                                     >6</div>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="">Мокрая</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal3(5)}
                                     >5</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -505,7 +570,7 @@ const NewRunWay3 = () => {
                                     <div className="">Иней</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal3(5)}
                                     >5</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -520,7 +585,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center gap-2">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal3(3)}
                                     >3</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -538,7 +603,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(2)}
+                                        onClick={() => setVal3(2)}
                                     >2</div>
                                     <div className="">{" > 3 мм"}</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
@@ -547,7 +612,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal3(5)}
                                     >5</div>
                                     <div className="">{" 3мм или < "}</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
@@ -563,7 +628,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal3(3)}
                                     >3</div>
                                     <div className="">{" > 3 мм"}</div>
                                 </div>
@@ -571,7 +636,7 @@ const NewRunWay3 = () => {
                                     <div className="">Слякоть</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(5)}
+                                        onClick={() => setVal3(5)}
                                     >5</div>
                                     <div className="">{" 3мм или < "}</div>
                                 </div>
@@ -586,7 +651,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center gap-2">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(3)}
+                                        onClick={() => setVal3(3)}
                                     >3</div>
                                     <div className="text-xs text-gray-6">25/50/75/100</div>
                                 </div>
@@ -613,7 +678,7 @@ const NewRunWay3 = () => {
                                 <div className="text-gray-6">25/50/75/100</div>
                                 <div
                                     className="border px-4 py-2 cursor-pointer"
-                                    onClick={() => setVal(4)}
+                                    onClick={() => setVal3(4)}
                                 >4</div>
                             </div>
                         </div>
@@ -623,7 +688,7 @@ const NewRunWay3 = () => {
                             <div className="flex items-center gap-2">
                                 <div
                                     className="border px-4 py-2 cursor-pointer"
-                                    onClick={() => setVal(3)}
+                                    onClick={() => setVal3(3)}
                                 >3</div>
                                 <div className="text-gray-6">25/50/75/100</div>
                             </div>
@@ -638,7 +703,7 @@ const NewRunWay3 = () => {
                                     <div className="">Лед</div>
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(1)}
+                                        onClick={() => setVal3(1)}
                                     >1</div>
                                 </div>
                             </div>
@@ -654,7 +719,7 @@ const NewRunWay3 = () => {
                                 <div className="flex flex-col items-center">
                                     <div
                                         className="border px-4 py-2 cursor-pointer"
-                                        onClick={() => setVal(0)}
+                                        onClick={() => setVal3(0)}
                                     >0</div>
                                 </div>
                                 <div className="text-gray-6">25/50/75/100</div>
