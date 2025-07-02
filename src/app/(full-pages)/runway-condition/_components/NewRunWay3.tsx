@@ -10,6 +10,10 @@ const NewRunWay3 = () => {
     const [val2, setVal2] = useState<type | null>(null)
     const [val3, setVal3] = useState<type | null>(null)
 
+    const [sel1, setSel1] = useState<number | null>(null)
+    const [sel2, setSel2] = useState<number | null>(null)
+    const [sel3, setSel3] = useState<number | null>(null)
+
     return (
         <div className="flex flex-col items-center">
             <div className="flex flex-col gap-4 mb-4 items-center">
@@ -83,6 +87,7 @@ const NewRunWay3 = () => {
                             size="large"
                             value={val1 === 6 ? 100 : null}
                             placeholder="Choose"
+                            onSelect={(val) => setSel1(val as number)}
                             options={[
                                 { value: 25, label: "25%" },
                                 { value: 50, label: "50%" },
@@ -308,6 +313,7 @@ const NewRunWay3 = () => {
                             size="large"
                             value={val2 === 6 ? 100 : null}
                             placeholder="Choose"
+                            onSelect={(val) => setSel2(val as number)}
                             options={[
                                 { value: 25, label: "25%" },
                                 { value: 50, label: "50%" },
@@ -533,6 +539,7 @@ const NewRunWay3 = () => {
                             size="large"
                             value={val3 === 6 ? 100 : null}
                             placeholder="Choose"
+                            onSelect={(val) => setSel3(val as number)}
                             options={[
                                 { value: 25, label: "25%" },
                                 { value: 50, label: "50%" },
