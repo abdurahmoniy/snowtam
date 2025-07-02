@@ -8,17 +8,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { GetAlertTypes, GetProcedureTypes } from "../../../../services/enums";
+import NewRunWay3 from "../_components/NewRunWay3";
 import { useCreateRunwayCondition } from "./fetch";
 import ReviewStep from "./steps/ReviewStep";
 import RunwayConditionInfoStep from "./steps/RunwayConditionInfoStep";
-import RunwayTypeStep from "./steps/RunwayTypeStep";
 
 export default function RunwayConditionCreate() {
     const [form] = Form.useForm<RunwayConditionCreateRequest>();
     const { mutate, isPending, isSuccess, isError, error } = useCreateRunwayCondition();
     const router = useRouter()
     const [value, setValue] = useState(1);
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(1);
     const [formValues, setFormValues] = useState(form.getFieldsValue());
     const [coverageSelections, setCoverageSelections] = useState<{ [key: number]: string }>({});
 
@@ -39,31 +39,31 @@ export default function RunwayConditionCreate() {
         },
         {
             title: 'Runway Thirds',
-            content: (
-                <Form.List name="runwayThirds">
-                    {(fields, { add, remove }) => (
-                        <div>
-                            {fields.map((field, idx) => (
-                                <RunwayTypeStep
-                                    key={field.key}
-                                    field={field}
-                                    fieldKey={idx}
-                                    remove={remove}
-                                    value={coverageSelections[idx]}
-                                    setValue={(index: number, val: string) => {
-                                        setCoverageSelections(prev => ({ ...prev, [index]: val }));
-                                        const thirds = form.getFieldValue('runwayThirds') || [];
-                                        if (thirds[index]) {
-                                            thirds[index].contaminationCoverage = val;
-                                            form.setFieldsValue({ runwayThirds: thirds });
-                                        }
-                                    }}
-                                />
-                            ))}
-                            <Button icon={<PlusOutlined />} onClick={() => add()} type="dashed" style={{ width: '100%' }}>Add Runway Third</Button>
-                        </div>
-                    )}
-                </Form.List>
+            content: (<NewRunWay3 />
+                // <Form.List name="runwayThirds">
+                //     {(fields, { add, remove }) => (
+                //         <div>
+                //             {fields.map((field, idx) => (
+                //                 <RunwayTypeStep
+                //                     key={field.key}
+                //                     field={field}
+                //                     fieldKey={idx}
+                //                     remove={remove}
+                //                     value={coverageSelections[idx]}
+                //                     setValue={(index: number, val: string) => {
+                //                         setCoverageSelections(prev => ({ ...prev, [index]: val }));
+                //                         const thirds = form.getFieldValue('runwayThirds') || [];
+                //                         if (thirds[index]) {
+                //                             thirds[index].contaminationCoverage = val;
+                //                             form.setFieldsValue({ runwayThirds: thirds });
+                //                         }
+                //                     }}
+                //                 />
+                //             ))}
+                //             <Button icon={<PlusOutlined />} onClick={() => add()} type="dashed" style={{ width: '100%' }}>Add Runway Third</Button>
+                //         </div>
+                //     )}
+                // </Form.List>
             )
         },
         {
