@@ -46,7 +46,7 @@ export default function Home() {
             rowKey="id"
             dataSource={RWConditionData.data.data as RunwayCondition[]}
             columns={[
-              { title: 'ID', dataIndex: 'id', key: 'id' },
+              // { title: 'ID', dataIndex: 'id', key: 'id' },
               { title: 'Airport Code', dataIndex: 'airportCode', key: 'airportCode' },
               { title: 'Runway Designation', dataIndex: 'runwayDesignation', key: 'runwayDesignation' },
               { title: 'Report DateTime', dataIndex: 'reportDateTime', key: 'reportDateTime', render: (date) => date ? dayjs(date).format('YYYY-MM-DD') : '' },

@@ -40,3 +40,9 @@ export interface MainResponse<Data>{
     pages: number;
     elements: number;
 }
+export interface MainResponseWithoutPagination<Data>{
+    message: string;
+    status: string;
+    data: Data;
+  
+}
