@@ -85,8 +85,9 @@ const NewRunWay3 = () => {
                         </div>
                         <Select
                             size="large"
-                            value={val1 === 6 ? 100 : null}
+                            value={val1 === 6 ? 100 : sel1}
                             placeholder="Choose"
+                            disabled={val1 === 6}
                             onSelect={(val) => setSel1(val as number)}
                             options={[
                                 { value: 25, label: "25%" },
@@ -311,8 +312,9 @@ const NewRunWay3 = () => {
                         </div>
                         <Select
                             size="large"
-                            value={val2 === 6 ? 100 : null}
+                            value={val2 === 6 ? 100 : sel2}
                             placeholder="Choose"
+                            disabled={val2 === 6}
                             onSelect={(val) => setSel2(val as number)}
                             options={[
                                 { value: 25, label: "25%" },
@@ -537,8 +539,9 @@ const NewRunWay3 = () => {
                         </div>
                         <Select
                             size="large"
-                            value={val3 === 6 ? 100 : null}
+                            value={val3 === 6 ? 100 : sel3}
                             placeholder="Choose"
+                            disabled={val3 === 6}
                             onSelect={(val) => setSel3(val as number)}
                             options={[
                                 { value: 25, label: "25%" },
