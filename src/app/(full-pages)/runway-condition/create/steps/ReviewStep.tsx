@@ -4,7 +4,7 @@ export default function ReviewStep({ values }: { values: any }) {
     console.log(values)
     return (
         <div className="p-8 bg-white dark:bg-dark-2 rounded shadow grid grid-cols-2 gap-2">
-            <div className="">
+            {/* <div className="">
                 <Divider>Review All Entered Data</Divider>
                 <Descriptions bordered column={1} size="middle">
                     <Descriptions.Item label="Airport Code">{values.airportCode}</Descriptions.Item>
@@ -16,7 +16,7 @@ export default function ReviewStep({ values }: { values: any }) {
                     <Descriptions.Item label="Overall Condition Code">{values.overallConditionCode}</Descriptions.Item>
                     <Descriptions.Item label="Remarks">{values.remarks}</Descriptions.Item>
                 </Descriptions>
-            </div>
+            </div> */}
             <div className="">
                 <Divider>Runway Thirds</Divider>
                 {(values.runwayThirds || []).map((item: any, idx: number) => (
@@ -42,8 +42,6 @@ export default function ReviewStep({ values }: { values: any }) {
                         <Descriptions.Item label="Details">{item.additionalDetails}</Descriptions.Item>
                     </Descriptions>
                 ))}
-            </div>
-            <div className="">
                 <Divider>Improvement Procedures</Divider>
                 {(values.improvementProcedures || []).map((item: any, idx: number) => (
                     <Descriptions key={idx} bordered column={1} size="small" title={`Procedure #${idx + 1}`}
