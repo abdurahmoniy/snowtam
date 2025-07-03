@@ -1,57 +1,210 @@
-import { Descriptions, Divider } from "antd";
+"use client";
 
-export default function ReviewStep({ values }: { values: any }) {
-    console.log(values)
-    return (
-        <div className="p-8 bg-white dark:bg-dark-2 rounded shadow grid grid-cols-2 gap-2">
-            {/* <div className="">
-                <Divider>Review All Entered Data</Divider>
-                <Descriptions bordered column={1} size="middle">
-                    <Descriptions.Item label="Airport Code">{values.airportCode}</Descriptions.Item>
-                    <Descriptions.Item label="Runway Designation">{values.runwayDesignation}</Descriptions.Item>
-                    <Descriptions.Item label="Report DateTime">{values.reportDateTime?.toString()}</Descriptions.Item>
-                    <Descriptions.Item label="Ambient Temperature">{values.ambientTemperature}</Descriptions.Item>
-                    <Descriptions.Item label="Initials">{values.initials}</Descriptions.Item>
-                    <Descriptions.Item label="RWYC Code">{values.rwycCode}</Descriptions.Item>
-                    <Descriptions.Item label="Overall Condition Code">{values.overallConditionCode}</Descriptions.Item>
-                    <Descriptions.Item label="Remarks">{values.remarks}</Descriptions.Item>
+import { Card, Descriptions, Divider, List, Space, Typography } from "antd";
+import { RunwayConditionCreateRequest } from "@/types/runway-condition";
+
+const { Title, Text } = Typography;
+
+interface ReviewStepProps {
+  values: RunwayConditionCreateRequest;
+}
+
+const ReviewStep = ({ values }: ReviewStepProps) => {
+  return (
+    <div className="space-y-6">
+      <Title level={4}>Review Runway Condition Report</Title>
+
+      {/* Basic Information */}
+      {/* <Card title="Basic Information">
+        <Descriptions column={2}>
+          <Descriptions.Item label="Airport Code">
+            {values.airportCode || <Text type="secondary">Not provided</Text>}
+          </Descriptions.Item>
+          <Descriptions.Item label="Runway Designation">
+            {values.runwayDesignation || (
+              <Text type="secondary">Not provided</Text>
+            )}
+          </Descriptions.Item>
+          <Descriptions.Item label="Report Date/Time">
+            {values.reportDateTime ? (
+              new Date(values.reportDateTime).toLocaleString()
+            ) : (
+              <Text type="secondary">Not provided</Text>
+            )}
+          </Descriptions.Item>
+          <Descriptions.Item label="Ambient Temperature">
+            {values.ambientTemperature !== null ? (
+              `${values.ambientTemperature}°C`
+            ) : (
+              <Text type="secondary">Not provided</Text>
+            )}
+          </Descriptions.Item>
+          <Descriptions.Item label="Initials">
+            {values.initials || <Text type="secondary">Not provided</Text>}
+          </Descriptions.Item>
+          <Descriptions.Item label="RWYC Code">
+            {values.rwycCode || <Text type="secondary">Not provided</Text>}
+          </Descriptions.Item>
+          <Descriptions.Item label="Overall Condition Code">
+            {values.overallConditionCode !== null ? (
+              values.overallConditionCode
+            ) : (
+              <Text type="secondary">Not provided</Text>
+            )}
+          </Descriptions.Item>
+        </Descriptions>
+      </Card> */}
+
+      {/* Runway Thirds */}
+      <Card title="Runway Thirds Conditions">
+        <List
+          dataSource={values.runwayThirds || []}
+          renderItem={(third, index) => (
+            <List.Item key={index}>
+              <Space direction="vertical" style={{ width: "100%" }}>
+                <Text strong>Third {third.partNumber}</Text>
+                <Descriptions column={2} size="small">
+                  <Descriptions.Item label="Coverage">
+                    {third.contaminationCoverage || (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Surface Condition">
+                    {third.surfaceCondition || (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Depth (mm)">
+                    {third.depthMm !== null ? (
+                      third.depthMm
+                    ) : (
+                      <Text type="secondary">Not applicable</Text>
+                    )}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Friction Coefficient">
+                    {third.frictionCoefficient !== null ? (
+                      third.frictionCoefficient
+                    ) : (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="RWYC Value">
+                    {third.rwycValue !== null ? (
+                      third.rwycValue
+                    ) : (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Temperature (°C)">
+                    {third.temperatureCelsius !== null ? (
+                      third.temperatureCelsius
+                    ) : (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </Descriptions.Item>
                 </Descriptions>
-            </div> */}
-            <div className="">
-                <Divider>Runway Thirds</Divider>
-                {(values.runwayThirds || []).map((item: any, idx: number) => (
-                    <Descriptions key={idx} bordered column={1} size="small" title={`Runway Third #${idx + 1}`}
-                        className="mb-4">
-                        <Descriptions.Item label="Part Number">{item.partNumber}</Descriptions.Item>
-                        <Descriptions.Item label="Coverage">{item.contaminationCoverage}</Descriptions.Item>
-                        <Descriptions.Item label="Surface">{item.surfaceCondition}</Descriptions.Item>
-                        <Descriptions.Item label="Depth (mm)">{item.depthMm}</Descriptions.Item>
-                        <Descriptions.Item label="Friction">{item.frictionCoefficient}</Descriptions.Item>
-                        <Descriptions.Item label="RWYC Value">{item.rwycValue}</Descriptions.Item>
-                        <Descriptions.Item label="Temp (C)">{item.temperatureCelsius}</Descriptions.Item>
-                    </Descriptions>
-                ))}
-            </div>
-            <div className="">
-                <Divider>Situational Notifications</Divider>
-                {(values.situationalNotifications || []).map((item: any, idx: number) => (
-                    <Descriptions key={idx} bordered column={1} size="small" title={`Notification #${idx + 1}`}
-                        className="mb-4">
-                        <Descriptions.Item label="Type">{item.notificationType}</Descriptions.Item>
-                        <Descriptions.Item label="Length Reduction (m)">{item.runwayLengthReductionM}</Descriptions.Item>
-                        <Descriptions.Item label="Details">{item.additionalDetails}</Descriptions.Item>
-                    </Descriptions>
-                ))}
-                <Divider>Improvement Procedures</Divider>
-                {(values.improvementProcedures || []).map((item: any, idx: number) => (
-                    <Descriptions key={idx} bordered column={1} size="small" title={`Procedure #${idx + 1}`}
-                        className="mb-4">
-                        <Descriptions.Item label="Type">{item.procedureType}</Descriptions.Item>
-                        <Descriptions.Item label="Time">{item.applicationTime?.toString()}</Descriptions.Item>
-                        <Descriptions.Item label="Effectiveness">{item.effectivenessRating}</Descriptions.Item>
-                    </Descriptions>
-                ))}
-            </div>
-        </div>
-    );
-} 
+              </Space>
+            </List.Item>
+          )}
+        />
+      </Card>
+
+      {/* Situational Notifications */}
+      {values.situationalNotifications?.length > 0 && (
+        <Card title="Situational Notifications">
+          <List
+            dataSource={values.situationalNotifications}
+            renderItem={(notification, index) => (
+              <List.Item key={index}>
+                <Space direction="vertical">
+                  <Text strong>Notification {index + 1}</Text>
+                  <div>
+                    <Text>Type: </Text>
+                    {notification.notificationType ? (
+                      Array.isArray(notification.notificationType) ? (
+                        <Text>{notification.notificationType.join(", ")}</Text>
+                      ) : (
+                        <Text>{notification.notificationType}</Text>
+                      )
+                    ) : (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </div>
+                  <div>
+                    <Text>Runway Length Reduction: </Text>
+                    {notification.runwayLengthReductionM !== null ? (
+                      <Text>{notification.runwayLengthReductionM}m</Text>
+                    ) : (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </div>
+                  {notification.additionalDetails && (
+                    <div>
+                      <Text>Additional Details: </Text>
+                      <Text>{notification.additionalDetails}</Text>
+                    </div>
+                  )}
+                </Space>
+              </List.Item>
+            )}
+          />
+        </Card>
+      )}
+
+      {/* Improvement Procedures */}
+      {values.improvementProcedures?.length > 0 && (
+        <Card title="Improvement Procedures">
+          <List
+            dataSource={values.improvementProcedures}
+            renderItem={(procedure, index) => (
+              <List.Item key={index}>
+                <Space direction="vertical">
+                  <Text strong>Procedure {index + 1}</Text>
+                  <div>
+                    <Text>Type: </Text>
+                    {procedure.procedureType ? (
+                      Array.isArray(procedure.procedureType) ? (
+                        <Text>{procedure.procedureType.join(", ")}</Text>
+                      ) : (
+                        <Text>{procedure.procedureType}</Text>
+                      )
+                    ) : (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </div>
+                  <div>
+                    <Text>Application Time: </Text>
+                    {procedure.applicationTime ? (
+                      <Text>
+                        {new Date(procedure.applicationTime).toLocaleString()}
+                      </Text>
+                    ) : (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </div>
+                  <div>
+                    <Text>Effectiveness Rating: </Text>
+                    {procedure.effectivenessRating !== null ? (
+                      <Text>{procedure.effectivenessRating}</Text>
+                    ) : (
+                      <Text type="secondary">Not provided</Text>
+                    )}
+                  </div>
+                </Space>
+              </List.Item>
+            )}
+          />
+        </Card>
+      )}
+
+      {/* Remarks */}
+      {values.remarks && (
+        <Card title="Remarks">
+          <Text>{values.remarks}</Text>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default ReviewStep;
