@@ -144,11 +144,40 @@ export default function RunwayConditionCreate() {
               <div>
                 <Row gutter={[16, 16]}>
                   <Col span={12}>
-                    <Form.Item name={[0, "improvementProcedures"]}>
-                      <Checkbox.Group>
+                    <Form.Item name={[0, "procedureType"]}>
+                      <Checkbox.Group
+                        onChange={(checkedValues) => {
+                          const currentValues = form.getFieldValue(
+                            "improvementProcedures",
+                          ) || [{}];
+                          // If "Хим. обработка" is checked and "Жидкая" isn't already checked
+                          if (
+                            checkedValues.includes("Хим. обработка") &&
+                            !checkedValues.includes("Жидкая")
+                          ) {
+                            form.setFieldsValue({
+                              improvementProcedures: [
+                                {
+                                  ...currentValues[0],
+                                  procedureType: [...checkedValues, "Жидкая"],
+                                },
+                              ],
+                            });
+                          } else {
+                            form.setFieldsValue({
+                              improvementProcedures: [
+                                {
+                                  ...currentValues[0],
+                                  procedureType: checkedValues,
+                                },
+                              ],
+                            });
+                          }
+                        }}
+                      >
                         <Row gutter={[0, 8]}>
                           <Col span={24}>
-                            <Checkbox value="Уменьшенная длина ВПП LDA">
+                            <Checkbox value="Хим. обработка">
                               Хим. обработка
                             </Checkbox>
                           </Col>
@@ -169,7 +198,7 @@ export default function RunwayConditionCreate() {
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item name={[0, "improvementProcedures"]}>
+                    <Form.Item name={[0, "procedureType"]}>
                       <Checkbox.Group>
                         <Row gutter={[0, 8]}>
                           <Col span={24}>
