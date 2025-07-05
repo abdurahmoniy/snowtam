@@ -10,96 +10,125 @@ interface ReviewStepProps {
 }
 
 const ReviewStep = ({ values }: ReviewStepProps) => {
+  // 3-та ВПП учун бошланғич қийматларни аниклаш
+  const allThirds = [
+    values.runwayThirds?.[0] || {
+      partNumber: 1,
+      contaminationCoverage: null,
+      surfaceCondition: null,
+      depthMm: null,
+      frictionCoefficient: null,
+      rwycValue: null,
+      temperatureCelsius: null,
+    },
+    values.runwayThirds?.[1] || {
+      partNumber: 2,
+      contaminationCoverage: null,
+      surfaceCondition: null,
+      depthMm: null,
+      frictionCoefficient: null,
+      rwycValue: null,
+      temperatureCelsius: null,
+    },
+    values.runwayThirds?.[2] || {
+      partNumber: 3,
+      contaminationCoverage: null,
+      surfaceCondition: null,
+      depthMm: null,
+      frictionCoefficient: null,
+      rwycValue: null,
+      temperatureCelsius: null,
+    },
+  ];
+
+  const getCoverageText = (coverage: string | null) => {
+    switch (coverage) {
+      case "LESS_THAN_10_PERCENT":
+        return "Менее 10%";
+      case "BETWEEN_10_AND_25_PERCENT":
+        return "10-25%";
+      case "MORE_THAN_25_PERCENT":
+        return "Более 25%";
+      default:
+        return <Text type="secondary">Не указано</Text>;
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <Title level={4}>Review Runway Condition Report</Title>
+      <Title level={4}>Проверка отчета о состоянии ВПП</Title>
 
-      {/* Basic Information */}
-      {/* <Card title="Basic Information">
+      {/* Основная информация */}
+      <Card title="Основная информация">
         <Descriptions column={2}>
-          <Descriptions.Item label="Airport Code">
-            {values.airportCode || <Text type="secondary">Not provided</Text>}
+          <Descriptions.Item label="Код аэропорта">
+            {values.airportCode || <Text type="secondary">Не указано</Text>}
           </Descriptions.Item>
-          <Descriptions.Item label="Runway Designation">
+          <Descriptions.Item label="Обозначение ВПП">
             {values.runwayDesignation || (
-              <Text type="secondary">Not provided</Text>
+              <Text type="secondary">Не указано</Text>
             )}
           </Descriptions.Item>
-          <Descriptions.Item label="Report Date/Time">
+          <Descriptions.Item label="Дата/время отчета">
             {values.reportDateTime ? (
               new Date(values.reportDateTime).toLocaleString()
             ) : (
-              <Text type="secondary">Not provided</Text>
+              <Text type="secondary">Не указано</Text>
             )}
           </Descriptions.Item>
-          <Descriptions.Item label="Ambient Temperature">
+          <Descriptions.Item label="Температура окружающей среды">
             {values.ambientTemperature !== null ? (
               `${values.ambientTemperature}°C`
             ) : (
-              <Text type="secondary">Not provided</Text>
-            )}
-          </Descriptions.Item>
-          <Descriptions.Item label="Initials">
-            {values.initials || <Text type="secondary">Not provided</Text>}
-          </Descriptions.Item>
-          <Descriptions.Item label="RWYC Code">
-            {values.rwycCode || <Text type="secondary">Not provided</Text>}
-          </Descriptions.Item>
-          <Descriptions.Item label="Overall Condition Code">
-            {values.overallConditionCode !== null ? (
-              values.overallConditionCode
-            ) : (
-              <Text type="secondary">Not provided</Text>
+              <Text type="secondary">Не указано</Text>
             )}
           </Descriptions.Item>
         </Descriptions>
-      </Card> */}
+      </Card>
 
-      {/* Runway Thirds */}
-      <Card title="Runway Thirds Conditions">
+      {/* Состояние третей ВПП */}
+      <Card title="Состояние третей ВПП">
         <List
-          dataSource={values.runwayThirds || []}
+          dataSource={allThirds}
           renderItem={(third, index) => (
             <List.Item key={index}>
               <Space direction="vertical" style={{ width: "100%" }}>
-                <Text strong>Third {third.partNumber}</Text>
-                <Descriptions column={2} size="small">
-                  <Descriptions.Item label="Coverage">
-                    {third.contaminationCoverage || (
-                      <Text type="secondary">Not provided</Text>
-                    )}
+                <Text strong>{third.partNumber} треть ВПП</Text>
+                <Descriptions column={2} size="small" bordered>
+                  <Descriptions.Item label="Покрытие" span={2}>
+                    {getCoverageText(third.contaminationCoverage)}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Surface Condition">
+                  <Descriptions.Item label="Состояние поверхности">
                     {third.surfaceCondition || (
-                      <Text type="secondary">Not provided</Text>
+                      <Text type="secondary">Не указано</Text>
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Depth (mm)">
+                  <Descriptions.Item label="Глубина (мм)">
                     {third.depthMm !== null ? (
                       third.depthMm
                     ) : (
-                      <Text type="secondary">Not applicable</Text>
+                      <Text type="secondary">Не применимо</Text>
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Friction Coefficient">
+                  <Descriptions.Item label="Коэффициент трения">
                     {third.frictionCoefficient !== null ? (
                       third.frictionCoefficient
                     ) : (
-                      <Text type="secondary">Not provided</Text>
+                      <Text type="secondary">Не указано</Text>
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="RWYC Value">
+                  <Descriptions.Item label="Значение RWYC">
                     {third.rwycValue !== null ? (
                       third.rwycValue
                     ) : (
-                      <Text type="secondary">Not provided</Text>
+                      <Text type="secondary">Не указано</Text>
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Temperature (°C)">
+                  <Descriptions.Item label="Температура (°C)">
                     {third.temperatureCelsius !== null ? (
                       third.temperatureCelsius
                     ) : (
-                      <Text type="secondary">Not provided</Text>
+                      <Text type="secondary">Не указано</Text>
                     )}
                   </Descriptions.Item>
                 </Descriptions>
@@ -109,97 +138,41 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
         />
       </Card>
 
-      {/* Situational Notifications */}
-      {values.situationalNotifications?.length > 0 && (
-        <Card title="Situational Notifications">
+      {/* Ситуационные уведомления */}
+      <Card title="Ситуационные уведомления">
+        {values.situationalNotifications?.length > 0 ? (
           <List
             dataSource={values.situationalNotifications}
-            renderItem={(notification, index) => (
+            renderItem={(item, index) => (
               <List.Item key={index}>
-                <Space direction="vertical">
-                  <Text strong>Notification {index + 1}</Text>
-                  <div>
-                    <Text>Type: </Text>
-                    {notification.notificationType ? (
-                      Array.isArray(notification.notificationType) ? (
-                        <Text>{notification.notificationType.join(", ")}</Text>
-                      ) : (
-                        <Text>{notification.notificationType}</Text>
-                      )
-                    ) : (
-                      <Text type="secondary">Not provided</Text>
-                    )}
-                  </div>
-                  <div>
-                    <Text>Runway Length Reduction: </Text>
-                    {notification.runwayLengthReductionM !== null ? (
-                      <Text>{notification.runwayLengthReductionM}m</Text>
-                    ) : (
-                      <Text type="secondary">Not provided</Text>
-                    )}
-                  </div>
-                  {notification.additionalDetails && (
-                    <div>
-                      <Text>Additional Details: </Text>
-                      <Text>{notification.additionalDetails}</Text>
-                    </div>
-                  )}
-                </Space>
+                <Text>{String(item)}</Text>
               </List.Item>
             )}
           />
-        </Card>
-      )}
+        ) : (
+          <Text type="secondary">Уведомления не выбраны</Text>
+        )}
+      </Card>
 
-      {/* Improvement Procedures */}
-      {values.improvementProcedures?.length > 0 && (
-        <Card title="Improvement Procedures">
+      {/* Процедуры улучшения */}
+      <Card title="Процедуры улучшения">
+        {values.improvementProcedures?.length > 0 ? (
           <List
             dataSource={values.improvementProcedures}
-            renderItem={(procedure, index) => (
+            renderItem={(item, index) => (
               <List.Item key={index}>
-                <Space direction="vertical">
-                  <Text strong>Procedure {index + 1}</Text>
-                  <div>
-                    <Text>Type: </Text>
-                    {procedure.procedureType ? (
-                      Array.isArray(procedure.procedureType) ? (
-                        <Text>{procedure.procedureType.join(", ")}</Text>
-                      ) : (
-                        <Text>{procedure.procedureType}</Text>
-                      )
-                    ) : (
-                      <Text type="secondary">Not provided</Text>
-                    )}
-                  </div>
-                  <div>
-                    <Text>Application Time: </Text>
-                    {procedure.applicationTime ? (
-                      <Text>
-                        {new Date(procedure.applicationTime).toLocaleString()}
-                      </Text>
-                    ) : (
-                      <Text type="secondary">Not provided</Text>
-                    )}
-                  </div>
-                  <div>
-                    <Text>Effectiveness Rating: </Text>
-                    {procedure.effectivenessRating !== null ? (
-                      <Text>{procedure.effectivenessRating}</Text>
-                    ) : (
-                      <Text type="secondary">Not provided</Text>
-                    )}
-                  </div>
-                </Space>
+                <Text>{String(item)}</Text>
               </List.Item>
             )}
           />
-        </Card>
-      )}
+        ) : (
+          <Text type="secondary">Процедуры не выбраны</Text>
+        )}
+      </Card>
 
-      {/* Remarks */}
+      {/* Примечания */}
       {values.remarks && (
-        <Card title="Remarks">
+        <Card title="Примечания">
           <Text>{values.remarks}</Text>
         </Card>
       )}
