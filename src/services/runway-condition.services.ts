@@ -8,7 +8,7 @@ export async function createRunwayCondition(
   headers?: AxiosRequestConfig
 ) {
   const res = await httpClient.private.post<RunwayConditionCreateResponse>(
-    "/runwayCondition/create",
+    "/runwayCondition/createAll",
     { ...payload },
     { ...headers }
   );

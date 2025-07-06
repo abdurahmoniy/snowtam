@@ -63,7 +63,7 @@ export default function Home() {
               },
               { title: 'Runway Thirds', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds) => thirds?.length || 0 },
               { title: 'Situational Notifications', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => n?.length || 0 },
-              { title: 'Improvement Procedures', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => p?.length || 0 },
+              { title: 'Improvement Procedures', dataIndex: 'improvementProcedure', key: 'improvementProcedure', render: (p) => p?.length || 0 },
             ]}
             pagination={{
               current: page,

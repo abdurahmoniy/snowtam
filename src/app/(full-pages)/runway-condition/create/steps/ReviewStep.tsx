@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, Descriptions, Divider, List, Space, Typography } from "antd";
 import { RunwayConditionCreateRequest } from "@/types/runway-condition";
+import { Card, Descriptions, List, Space, Typography } from "antd";
 
 const { Title, Text } = Typography;
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { RunwayConditionCreateRequest } from "@/types/runway-condition";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
   Button,
@@ -10,10 +9,11 @@ import {
   DatePicker,
   Form,
   Input,
+  Radio,
   RadioChangeEvent,
   Row,
   Select,
-  Steps,
+  Steps
 } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -34,6 +34,7 @@ export default function RunwayConditionCreate() {
   const [coverageSelections, setCoverageSelections] = useState<{
     [key: number]: string;
   }>({});
+  const [chemicalTreatmentChecked, setChemicalTreatmentChecked] = useState(false);
 
   const AlertTypesData = useQuery({
     queryFn: () => GetAlertTypes(),
@@ -67,28 +68,54 @@ export default function RunwayConditionCreate() {
                         <Row gutter={[0, 8]}>
                           <Col span={24}>
                             <Checkbox value="Уменьшенная длина ВПП LDA">
-                              Уменьшенная длина ВПП LDA..................m
+                              <div className="flex items-center text-lg">
+                                Уменьшенная длина ВПП LDA
+                                <Form.Item name={[0, "runwayLengthReductionM"]} className="inline-block ml-2 mb-0">
+                                  <Input size="small" style={{ width: 80 }} suffix="m" />
+                                </Form.Item>
+                              </div>
                             </Checkbox>
                           </Col>
                           <Col span={24}>
                             <Checkbox value="Снежная позёмка на ВПП">
-                              Снежная позёмка на ВПП
+                              <div className="flex items-center text-lg">
+                                Снежная позёмка на ВПП
+                              </div>
                             </Checkbox>
                           </Col>
                           <Col span={24}>
                             <Checkbox value="Песок на ВПП">
-                              Песок на ВПП
+                              <div className="flex items-center text-lg">
+                                Песок на ВПП
+                              </div>
                             </Checkbox>
                           </Col>
                           <Col span={24}>
                             <Checkbox value="Сугробы на ВПП">
-                              Сугробы на ВПП Л от оси ВПП....м / П от оси
-                              ВПП....м
+                              <div className="flex items-center text-lg">
+                                Сугробы на ВПП Л от оси ВПП
+                                <Form.Item name={[0, "snowdriftLeftDistance"]} className="inline-block ml-1 mb-0">
+                                  <Input size="small" style={{ width: 60 }} suffix="м" />
+                                </Form.Item>
+                                / П от оси ВПП
+                                <Form.Item name={[0, "snowdriftRightDistance"]} className="inline-block ml-1 mb-0">
+                                  <Input size="small" style={{ width: 60 }} suffix="м" />
+                                </Form.Item>
+                              </div>
                             </Checkbox>
                           </Col>
                           <Col span={24}>
                             <Checkbox value="Сугробы на РД">
-                              Сугробы на РД Л от оси ВПП....м/П от оси ВПП....м
+                              <div className="flex items-center text-lg">
+                                Сугробы на РД Л от оси ВПП
+                                <Form.Item name={[0, "taxiwaySnowdriftLeftDistance"]} className="inline-block ml-1 mb-0">
+                                  <Input size="small" style={{ width: 60 }} suffix="м" />
+                                </Form.Item>
+                                /П от оси ВПП
+                                <Form.Item name={[0, "taxiwaySnowdriftRightDistance"]} className="inline-block ml-1 mb-0">
+                                  <Input size="small" style={{ width: 60 }} suffix="м" />
+                                </Form.Item>
+                              </div>
                             </Checkbox>
                           </Col>
                         </Row>
@@ -101,21 +128,39 @@ export default function RunwayConditionCreate() {
                         <Row gutter={[0, 8]}>
                           <Col span={24}>
                             <Checkbox value="Сугробы вблизи ВПП">
-                              Сугробы вблизи ВПП
+                              <div className="flex items-center  text-lg">
+                                Сугробы вблизи ВПП
+                              </div>
                             </Checkbox>
                           </Col>
                           <Col span={24}>
                             <Checkbox value="РД Плохое">
-                              РД.......Плохое
+                              <div className="flex items-center text-lg">
+                                РД
+                                <Form.Item name={[0, "taxiwayNumber"]} className="inline-block ml-1 mb-0">
+                                  <Input size="small" style={{ width: 60 }} />
+                                </Form.Item>
+                                Плохое
+                              </div>
                             </Checkbox>
                           </Col>
                           <Col span={24}>
                             <Checkbox value="Перрон Плохое">
-                              Перрон.....Плохое
+                              <div className="flex items-center text-lg">
+                                Перрон
+                                <Form.Item name={[0, "apronNumber"]} className="inline-block ml-1 mb-0">
+                                  <Input size="small" style={{ width: 60 }} />
+                                </Form.Item>
+                                Плохое
+                              </div>
                             </Checkbox>
                           </Col>
                           <Col span={24}>
-                            <Checkbox value="Другое">Другое</Checkbox>
+                            <Checkbox value="Другое">
+                              <div className="flex items-center text-lg">
+                                Другое
+                              </div>
+                            </Checkbox>
                           </Col>
                         </Row>
                       </Checkbox.Group>
@@ -136,10 +181,22 @@ export default function RunwayConditionCreate() {
             <h1 className="mb-4 text-lg font-semibold">
               Какие процедуры по улучшению состояния ВПП были применены{" "}
             </h1>
-            <h2 className="mb-4">Время применения,_____</h2>
+            <h2 className="mb-4 flex items-center gap-2 text-lg">Время применения,<DatePicker placeholder="Выберите дату" showTime /></h2>
+            <h2 className="mb-4 flex items-center gap-2">
+              <Select
+                className=""
+                placeholder="Выберите устройство"
+                options={[
+                  { label: 'A. SNOWBANK ON APRON' },
+                  { label: 'B.' },
+                  { label: 'C.' },
+                  { label: 'D.' },
+                ]}
+              />
+            </h2>
           </div>
 
-          <Form.List name="improvementProcedures">
+          <Form.List name="improvementProcedure">
             {(fields, { add, remove }) => (
               <div>
                 <Row gutter={[16, 16]}>
@@ -148,15 +205,19 @@ export default function RunwayConditionCreate() {
                       <Checkbox.Group
                         onChange={(checkedValues) => {
                           const currentValues = form.getFieldValue(
-                            "improvementProcedures",
+                            "improvementProcedure",
                           ) || [{}];
+
+                          // Update state for chemical treatment
+                          setChemicalTreatmentChecked(checkedValues.includes("Хим. обработка"));
+
                           // If "Хим. обработка" is checked and "Жидкая" isn't already checked
                           if (
                             checkedValues.includes("Хим. обработка") &&
                             !checkedValues.includes("Жидкая")
                           ) {
                             form.setFieldsValue({
-                              improvementProcedures: [
+                              improvementProcedure: [
                                 {
                                   ...currentValues[0],
                                   procedureType: [...checkedValues, "Жидкая"],
@@ -165,7 +226,7 @@ export default function RunwayConditionCreate() {
                             });
                           } else {
                             form.setFieldsValue({
-                              improvementProcedures: [
+                              improvementProcedure: [
                                 {
                                   ...currentValues[0],
                                   procedureType: checkedValues,
@@ -177,38 +238,32 @@ export default function RunwayConditionCreate() {
                       >
                         <Row gutter={[0, 8]}>
                           <Col span={24}>
-                            <Checkbox value="Хим. обработка">
+                            <Checkbox value="Хим. обработка" className=" text-lg">
                               Хим. обработка
                             </Checkbox>
                           </Col>
+                          {chemicalTreatmentChecked && (
+                            <>
+                              <Col span={24}>
+                                <div className="ml-6">
+                                  <Form.Item name={[0, "chemicalType"]}>
+                                    <Radio.Group className="flex flex-col text-lg">
+                                      <Radio value="Жидкая" className=" text-lg">Жидкая</Radio>
+                                      <Radio value="Твердая" className=" text-lg">Твердая</Radio>
+                                    </Radio.Group>
+                                  </Form.Item>
+                                </div>
+                              </Col>
+                            </>
+                          )}
                           <Col span={24}>
-                            <Checkbox value="Жидкая">Жидкая</Checkbox>
+                            <Checkbox value="Песок" className=" text-lg">Песок</Checkbox>
                           </Col>
                           <Col span={24}>
-                            <Checkbox value="Твердая">Твердая</Checkbox>
+                            <Checkbox value="Щеточ" className=" text-lg">Щеточ</Checkbox>
                           </Col>
                           <Col span={24}>
-                            <Checkbox value="Песок">Песок</Checkbox>
-                          </Col>
-                          <Col span={24}>
-                            <Checkbox value="Щеточ">Щеточ</Checkbox>
-                          </Col>
-                        </Row>
-                      </Checkbox.Group>
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item name={[0, "procedureType"]}>
-                      <Checkbox.Group>
-                        <Row gutter={[0, 8]}>
-                          <Col span={24}>
-                            <Checkbox value="Песок">Песок</Checkbox>
-                          </Col>
-                          <Col span={24}>
-                            <Checkbox value="Щеточ">Щеточ</Checkbox>
-                          </Col>
-                          <Col span={24}>
-                            <Checkbox value="Предув">Предув</Checkbox>
+                            <Checkbox value="Предув" className=" text-lg">Предув</Checkbox>
                           </Col>
                         </Row>
                       </Checkbox.Group>
@@ -229,96 +284,6 @@ export default function RunwayConditionCreate() {
 
   const next = async () => {
     try {
-      // Validate current step before proceeding
-      if (currentStep === 0) {
-        // Validate Runway Condition Info step
-        await form.validateFields([
-          "airportCode",
-          "runwayDesignation",
-          "reportDateTime",
-          "ambientTemperature",
-          "initials",
-          "rwycCode",
-          "overallConditionCode",
-        ]);
-      } else if (currentStep === 1) {
-        // Validate Runway Thirds step
-        const runwayThirds = form.getFieldValue("runwayThirds") || [];
-        if (runwayThirds.length === 0) {
-          throw new Error("At least one runway third is required");
-        }
-
-        // Check if at least one runway third has all required fields
-        let hasValidThird = false;
-        for (let i = 0; i < runwayThirds.length; i++) {
-          const third = runwayThirds[i];
-          if (
-            third &&
-            third.partNumber &&
-            third.contaminationCoverage &&
-            third.surfaceCondition &&
-            third.depthMm !== null &&
-            third.depthMm !== undefined &&
-            third.frictionCoefficient !== null &&
-            third.frictionCoefficient !== undefined &&
-            third.rwycValue !== null &&
-            third.rwycValue !== undefined &&
-            third.temperatureCelsius !== null &&
-            third.temperatureCelsius !== undefined
-          ) {
-            hasValidThird = true;
-            break;
-          }
-        }
-
-        if (!hasValidThird) {
-          throw new Error(
-            "At least one runway third must have all required fields filled",
-          );
-        }
-
-        // Validate all filled runway thirds
-        for (let i = 0; i < runwayThirds.length; i++) {
-          const third = runwayThirds[i];
-          if (third && third.partNumber) {
-            // Only validate if third exists and has partNumber
-            await form.validateFields([
-              ["runwayThirds", i, "partNumber"],
-              ["runwayThirds", i, "contaminationCoverage"],
-              ["runwayThirds", i, "surfaceCondition"],
-              ["runwayThirds", i, "depthMm"],
-              ["runwayThirds", i, "frictionCoefficient"],
-              ["runwayThirds", i, "rwycValue"],
-              ["runwayThirds", i, "temperatureCelsius"],
-            ]);
-          }
-        }
-      } else if (currentStep === 2) {
-        // Validate Situational Notifications step
-        const notifications =
-          form.getFieldValue("situationalNotifications") || [];
-        for (let i = 0; i < notifications.length; i++) {
-          await form.validateFields([
-            ["situationalNotifications", i, "notificationType"],
-            ["situationalNotifications", i, "runwayLengthReductionM"],
-          ]);
-        }
-      } else if (currentStep === 3) {
-        // Validate Improvement Procedures step
-        const procedures = form.getFieldValue("improvementProcedures") || [];
-        for (let i = 0; i < procedures.length; i++) {
-          await form.validateFields([
-            ["improvementProcedures", i, "procedureType"],
-            ["improvementProcedures", i, "applicationTime"],
-            ["improvementProcedures", i, "effectivenessRating"],
-          ]);
-        }
-      }
-
-      // If validation passes, proceed to next step
-      if (currentStep === steps.length - 2) {
-        setFormValues(form.getFieldsValue(true));
-      }
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error("Validation failed:", error);
@@ -330,51 +295,12 @@ export default function RunwayConditionCreate() {
   };
 
   const handleFinish = async (values: any) => {
-    console.log("handleFinish called with values:", values);
-
     try {
-      // Get all form values including nested arrays
       const allFormValues = form.getFieldsValue(true);
-      console.log(
-        "All form values from form.getFieldsValue(true):",
-        allFormValues,
-      );
-
-      // Use the complete form values instead of just the passed values
       const formData = allFormValues || values;
-      console.log("Form data to process:", formData);
-
-      // Process dates and convert to ISO strings
       const processedValues = {
         ...formData,
-        reportDateTime:
-          formData.reportDateTime?.toISOString?.() || new Date().toISOString(),
-        ambientTemperature: Number(formData.ambientTemperature) || 0,
-        overallConditionCode: Number(formData.overallConditionCode) || 0,
-        runwayThirds: (formData.runwayThirds || []).map((third: any) => ({
-          ...third,
-          partNumber: Number(third.partNumber) || 0,
-          depthMm: Number(third.depthMm) || 0,
-          frictionCoefficient: Number(third.frictionCoefficient) || 0,
-          rwycValue: Number(third.rwycValue) || 0,
-          temperatureCelsius: Number(third.temperatureCelsius) || 0,
-        })),
-        situationalNotifications: (formData.situationalNotifications || []).map(
-          (notification: any) => ({
-            ...notification,
-            runwayLengthReductionM:
-              Number(notification.runwayLengthReductionM) || 0,
-          }),
-        ),
-        improvementProcedures: (formData.improvementProcedures || []).map(
-          (procedure: any) => ({
-            ...procedure,
-            applicationTime:
-              procedure.applicationTime?.toISOString?.() ||
-              new Date().toISOString(),
-            effectivenessRating: Number(procedure.effectivenessRating) || 0,
-          }),
-        ),
+
       };
 
       console.log("Final processed payload:", processedValues);
@@ -409,39 +335,7 @@ export default function RunwayConditionCreate() {
         layout="vertical"
         onFinish={handleFinish}
         initialValues={{
-          airportCode: "",
-          runwayDesignation: "",
-          reportDateTime: "",
-          ambientTemperature: null,
-          initials: "",
-          rwycCode: "",
-          overallConditionCode: null,
-          remarks: "",
-          runwayThirds: [
-            {
-              partNumber: 1,
-              contaminationCoverage: "LESS_THAN_10_PERCENT",
-              surfaceCondition: "DRY",
-              depthMm: 0,
-              frictionCoefficient: 1,
-              rwycValue: 6,
-              temperatureCelsius: 0,
-            },
-          ],
-          situationalNotifications: [
-            {
-              notificationType: null,
-              runwayLengthReductionM: 0,
-              additionalDetails: "",
-            },
-          ],
-          improvementProcedures: [
-            {
-              procedureType: null,
-              applicationTime: "",
-              effectivenessRating: 0,
-            },
-          ],
+
         }}
         className=""
       >
