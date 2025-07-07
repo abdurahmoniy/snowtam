@@ -9,7 +9,7 @@ export interface RunwayConditionCreateRequest {
   contaminationCoverage: contaminationCoverage;
   rurunwayThirds: RunwayThird[];
   situationalNotification: SituationalNotification
-  improvementProcedure: ImprovementProcedure
+  improvementProcedure: ImprovementProcedure[]
 }
 
 export interface RunwayThird {
@@ -58,6 +58,7 @@ export interface SituationalNotification {
 
   /** Другое (описание) */
   otherText?: string;
+  runwayLengthReduction?: string
 }
 
 export interface ImprovementProcedure {

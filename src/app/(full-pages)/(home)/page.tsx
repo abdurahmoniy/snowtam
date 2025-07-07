@@ -33,7 +33,7 @@ export default function Home() {
         <Button type="primary" variant="solid" size="large"
           onClick={() => router.push('/runway-condition/create')}
         >
-          Create new
+          Создать
         </Button>
       </div>
       <div className="mt-6">

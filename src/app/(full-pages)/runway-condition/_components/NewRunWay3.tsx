@@ -2,27 +2,33 @@
 
 import { GetSurfaceCondition } from "@/services/enums";
 import { useQuery } from "@tanstack/react-query";
-import { Col, Divider, InputNumber, Row, Select } from "antd";
+import { Col, Divider, Form, FormInstance, InputNumber, Row, Select } from "antd";
 import { CircleDot } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type RunwayConditionType = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 type CoveragePercentage = 25 | 50 | 75 | 100;
+type SurfaceConditionType = "DRY" | "WET" | "ICE" | "SNOW";
 
 interface RunwayThirdProps {
+  orderIndex: number;
   title: string;
   value: RunwayConditionType | null;
   coverage: CoveragePercentage | null;
   onValueChange: (value: RunwayConditionType) => void;
   onCoverageChange: (value: CoveragePercentage) => void;
   surfaceConditions: string[];
+  onSurfaceConditionChange: (val: SurfaceConditionType) => void;
+  depth: string;
+  onDepthChange: (val: string) => void;
+  formInstance: FormInstance;
 }
 
 const sostoyanie = [
-  { label: "Dry - quruq - сухой", value: "DRY" },
-  { label: "Wet - ho'l - мокрый", value: "WET" },
-  { label: "Ice - muz - лед", value: "ICE" },
-  { label: "Snow - qor - снег", value: "SNOW" },
+  { label: "Dry / Quruq / Сухой", value: "DRY" },
+  { label: "Wet / Ho'l / Мокрый", value: "WET" },
+  { label: "Ice / Muz / Лед", value: "ICE" },
+  { label: "Snow / Qor / Снег", value: "SNOW" },
 ]
 
 const RunwayThird = ({
@@ -31,10 +37,20 @@ const RunwayThird = ({
   coverage,
   onValueChange,
   onCoverageChange,
-  surfaceConditions
+  surfaceConditions,
+  onSurfaceConditionChange,
+  depth,
+  onDepthChange,
+  orderIndex,
+  formInstance,
+
 }: RunwayThirdProps) => {
+
+
+
+
   return (
-    <div className="rounded-md border border-primary p-2">
+    <div className="rounded-md border border-primary p-2 md:max-w-[550px] lg:max-w-full">
       <div className="flex flex-col items-center justify-center pt-2">
         <div className="text-lg font-semibold text-center">{title}</div>
         <div className="text-sm text-center">
@@ -44,7 +60,7 @@ const RunwayThird = ({
 
       <Divider />
 
-      <div className="text-sm">
+      <div className="text-base">
         <p>- Определите превышает ли загрязнение 25% покрытий трети ВПП</p>
         <p>- Определите % покрытия</p>
         <p>- Определите глубину (если применимо)</p>
@@ -54,56 +70,77 @@ const RunwayThird = ({
 
       <Divider />
 
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex flex-col gap-2 sm:flex-row flex-wrap">
         <div className="flex flex-col items-center">
-          <Select
-            value={value}
-            size="large"
-            placeholder="1-6"
-            onChange={(value) => {
-              if (value && typeof value === 'number' && [0, 1, 2, 3, 4, 5, 6].includes(value)) {
-                onValueChange(value as RunwayConditionType);
-              }
-            }}
-            className="w-[80px]"
-            options={[
-              { value: 1, label: "1" },
-              { value: 2, label: "2" },
-              { value: 3, label: "3" },
-              { value: 4, label: "4" },
-              { value: 5, label: "5" },
-              { value: 6, label: "6" },
-            ]}
-          />
+          <Form.Item name={`runwayConditionType${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
+            <Select
+              value={value}
+              size="large"
+              placeholder="1-6"
+              onChange={(value) => {
+                if (value && typeof value === 'number' && [0, 1, 2, 3, 4, 5, 6].includes(value)) {
+                  onValueChange(value as RunwayConditionType);
+                }
+              }}
+              className="w-[80px]"
+              options={[
+                { value: 1, label: "1" },
+                { value: 2, label: "2" },
+                { value: 3, label: "3" },
+                { value: 4, label: "4" },
+                { value: 5, label: "5" },
+                { value: 6, label: "6" },
+              ]}
+            />
+          </Form.Item>
           <div className="">RWYCC</div>
         </div>
 
-        <Select
-          size="large"
-          value={value === 6 ? 100 : coverage}
-          placeholder="Процент"
-          disabled={value === 6}
-          onSelect={(val) => onCoverageChange(val as CoveragePercentage)}
-          options={[
-            { value: 25, label: "25%" },
-            { value: 50, label: "50%" },
-            { value: 75, label: "75%" },
-            { value: 100, label: "100%" },
-          ]}
-        />
+        <Form.Item name={`coveragePercentage${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="min-w-[120px] mb-0" >
+          <Select
+            size="large"
+            value={value === 6 ? 100 : coverage}
+            placeholder="Процент"
+            disabled={value === 6}
+            onSelect={(val) => onCoverageChange(val as CoveragePercentage)}
+            options={[
+              { value: 25, label: "25%" },
+              { value: 50, label: "50%" },
+              { value: 75, label: "75%" },
+              { value: 100, label: "100%" },
+            ]}
+          />
+        </Form.Item>
 
         <div className="">
-          {value !== 6 && <InputNumber size="large" placeholder="Глубина" />}
+          {value !== 6 && <Form.Item name={`depth${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
+            <InputNumber size="large"
+              value={depth}
+              placeholder="Глубина"
+              onChange={(e) => {
+                if (e && Number(e) >= 0) {
+                  onDepthChange(e.toString());
+                }
+              }}
+              onBlur={(e) => {
+                if (!e.target.value.trim()) {
+                  onDepthChange("N/R");
+                  formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
+                }
+              }}
+              className="text-center" /></Form.Item>}
         </div>
 
         {value !== 6 && (
-          <Select
-            size="large"
-            placeholder="Состояние"
-            onSelect={(val) => onCoverageChange(val as CoveragePercentage)}
-            options={sostoyanie}
-            className="w-full sm:w-[200px]"
-          />
+          <Form.Item name={`surfaceCondition${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
+            <Select
+              size="large"
+              placeholder="Состояние"
+              onSelect={(val) => onSurfaceConditionChange(val as SurfaceConditionType)}
+              options={sostoyanie}
+              className="!w-[200px] sm:w-[200px] "
+            />
+          </Form.Item>
         )}
       </div>
 
@@ -166,7 +203,7 @@ const RunwayThird = ({
 
       <Divider />
 
-      <Row gutter={16}>
+      <Row gutter={16} className="flex !flex-row !md:flex-row !lg:flex-col">
         <Col xs={24} md={8} className="border-r">
           <div className="text-lg font-semibold text-center sm:text-left">Стоячая вода</div>
           <div className="flex flex-col gap-4 sm:flex-row">
@@ -252,68 +289,70 @@ const RunwayThird = ({
         Сухого снега, любого снега на поверхности утрамбованного снега
       </div>
 
-      <Divider />
+      <Divider className="" />
 
-      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:items-end">
-        <div className="flex flex-col gap-2 text-center sm:text-left">
-          <div className="">-15°C или ниже</div>
-          <div className="flex items-center justify-center gap-2 sm:justify-start">
-            <div className="text-gray-6">25/50/75/100</div>
-            <div
-              className="cursor-pointer border px-4 py-2"
-              onClick={() => onValueChange(4)}
-            >
-              4
+      <div className="flex flex-row lg:flex-col gap-4 ">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row /sm:items-end !md:flex-row !lg:flex-row">
+          <div className="flex flex-col gap-2 text-center sm:text-left">
+            <div className="">-15°C или ниже</div>
+            <div className="flex items-center justify-center gap-2 sm:justify-start">
+              <div className="text-gray-6">25/50/75/100</div>
+              <div
+                className="cursor-pointer border px-4 py-2"
+                onClick={() => onValueChange(4)}
+              >
+                4
+              </div>
+            </div>
+          </div>
+          <div className="font-semibold text-center sm:text-left">Уплетненный снег</div>
+          <div className="flex flex-col gap-2 text-center sm:text-left">
+            <div className="">Выше -15°C</div>
+            <div className="flex items-center justify-center gap-2 sm:justify-start">
+              <div
+                className="cursor-pointer border px-4 py-2"
+                onClick={() => onValueChange(3)}
+              >
+                3
+              </div>
+              <div className="text-gray-6">25/50/75/100</div>
             </div>
           </div>
         </div>
-        <div className="font-semibold text-center sm:text-left">Уплетненный снег</div>
-        <div className="flex flex-col gap-2 text-center sm:text-left">
-          <div className="">Выше -15°C</div>
-          <div className="flex items-center justify-center gap-2 sm:justify-start">
-            <div
-              className="cursor-pointer border px-4 py-2"
-              onClick={() => onValueChange(3)}
-            >
-              3
+
+        <Divider className="!md:w-0 !md:h-0 !lg:w-0 !lg:h-0 !md:min-w-0" />
+
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="border-r pr-2">
+            <div className="flex flex-col items-center gap-2 sm:flex-row">
+              <div className="text-gray-6">25/50/75/100</div>
+              <div className="flex flex-col items-center">
+                <div className="">Лед</div>
+                <div
+                  className="cursor-pointer border px-4 py-2"
+                  onClick={() => onValueChange(1)}
+                >
+                  1
+                </div>
+              </div>
             </div>
-            <div className="text-gray-6">25/50/75/100</div>
           </div>
-        </div>
-      </div>
-
-      <Divider />
-
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <div className="border-r pr-2">
           <div className="flex flex-col items-center gap-2 sm:flex-row">
-            <div className="text-gray-6">25/50/75/100</div>
-            <div className="flex flex-col items-center">
-              <div className="">Лед</div>
-              <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(1)}
-              >
-                1
-              </div>
+            <div className="text-center sm:text-left">
+              Мокрый лед/ Вода на поверхности утрамбованного снега/ Сухой снег
+              или Мокрый снег на поверхности льда
             </div>
-          </div>
-        </div>
-        <div className="flex flex-col items-center gap-2 sm:flex-row">
-          <div className="text-center sm:text-left">
-            Мокрый лед/ Вода на поверхности утрамбованного снега/ Сухой снег
-            или Мокрый снег на поверхности льда
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex flex-col items-center">
-              <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(0)}
-              >
-                0
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center">
+                <div
+                  className="cursor-pointer border px-4 py-2"
+                  onClick={() => onValueChange(0)}
+                >
+                  0
+                </div>
               </div>
+              <div className="text-gray-6">25/50/75/100</div>
             </div>
-            <div className="text-gray-6">25/50/75/100</div>
           </div>
         </div>
       </div>
@@ -321,14 +360,18 @@ const RunwayThird = ({
   );
 };
 
-const NewRunWay3 = () => {
+const NewRunWay3 = ({ form }: { form: FormInstance }) => {
   const [coverageType, setCoverageType] = useState(1);
   const [thirds, setThirds] = useState<{
     values: (RunwayConditionType | null)[];
     coverages: (CoveragePercentage | null)[];
+    surfaceConditions: (SurfaceConditionType | null)[];
+    depths: (string)[];
   }>({
     values: [null, null, null],
-    coverages: [null, null, null]
+    coverages: [null, null, null],
+    surfaceConditions: [null, null, null],
+    depths: ["", "", ""]
   });
 
   const { data: surfaceConditionsData } = useQuery({
@@ -349,6 +392,25 @@ const NewRunWay3 = () => {
       coverages: prev.coverages.map((c, i) => i === index ? coverage : c)
     }));
   };
+
+
+  const handleThirdSurfaceConditionChange = (index: number, val: SurfaceConditionType) => {
+    setThirds(prev => ({
+      ...prev,
+      surfaceConditions: prev.surfaceConditions.map((s, i) => i === index ? val : s)
+    }));
+  };
+
+  const handleThirdDepthChange = (index: number, val: string) => {
+    setThirds(prev => ({
+      ...prev,
+      depths: prev.depths.map((d, i) => i === index ? val : d)
+    }));
+  };
+
+
+
+
 
   return (
     <div className="flex flex-col items-center">
@@ -377,11 +439,10 @@ const NewRunWay3 = () => {
           ].map((option) => (
             <div
               key={option.value}
-              onClick={() => setCoverageType(option.value)}
-              className={`rounded-md border ${coverageType === option.value && "border-[#3C50E0]"} flex max-w-[400px] cursor-pointer flex-col gap-2 p-2`}
+              className={`rounded-md border-[#272727] dark:border-white border-[1px] flex max-w-[500px]  cursor-pointer flex-col gap-2 p-2`}
             >
               <div className="flex items-center gap-2">
-                <CircleDot color={coverageType === option.value ? `#3C50E0` : "#fff"} />
+                <CircleDot className="dark:text-white text-#272727" />
                 <div className={option.color}>{option.label}</div>
               </div>
               <div className="text-sm">{option.description}</div>
@@ -395,9 +456,11 @@ const NewRunWay3 = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 px-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 px-4 lg:grid-cols-3 md:grid-cols-1">
         {[1, 2, 3].map((thirdNumber, index) => (
           <RunwayThird
+            formInstance={form}
+            orderIndex={thirdNumber}
             key={thirdNumber}
             title={`${thirdNumber} треть ВПП`}
             value={thirds.values[index]}
@@ -405,6 +468,9 @@ const NewRunWay3 = () => {
             onValueChange={(value) => handleThirdValueChange(index, value)}
             onCoverageChange={(coverage) => handleThirdCoverageChange(index, coverage)}
             surfaceConditions={surfaceConditionsData?.data || []}
+            onSurfaceConditionChange={(val) => handleThirdSurfaceConditionChange(index, val)}
+            depth={thirds.depths[index]}
+            onDepthChange={(val) => handleThirdDepthChange(index, val)}
           />
         ))}
       </div>
