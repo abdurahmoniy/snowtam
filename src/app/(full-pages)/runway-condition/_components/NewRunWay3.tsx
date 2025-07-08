@@ -50,7 +50,7 @@ const RunwayThird = ({
 
 
   return (
-    <div className="rounded-md border border-primary p-2 md:max-w-[550px] lg:max-w-full">
+    <div className="rounded-md border border-primary p-2 md:max-w-[650px] lg:max-w-full">
       <div className="flex flex-col items-center justify-center pt-2">
         <div className="text-lg font-semibold text-center">{title}</div>
         <div className="text-sm text-center">
@@ -84,6 +84,7 @@ const RunwayThird = ({
               }}
               className="w-[80px]"
               options={[
+                { value: 0, label: "0" },
                 { value: 1, label: "1" },
                 { value: 2, label: "2" },
                 { value: 3, label: "3" },
@@ -117,17 +118,38 @@ const RunwayThird = ({
             <InputNumber size="large"
               value={depth}
               placeholder="Глубина"
+              // onChange={(e) => {
+              //   if (e && Number(e) >= 0) {
+              //     onDepthChange(e.toString());
+              //   }
+              // }}
+              // onBlur={(e) => {
+              //   if (!e.target.value.trim()) {
+              //     onDepthChange("N/R");
+              //     formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
+              //   }
+              // }}
+
+              min={"4"}
               onChange={(e) => {
-                if (e && Number(e) >= 0) {
+                if (e === null || e === undefined || Number(e) < Number("4")) {
+                  // Устанавливаем N/R если меньше 3 или пусто
+                  onDepthChange("N/R");
+                  formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
+                } else {
                   onDepthChange(e.toString());
+                  formInstance.setFieldsValue({ [`depth${orderIndex}`]: e });
                 }
               }}
               onBlur={(e) => {
-                if (!e.target.value.trim()) {
+                const val = e.target.value.trim();
+                const numeric = Number(val);
+                if (!val || isNaN(numeric) || numeric < 3) {
                   onDepthChange("N/R");
                   formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
                 }
               }}
+
               className="text-center" /></Form.Item>}
         </div>
 

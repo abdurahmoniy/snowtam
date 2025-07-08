@@ -1,84 +1,71 @@
-export type contaminationCoverage =
-  'LESS_THAN_10_PERCENT' |
-  'BETWEEN_10_AND_25_PERCENT' |
-  'MORE_THAN_25_PERCENT'
+import { NotificationType, ProcedureType } from "@/consts/data";
 
-export type surfaceCondition = 'DRY' | 'WET' | 'ICE' | 'SNOW'
+export type contaminationCoverage =
+  | "LESS_THAN_10_PERCENT"
+  | "BETWEEN_10_AND_25_PERCENT"
+  | "MORE_THAN_25_PERCENT";
+
+export type surfaceCondition = "DRY" | "WET" | "ICE" | "SNOW";
 
 export interface RunwayConditionCreateRequest {
-  contaminationCoverage: contaminationCoverage;
-  rurunwayThirds: RunwayThird[];
-  situationalNotification: SituationalNotification
-  improvementProcedure: ImprovementProcedure[]
+  deviceForImprovement: string;
+  runwayDesignation: string;
+  runwayThirds: RunwayThird[];
+  situationalNotifications: {
+    runwayConditionId: number;
+    notificationType: NotificationType;
+    runwayLengthReductionM: number;
+    additionalDetails: string;
+  }[];
+  improvementProcedure: ImprovementProcedure[];
+  runwayId?: number;
 }
+
+// {
+//   deviceForImprovement: string;
+//   runwayDesignation: string;
+//   reportDateTime: string;
+//   ambientTemperature: number;
+//   initials: string;
+//   rwycCode: string;
+//   overallConditionCode: number;
+//   remarks: string;
+//   rurunwayThirds: RunwayThird[];
+//   situationalNotification: {
+//     runwayConditionId: number;
+//     notificationType: string;
+//     runwayLengthReductionM: number;
+//     isActive: boolean;
+//     additionalDetails: string;
+//   }[];
+//   improvementProcedure: ImprovementProcedure[];
+// }
 
 export interface RunwayThird {
+  partNumber: number;
+  surfaceCondition: surfaceCondition;
+  depthMm: number;
+  frictionCoefficient: number;
   rwycValue: number;
-  percent: string;
-  depth: string;
-  surfaceCondition: surfaceCondition
+  temperatureCelsius: number;
 }
 
-export interface ContaminationDetail {
-}
+export interface ContaminationDetail {}
 
 export interface SituationalNotification {
-  /** Уменьшенная длина ВПП LDA (м) */
-  reducedLdaLength?: number;
-
-  /** Снежная позёмка на ВПП */
-  snowDriftOnRunway?: boolean;
-
-  /** Песок на ВПП */
-  sandOnRunway?: boolean;
-
-  /** Сугробы на ВПП: расстояния L/П от оси (м) */
-  runwaySnowdriftDistances?: {
-    leftFromCenterline: number;
-    rightFromCenterline: number;
-  };
-
-  /** Сугробы на РД: расстояния L/П от оси (м) */
-  taxiwaySnowdriftDistances?: {
-    leftFromCenterline: number;
-    rightFromCenterline: number;
-  };
-
-  /** Сугробы вблизи ВПП */
-  snowdriftsNearRunway?: boolean;
-
-  /** «РД ___ Плохое»: указать название/код РД */
-  poorTaxiway?: string;
-
-  /** «Перрон ___ Плохое»: указать номер/код перрона */
-  poorApron?: string;
-
-  /** Другое (если просто флаг) */
-  other?: boolean;
-
-  /** Другое (описание) */
-  otherText?: string;
-  runwayLengthReduction?: string
+  REDUCED_RUNWAY_LENGTH: number;
+  SNOW_BANK_NEAR_RUNWAY: number;
+  SAND_ON_RUNWAY: number;
+  DEBRIS_ON_RUNWAY: number;
+  POOR_RUNWAY_CONDITION: number;
+  OTHER: number;
+  [key: string]: number;
 }
 
 export interface ImprovementProcedure {
-  /** Химическая обработка ВПП */
-  chemicalTreatment?: boolean;
-
-  /** Насыпка песка */
-  sand?: boolean;
-
-  /** Щеточная обработка */
-  brushing?: boolean;
-
-  /** Предув (сдувка) */
-  preblow?: boolean;
-
-  /** Время применения процедуры (ISO-строка или Date) */
-  applicationTime?: string;
-
-  /** Выбранное устройство (ID или название) */
-  device?: string;
+  runwayConditionId?: number;
+  procedureType: ProcedureType;
+  applicationTime: string;
 }
 
 export interface RunwayConditionCreateResponse {
@@ -88,4 +75,49 @@ export interface RunwayConditionCreateResponse {
 }
 
 export interface RunwayCondition {
+  id: number;
+  airportCode: null;
+  runwayDesignation: string;
+  reportDateTime: null;
+  ambientTemperature: null;
+  initials: null;
+  rwycCode: null;
+  overallConditionCode: null;
+  remarks: null;
+  deviceForImprovement: null | string;
+  finalRCR: string;
+  runwayThirds: {
+    id: number;
+    runwayConditionId: number;
+    partNumber: number;
+    contaminationCoverage: null;
+    surfaceCondition: surfaceCondition;
+    depthMm: number;
+    frictionCoefficient: number;
+    rwycValue: number;
+    temperatureCelsius: null;
+    contaminationDetails: [];
+    createdAt: string;
+    updatedAt: string;
+  }[];
+  situationalNotifications: {
+    id: number;
+    runwayConditionId: number;
+    notificationType: NotificationType;
+    runwayLengthReductionM: number;
+    isActive: null;
+    additionalDetails: null;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+  improvementProcedures: {
+    id: number;
+    runwayConditionId: number;
+    procedureType: ProcedureType;
+    applicationTime: string;
+    isApplied: null;
+    effectivenessRating: null;
+    createdAt: string;
+    updatedAt: string;
+  }[];
 }

@@ -29,5 +29,47 @@ export async function GetAllRunWayCondition({
     `/runwayCondition/getAll?${searchParams.toString()}`
   );
   return res.data;
+}
+
+
+export async function GetAllRunWayConditionByPeriod({
+  page, size, from, to, query
+}:{
+  page: number;
+  size: number;
+  from: string;
+  to: string;
+  query: string;
+}){
+  const searchParams = new URLSearchParams();
+  page && searchParams.set("page", String(page));
+  size && searchParams.set("size", String(size));
+  from && searchParams.set("from", String(from));
+  to && searchParams.set("to", String(to));
+  query && searchParams.set("query", String(query));
+
+  const res = await httpClient.private.get<MainResponse<RunwayCondition[]>>(
+    `/runwayCondition/getAllByPeriod?${searchParams.toString()}`
+  );
+  return res.data;
+
+}
+
+
+
+export async function GetRunWayConditionById({
+  id
+}:{
+
+  id: string;
+}){
+  const searchParams = new URLSearchParams();
+  id && searchParams.set("id", String(id));
+
+
+  const res = await httpClient.private.get<MainResponse<RunwayCondition>>(
+    `/runwayCondition/getById?${searchParams.toString()}`
+  );
+  return res.data;
 
 }

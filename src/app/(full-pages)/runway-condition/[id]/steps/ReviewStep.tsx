@@ -279,135 +279,181 @@
 
 
 
-
-
-
 "use client";
 
-import { RunwayConditionCreateRequest } from "@/types/runway-condition";
-import { Card, Descriptions, List, Space, Typography } from "antd";
-
+import { Button, Card, Descriptions, Typography } from "antd";
+import { ArrowLeftFromLine, MoveLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 const { Title, Text } = Typography;
 
 interface ReviewStepProps {
-  values: RunwayConditionCreateRequest;
+  values: {
+    form1: {
+      runwayConditionType1: string | null;
+      coveragePercentage1: number | null;
+      depth1: string | null;
+      surfaceCondition1: string | null;
+      runwayConditionType2: string | null;
+      coveragePercentage2: number | null;
+      depth2: string | null;
+      surfaceCondition2: string | null;
+      runwayConditionType3: string | null;
+      coveragePercentage3: number | null;
+      depth3: string | null;
+      surfaceCondition3: string | null;
+    };
+    form2: {
+      notificationType: string[];
+      snowdriftLeftDistance: number | null;
+      snowdriftRightDistance: number | null;
+      taxiwaySnowdriftLeftDistance: number | null;
+      taxiwaySnowdriftRightDistance: number | null;
+      runwayLengthReduction: number | null;
+      other: string | null;
+      apronNumber: number | null;
+      taxiwayNumber: number | null;
+    };
+    form3: {
+      "date-of-implementation": string | null;
+      "device-of-implementation": string | null;
+      improvementProcedure: {
+        procedureType: string[];
+        chemicalType: string | null;
+      }[];
+      RCR?: string | null;
+    };
+  };
 }
 
 const ReviewStep = ({ values }: ReviewStepProps) => {
-  const s = values.situationalNotification;
+  const { form1, form2, form3 } = values;
+  const router = useRouter();
+
+  const { id } = useParams();
+  const isCreateMode = id === "create";
+
+  const thirds = [
+    {
+      part: "Треть 1",
+      rwyc: form1.runwayConditionType1,
+      coverage: form1.coveragePercentage1,
+      depth: form1.depth1,
+      surface: form1.surfaceCondition1,
+    },
+    {
+      part: "Треть 2",
+      rwyc: form1.runwayConditionType2,
+      coverage: form1.coveragePercentage2,
+      depth: form1.depth2,
+      surface: form1.surfaceCondition2,
+    },
+    {
+      part: "Треть 3",
+      rwyc: form1.runwayConditionType3,
+      coverage: form1.coveragePercentage3,
+      depth: form1.depth3,
+      surface: form1.surfaceCondition3,
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <Title level={4}>Review Runway Condition Report</Title>
+      <div className="flex items-center gap-6">
+        <Button type="primary" onClick={() => router.back()} className="flex items-center" icon={<ArrowLeftFromLine size={15} className="mb-0"></ArrowLeftFromLine>}>Назад</Button>
+        <Title level={4} className="!mb-0">Обзор состояния ВПП</Title>
+      </div>
 
-      {/* Runway Thirds */}
-      <Card title="Runway Thirds Conditions">
-        <List
-          dataSource={values.rurunwayThirds || []}
-          renderItem={(third, index) => (
-            <List.Item key={index}>
-              <Space direction="vertical" style={{ width: "100%" }}>
-                <Text strong>Third {index + 1}</Text>
-                <Descriptions column={2} size="small">
-                  <Descriptions.Item label="RWYC Value">
-                    {third.rwycValue ?? <Text type="secondary">Not provided</Text>}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Coverage %">
-                    {third.percent || <Text type="secondary">Not provided</Text>}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Depth">
-                    {third.depth || <Text type="secondary">Not provided</Text>}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Surface Condition">
-                    {third.surfaceCondition || <Text type="secondary">Not provided</Text>}
-                  </Descriptions.Item>
-                </Descriptions>
-              </Space>
-            </List.Item>
-          )}
-        />
+      {/* <Card title="Состояние ВПП по третям">
+        <Descriptions bordered column={1} size="small">
+          {thirds.map((t, idx) => (
+            <Descriptions.Item styles={{}} style={{
+            }} key={idx} label={t.part} className="">
+              <div className="space-y-1">
+                <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">Нет данных</Text>}</div>
+                <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">Нет данных</Text>}</div>
+                <div><strong>Глубина:</strong> {t.depth ?? <Text type="secondary">Нет данных</Text>}</div>
+                <div><strong>Состояние поверхности:</strong> {t.surface ?? <Text type="secondary">Нет данных</Text>}</div>
+              </div>
+            </Descriptions.Item>
+          ))}
+        </Descriptions>
+      </Card> */}
+
+      <Card title="Состояние ВПП по третям">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {thirds.map((t, idx) => (
+            <Card key={idx} title={t.part} className="flex-1 border-[2px] border-[#00000060] dark:border-[#2c48c4cc]" size="small" bordered >
+              <div className="space-y-2">
+                <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">Нет данных</Text>}</div>
+                <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">Нет данных</Text>}</div>
+                <div><strong>Глубина:</strong> {t.depth ?? <Text type="secondary">Нет данных</Text>}</div>
+                <div><strong>Состояние поверхности:</strong> {t.surface ?? <Text type="secondary">Нет данных</Text>}</div>
+              </div>
+            </Card>
+          ))}
+        </div>
       </Card>
 
-      {/* Situational Notifications */}
-      <Card title="Situational Notifications">
-        <Descriptions column={2}>
-          <Descriptions.Item label="Reduced LDA Length">
-            {s?.reducedLdaLength ?? <Text type="secondary">Not provided</Text>}
+      <Card title="Ситуационные уведомления">
+        <Descriptions bordered column={1} size="small">
+          <Descriptions.Item label="Типы уведомлений">
+            {form2.notificationType ? form2.notificationType.length > 0
+              ? form2.notificationType.join(", ") : "Нет данных"
+              : <Text type="secondary">Нет данных</Text>}
           </Descriptions.Item>
-          <Descriptions.Item label="Snow Drift on Runway">
-            {s?.snowDriftOnRunway ? "Yes" : <Text type="secondary">No</Text>}
+          <Descriptions.Item label="Сокращение длины ВПП">
+            {form2.runwayLengthReduction ?? <Text type="secondary">Нет данных</Text>}
           </Descriptions.Item>
-          <Descriptions.Item label="Sand on Runway">
-            {s?.sandOnRunway ? "Yes" : <Text type="secondary">No</Text>}
+          <Descriptions.Item label="Сугробы на ВПП (Л/П)">
+            {(!!form2.snowdriftLeftDistance && !!form2.snowdriftRightDistance)
+              ? `${form2.snowdriftLeftDistance ?? 0} / ${form2.snowdriftRightDistance ?? 0} м`
+              : <Text type="secondary">Нет данных</Text>}
           </Descriptions.Item>
-          <Descriptions.Item label="Runway Snowdrifts (L/P)">
-            {s?.runwaySnowdriftDistances
-              ? `${s.runwaySnowdriftDistances.leftFromCenterline} / ${s.runwaySnowdriftDistances.rightFromCenterline} м`
-              : <Text type="secondary">Not provided</Text>}
+          <Descriptions.Item label="Сугробы на РД (Л/П)">
+            {(form2.taxiwaySnowdriftLeftDistance !== null && form2.taxiwaySnowdriftRightDistance !== null)
+              ? `${form2.taxiwaySnowdriftLeftDistance ?? 0} / ${form2.taxiwaySnowdriftRightDistance ?? 0} м`
+              : <Text type="secondary">Нет данных</Text>}
           </Descriptions.Item>
-          <Descriptions.Item label="Taxiway Snowdrifts (L/P)">
-            {s?.taxiwaySnowdriftDistances
-              ? `${s.taxiwaySnowdriftDistances.leftFromCenterline} / ${s.taxiwaySnowdriftDistances.rightFromCenterline} м`
-              : <Text type="secondary">Not provided</Text>}
+          <Descriptions.Item label="Плохое состояние перрона">
+            {form2.apronNumber ?? <Text type="secondary">Нет данных</Text>}
           </Descriptions.Item>
-          <Descriptions.Item label="Snowdrifts Near Runway">
-            {s?.snowdriftsNearRunway ? "Yes" : <Text type="secondary">No</Text>}
+          <Descriptions.Item label="Плохое состояние РД">
+            {form2.taxiwayNumber ?? <Text type="secondary">Нет данных</Text>}
           </Descriptions.Item>
-          <Descriptions.Item label="Poor Taxiway">
-            {s?.poorTaxiway ?? <Text type="secondary">Not provided</Text>}
-          </Descriptions.Item>
-          <Descriptions.Item label="Poor Apron">
-            {s?.poorApron ?? <Text type="secondary">Not provided</Text>}
-          </Descriptions.Item>
-          <Descriptions.Item label="Other">
-            {s?.other ? "Yes" : <Text type="secondary">No</Text>}
-          </Descriptions.Item>
-          <Descriptions.Item label="Other Description">
-            {s?.otherText ?? <Text type="secondary">Not provided</Text>}
+          <Descriptions.Item label="Другое">
+            {form2.other ?? <Text type="secondary">Нет данных</Text>}
           </Descriptions.Item>
         </Descriptions>
       </Card>
 
-      {/* Improvement Procedures */}
-      {values.improvementProcedure?.length > 0 && (
-        <Card title="Improvement Procedures">
-          <List
-            dataSource={values.improvementProcedure}
-            renderItem={(procedure, index) => (
-              <List.Item key={index}>
-                <Space direction="vertical">
-                  <Text strong>Procedure {index + 1}</Text>
-                  <Descriptions column={1} size="small">
-                    <Descriptions.Item label="Chemical Treatment">
-                      {procedure.chemicalTreatment ? "Yes" : <Text type="secondary">No</Text>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Chemical Type">
-                      {procedure.chemicalTreatment && procedure.chemicalTreatment
-                        ? procedure.chemicalTreatment
-                        : <Text type="secondary">Not provided</Text>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Sand">
-                      {procedure.sand ? "Yes" : <Text type="secondary">No</Text>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Brushing">
-                      {procedure.brushing ? "Yes" : <Text type="secondary">No</Text>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Preblow">
-                      {procedure.preblow ? "Yes" : <Text type="secondary">No</Text>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Application Time">
-                      {procedure.applicationTime
-                        ? new Date(procedure.applicationTime).toLocaleString()
-                        : <Text type="secondary">Not provided</Text>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Device">
-                      {procedure.device || <Text type="secondary">Not provided</Text>}
-                    </Descriptions.Item>
-                  </Descriptions>
-                </Space>
-              </List.Item>
-            )}
-          />
+      {form3.improvementProcedure?.length > 0 && (
+        <Card title="Процедуры улучшения">
+          <Descriptions bordered column={1} size="small">
+            {form3.improvementProcedure?.map((proc, idx) => (
+              <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
+                <div className="space-y-1">
+                  <div><strong>Тип(ы):</strong> {proc.procedureType.length > 0 ? proc.procedureType : <Text type="secondary">Нет</Text>}</div>
+                  <div><strong>Тип химии:</strong> {proc.chemicalType ?? <Text type="secondary">Нет данных</Text>}</div>
+                </div>
+              </Descriptions.Item>
+            ))}
+            <Descriptions.Item label="Дата применения">
+              {form3["date-of-implementation"]
+                ? new Date(form3["date-of-implementation"]).toLocaleString()
+                : <Text type="secondary">Нет данных</Text>}
+            </Descriptions.Item>
+            <Descriptions.Item label="Устройство">
+              {form3["device-of-implementation"] ?? <Text type="secondary">Нет данных</Text>}
+            </Descriptions.Item>
+          </Descriptions>
+        </Card>
+      )}
+      {!isCreateMode && (
+
+        <Card title="RCR:">
+          <Descriptions bordered column={1} size="small">
+            <div>{form3.RCR}</div>
+          </Descriptions>
         </Card>
       )}
     </div>
