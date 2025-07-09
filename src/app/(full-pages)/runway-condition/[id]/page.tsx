@@ -405,10 +405,10 @@ export default function RunwayConditionCreate() {
                   className=""
                   placeholder="Выберите устройство"
                   options={[
-                    { label: 'A. SNOWBANK ON APRON', value: "A" },
-                    { label: 'B.', value: "B" },
-                    { label: 'C.', value: "C" },
-                    { label: 'D.', value: "D" },
+                    { label: 'ATT-1', value: "ATT-1" },
+                    { label: 'ATT-2', value: "ATT-2" },
+                    { label: 'ATT-3', value: "ATT-3" },
+                    { label: 'ATT-4', value: "ATT-4" },
                   ]}
                 />
 
@@ -426,14 +426,14 @@ export default function RunwayConditionCreate() {
                         onChange={(checkedValues) => {
                           const last = checkedValues.slice(-1); // оставляем только последний выбранный
                           form.setFieldsValue({
-                            improvementProcedure: [{ procedureType: last } as any],
+                            improvementProcedures: [{ procedureType: last } as any],
                           });
                           setChemicalTreatmentChecked(last[0] === "Хим. обработка");
 
                           return;
 
                           const currentValues = form.getFieldValue(
-                            "improvementProcedure",
+                            "improvementProcedures",
                           ) || [{}];
 
                           // Update state for chemical treatment
@@ -445,7 +445,7 @@ export default function RunwayConditionCreate() {
                             !checkedValues.includes("Жидкая")
                           ) {
                             form.setFieldsValue({
-                              improvementProcedure: [
+                              improvementProcedures: [
                                 {
                                   ...currentValues[0],
                                   procedureType: [...checkedValues, "Жидкая"],
@@ -454,7 +454,7 @@ export default function RunwayConditionCreate() {
                             });
                           } else {
                             form.setFieldsValue({
-                              improvementProcedure: [
+                              improvementProcedures: [
                                 {
                                   ...currentValues[0],
                                   procedureType: checkedValues,
@@ -475,7 +475,7 @@ export default function RunwayConditionCreate() {
                               <Col span={24}>
                                 <div className="ml-6">
                                   <Form.Item name={[0, "chemicalType"]}>
-                                    <Radio.Group className="flex flex-col text-lg" defaultValue={"Жидкая"}>
+                                    <Radio.Group className="flex flex-col text-lg" defaultValue={ProcedureType.CHEMICAL_TREATMENT}>
                                       <Radio value="Жидкая" className=" text-lg">Жидкая</Radio>
                                       <Radio value="Твердая" className=" text-lg">Твердая</Radio>
                                     </Radio.Group>
@@ -485,13 +485,13 @@ export default function RunwayConditionCreate() {
                             </>
                           )}
                           <Col span={24}>
-                            <Checkbox value="Песок" className=" text-lg">Песок</Checkbox>
+                            <Checkbox value={ProcedureType.SAND_APPLICATION} className=" text-lg">Песок</Checkbox>
                           </Col>
                           <Col span={24}>
-                            <Checkbox value="Щеточ" className=" text-lg">Щеточ</Checkbox>
+                            <Checkbox value={ProcedureType.BRUSHING} className=" text-lg">Щеточ</Checkbox>
                           </Col>
                           <Col span={24}>
-                            <Checkbox value="Предув" className=" text-lg">Предув</Checkbox>
+                            <Checkbox value={ProcedureType.PLOWING} className=" text-lg">Предув</Checkbox>
                           </Col>
                         </Row>
                       </Checkbox.Group>
@@ -546,16 +546,19 @@ export default function RunwayConditionCreate() {
   const prev = () => {
     setCurrentStep(currentStep - 1);
   };
+  // console.log(FormValuesState.form3["improvementProcedure"][0].procedureType, "procedureType-procedureType");
 
   const handleFinish = async (values: any) => {
+
+
 
     const RequestMock: RunwayConditionCreateRequest = {
       // reportDateTime: dayjs(FormValuesState.form3["date-of-implementation"]).format('YYYY-MM-DD HH:mm:ss'),
       deviceForImprovement: FormValuesState.form3["device-of-implementation"] as any,
-      improvementProcedure: [{
-        applicationTime: dayjs(FormValuesState.form3["date-of-implementation"]).format('YYYY-MM-DD HH:mm:ss'),
-        procedureType: FormValuesState.form3["improvementProcedure"][0].procedureType,
-      }],
+      improvementProcedures: (FormValuesState.form3["improvementProcedure"][0].procedureType as any).map((i: string, index: number) => ({
+        applicationTime: dayjs(FormValuesState.form3["date-of-implementation"]).format('YYYY-MM-DDTHH:mm:ss'),
+        procedureType: FormValuesState.form3["improvementProcedure"][0].procedureType[index] as any,
+      })),
       runwayDesignation: "",
       runwayThirds: [{
         depthMm: Number(FormValuesState.form1.depth1),
@@ -673,11 +676,11 @@ export default function RunwayConditionCreate() {
             chemicalType: null, // если будет приходить — добавь
           }]
           : [],
-          RCR: data.data.finalRCR
+        RCR: data.data.finalRCR
       };
 
       console.log(form3, "form3");
-      
+
 
       setFormValuesState({
         form1,
@@ -694,7 +697,7 @@ export default function RunwayConditionCreate() {
 
   return (
     <div>
-     
+
       <Steps
         progressDot
         current={currentStep}
