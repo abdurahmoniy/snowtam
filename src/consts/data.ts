@@ -24,3 +24,4 @@ export enum ProcedureType {
   PLOWING = "PLOWING", // PRODUV
   OTHER = "OTHER", // Другое
 }
+

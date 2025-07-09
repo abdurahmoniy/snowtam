@@ -47,11 +47,6 @@ export default function Home() {
   return (
     <div className="">
       <div className="flex justify-end">
-        {/* <DatePicker.RangePicker value={rangePickerValue} onChange={(value) => {
-          if(value &&  value != null) {
-            setRangePickerValue(value)
-          }
-        }}></DatePicker.RangePicker> */}
         <Button type="primary" variant="solid" size="large"
           onClick={() => router.push('/runway-condition/create')}
         >
@@ -69,23 +64,16 @@ export default function Home() {
             dataSource={RWConditionData.data.data as RunwayCondition[]}
             columns={[
               { title: 'Код аэропорта', dataIndex: 'airportCode', key: 'airportCode' },
-              { title: 'Обозначение ВПП', dataIndex: 'runwayDesignation', key: 'runwayDesignation' },
               {
-                title: 'Дата и время отчёта', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (date) => {
+                title: 'Обозначение ВПП',
+                dataIndex: 'initials', key: 'initials'
+              },
+              {
+                title: 'Дата и время отчёта', dataIndex: 'createdAt', key: 'createdAt', render: (date) => {
                   return date.length != 0 ? dayjs(date[0].applicationTime).format('YYYY-MM-DD HH:mm:ss') : date[0]
                 }
               },
               { title: 'Температура воздуха', dataIndex: 'ambientTemperature', key: 'ambientTemperature' },
-              { title: 'Инициалы инспектора', dataIndex: 'initials', key: 'initials' },
-              // { title: 'RWYC Code', dataIndex: 'rwycCode', key: 'rwycCode' },
-              // { title: 'Overall Condition', dataIndex: 'overallConditionCode', key: 'overallConditionCode' },
-              // {
-              //   title: 'Remarks', dataIndex: 'remarks', key: 'remarks', render: (text) => (
-              //     <Popover content={text}>
-              //       <span>{truncateText(text)}</span>
-              //     </Popover>
-              //   )
-              // },
               { title: 'Трети', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds) => thirds?.length || 0 },
               { title: 'Ситуационные уведомления', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => n?.length || 0 },
               { title: 'Процедуры улучшения', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => p?.length || 0 },

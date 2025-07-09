@@ -17,7 +17,7 @@ export interface RunwayConditionCreateRequest {
     runwayLengthReductionM: number;
     additionalDetails: string;
   }[];
-  improvementProcedure: ImprovementProcedure[];
+  improvementProcedures: ImprovementProcedure[];
   runwayId?: number;
 }
 
