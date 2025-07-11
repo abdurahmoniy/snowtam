@@ -20,6 +20,7 @@ export interface RunwayConditionCreateRequest {
   improvementProcedures: ImprovementProcedure[];
   runwayId?: number;
   deviceId: number;
+  [key: string]: any;
 }
 
 // {
@@ -49,6 +50,7 @@ export interface RunwayThird {
   frictionCoefficient: number;
   rwycValue: number;
   temperatureCelsius: number;
+   "coveragePercentage": number,
 }
 
 export interface ContaminationDetail {}
@@ -96,6 +98,7 @@ export interface RunwayCondition {
     surfaceCondition: surfaceCondition;
     depthMm: number;
     frictionCoefficient: number;
+    coveragePercentage: string | null;
     rwycValue: number;
     temperatureCelsius: null;
     contaminationDetails: [];

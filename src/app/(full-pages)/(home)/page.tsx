@@ -10,7 +10,6 @@ import type { RunwayCondition } from "../../../types/runway-condition";
 
 import useLocalStorage from "use-local-storage";
 
-// Utility to truncate text
 function truncateText(text: string, maxLength = 12) {
   if (!text) return '';
   return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
@@ -53,7 +52,7 @@ export default function Home() {
           Создать
         </Button>
       </div>
-      <div className="mt-6">
+      <div className="mt-6 flex justify-center">
         {RWConditionData.isLoading ? (
           <Spin size="large" />
         ) : RWConditionData.isError ? (

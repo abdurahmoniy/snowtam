@@ -406,6 +406,7 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
 
   console.log(AllDevicesData, "AllDevicesData");
 
+  
 
 
 
