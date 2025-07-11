@@ -19,6 +19,7 @@ export interface RunwayConditionCreateRequest {
   }[];
   improvementProcedures: ImprovementProcedure[];
   runwayId?: number;
+  deviceId: number;
 }
 
 // {
@@ -64,8 +65,8 @@ export interface SituationalNotification {
 
 export interface ImprovementProcedure {
   runwayConditionId?: number;
-  procedureType: ProcedureType;
-  applicationTime: string;
+  procedureType: ProcedureType | null;
+  applicationTime: string | null;
 }
 
 export interface RunwayConditionCreateResponse {
@@ -84,8 +85,9 @@ export interface RunwayCondition {
   rwycCode: null;
   overallConditionCode: null;
   remarks: null;
-  deviceForImprovement: null | string;
+  deviceForImprovement: null | number;
   finalRCR: string;
+  runwayId: number | null;
   runwayThirds: {
     id: number;
     runwayConditionId: number;
