@@ -173,6 +173,21 @@ export interface FormValuesState {
 
 
 
+const numberInputFields: NotificationType[] = [
+  NotificationType.REDUCED_RUNWAY_LENGTH,
+  NotificationType.DEBRIS_ON_RUNWAY_LEFT,
+  NotificationType.DEBRIS_ON_RUNWAY_RIGHT,
+  NotificationType.DEBRIS_ON_TAXIWAY_LEFT,
+  NotificationType.DEBRIS_ON_TAXIWAY_RIGHT,
+];
+
+const textInputFields: NotificationType[] = [
+  NotificationType.TAXIWAY_POOR_CONDITION,
+  NotificationType.APRON_POOR_CONDITION,
+  NotificationType.OTHER,
+];
+
+
 
 export default function RunwayConditionCreate() {
   const [form] = Form.useForm<RunwayConditionCreateRequest>();
@@ -233,10 +248,10 @@ export default function RunwayConditionCreate() {
     form3: {
       "device-of-implementation": null,
       details: {
-        coefficient1: undefined,
         chemicalType: undefined,
-        coefficient2: undefined,
-        coefficient3: undefined
+        coefficient1: 50,
+        coefficient2: 50,
+        coefficient3: 50
       },
       improvementProcedure: null,
       applicationTime: null
@@ -317,7 +332,9 @@ export default function RunwayConditionCreate() {
                                   className="inline-block ml-2 mb-0"
                                   rules={checkedFields.includes(String(item.field)) ? [
                                     { required: true, message: "Обязательное поле" },
-                                    { validator: customNumberValidator },
+                                    ...(numberInputFields.includes(item.field)
+                                      ? [{ validator: customNumberValidator }]
+                                      : []),
                                   ] : []}
                                 >
                                   <Input
@@ -353,7 +370,9 @@ export default function RunwayConditionCreate() {
                                       className="inline-block ml-1 mb-0"
                                       rules={checkedFields.includes(String(item.field)) ? [
                                         { required: true, message: "Обязательное поле" },
-                                        { validator: customNumberValidator },
+                                        ...(numberInputFields.includes(item.field as any)
+                                          ? [{ validator: customNumberValidator }]
+                                          : []),
                                       ] : []}
                                     >
                                       <Input
@@ -385,7 +404,9 @@ export default function RunwayConditionCreate() {
                                   className="inline-block mb-0"
                                   rules={checkedFields.includes(String(item.field)) ? [
                                     { required: true, message: "Обязательное поле" },
-                                    { validator: customNumberValidator },
+                                    ...(numberInputFields.includes(item.field)
+                                      ? [{ validator: customNumberValidator }]
+                                      : []),
                                   ] : []}
                                 >
                                   <TextArea style={{ width: "100%", resize: "both", minHeight: "60px" }} size="small"
@@ -404,7 +425,9 @@ export default function RunwayConditionCreate() {
                                     className="inline-block mb-0"
                                     rules={checkedFields.includes(String(item.field)) ? [
                                       { required: true, message: "Обязательное поле" },
-                                      { validator: customNumberValidator },
+                                      ...(numberInputFields.includes(item.field as any)
+                                        ? [{ validator: customNumberValidator }]
+                                        : []),
                                     ] : []}
                                   >
                                     <Input
@@ -447,121 +470,45 @@ export default function RunwayConditionCreate() {
             <h1 className="mb-4 text-lg font-semibold">
               Какие процедуры по улучшению состояния ВПП были применены{" "}
             </h1>
-            <h2 className="mb-4 flex  gap-2 text-lg">Время сервера:{" "}
-              {/* <Form.Item className="mb-0" name={"date-of-implementation"} rules={[{ required: true, message: "Обязательное поле" }]}>
-                <DatePicker placeholder="Выберите дату" showTime />\
-                </Form.Item> */}
-              <span>{currentTime}</span>
-            </h2>
-            <h2 className="mb-4 flex  gap-2">
-              <Form.Item name={"device-of-implementation"} className="mb-0" rules={[{ required: true, message: "Обязательное поле" }]}>
-                <Select
-                  className="min-w-[130px]"
-                  size="large"
-
-                  placeholder="Выберите устройство"
-                  options={AllDevicesData.data?.data.map((d: any) => ({ label: d.name, value: d.id }))}
-                />
-
+            <h2 className="mb-4 flex  gap-2 text-lg">Время применения:{" "}
+              <Form.Item className="mb-0" name={"applicationTime"}  rules={[{ required: true, message: "Обязательное поле" }]}>
+                <DatePicker placeholder="Выберите дату" showTime format={"YYYY-MM-DD HH:mm:ss"} />
               </Form.Item>
+              {/* <span>{currentTime}</span> */}
             </h2>
+
           </div>
+          <div className="flex justify-between max-w-[1000px] text-lg gap-20">
+            <div className="flex flex-col">
+              <h2 className="mb-4 flex  gap-2">
+                <Form.Item name={"device-of-implementation"} className="mb-0" rules={[{ required: true, message: "Обязательное поле" }]}>
+                  <Select
+                    className="min-w-[130px]"
+                    size="large"
 
-          {/* <Form.List name="improvementProcedure">
-            {(fields, { add, remove }) => (
+                    placeholder="Выберите устройство"
+                    options={AllDevicesData.data?.data.map((d: any) => ({ label: d.name, value: d.id }))}
+                  />
+
+                </Form.Item>
+              </h2>
               <div>
-                <Row gutter={[16, 16]}>
-                  <Col span={12}>
-                    <Form.Item name={[0, "procedureType"]}>
-                      <Radio.Group
-                        // onChange={(checkedValues) => {
-                        //   const last = checkedValues.slice(-1); // оставляем только последний выбранный
-                        //   form.setFieldsValue({
-                        //     improvementProcedures: [{ procedureType: last } as any],
-                        //   });
-                        //   setChemicalTreatmentChecked(last[0] === "Хим. обработка");
-
-                        //   return;
-
-                        //   const currentValues = form.getFieldValue(
-                        //     "improvementProcedures",
-                        //   ) || [{}];
-
-                        //   // Update state for chemical treatment
-                        //   setChemicalTreatmentChecked(checkedValues.includes("Хим. обработка"));
-
-                        //   // If "Хим. обработка" is checked and "Жидкая" isn't already checked
-                        //   if (
-                        //     checkedValues.includes("Хим. обработка") &&
-                        //     !checkedValues.includes("Жидкая")
-                        //   ) {
-                        //     form.setFieldsValue({
-                        //       improvementProcedures: [
-                        //         {
-                        //           ...currentValues[0],
-                        //           procedureType: [...checkedValues, "Жидкая"],
-                        //         },
-                        //       ],
-                        //     });
-                        //   } else {
-                        //     form.setFieldsValue({
-                        //       improvementProcedures: [
-                        //         {
-                        //           ...currentValues[0],
-                        //           procedureType: checkedValues,
-                        //         },
-                        //       ],
-                        //     });
-                        //   }
-                        // }}
-                        onChange={(e) => {
-                          const selected = e.target.value;
-                          form.setFieldsValue({
-                            improvementProcedures: [{
-                              procedureType: selected
-                            }]
-                          });
-                          setChemicalTreatmentChecked(selected === ProcedureType.CHEMICAL_TREATMENT);
-                        }}
-                      >
-                        <Row gutter={[0, 8]}>
-                          <Col span={24}>
-                            <Checkbox value="Хим. обработка" className=" text-lg">
-                              Хим. обработка
-                            </Checkbox>
-                          </Col>
-                          {chemicalTreatmentChecked && (
-                            <>
-                              <Col span={24}>
-                                <div className="ml-6">
-                                  <Form.Item name={[0, "chemicalType"]}>
-                                    <Radio.Group className="flex flex-col text-lg" defaultValue={ProcedureType.CHEMICAL_TREATMENT}>
-                                      <Radio value="Жидкая" className=" text-lg">Жидкая</Radio>
-                                      <Radio value="Твердая" className=" text-lg">Твердая</Radio>
-                                    </Radio.Group>
-                                  </Form.Item>
-                                </div>
-                              </Col>
-                            </>
-                          )}
-                          <Col span={24}>
-                            <Checkbox value={ProcedureType.SAND_APPLICATION} className=" text-lg">Песок</Checkbox>
-                          </Col>
-                          <Col span={24}>
-                            <Checkbox value={ProcedureType.BRUSHING} className=" text-lg">Щеточ</Checkbox>
-                          </Col>
-                          <Col span={24}>
-                            <Checkbox value={ProcedureType.PLOWING} className=" text-lg">Предув</Checkbox>
-                          </Col>
-                        </Row>
-                      </Radio.Group>
-                    </Form.Item>
-                  </Col>
-                </Row>
+                <h3>Измеренный коэффициент сцепления</h3>
+                <div className="flex gap-3">
+                  {[1, 2, 3].map((item) => (
+                    <div key={item}>
+                      <Form.Item rules={[{
+                        required: true,
+                        message: "Обязательное поле"
+                      }]} name={["details", `coefficient${item}`]}>
+                        <Input min={0} max={"99"} maxLength={2} type="number" className="w-16 h-16 text-center flex justify-center text-lg" />
+                      </Form.Item>
+                    </div>
+                  ))}
+                </div>
+                <p>Коэффициент сцепления включает в ситуационный раздел представлении (RCR) в SNOWTAM</p>
               </div>
-            )}
-          </Form.List> */}
-          <div className="flex justify-between max-w-[900px] text-lg">
+            </div>
             <Form.Item name={["improvementProcedure"]}>
               <Radio.Group
                 onChange={(e) => {
@@ -583,9 +530,11 @@ export default function RunwayConditionCreate() {
                   {chemicalTreatmentChecked && (
                     <Col span={24}>
                       <div className="ml-6">
-                        <Form.Item name={["details", "chemicalType"]}>
-                          <Radio.Group className="flex flex-col !text-lg">
-                            <Radio value="HARD">Жидкая</Radio>
+                        <Form.Item rules={[{ required: true, message: "Обязательное поле" }]} name={["details", "chemicalType"]}>
+                          
+                          <Radio.Group 
+                           className="flex flex-col !text-lg">
+                            <Radio  value="HARD">Жидкая</Radio>
                             <Radio value="LIQUID">Твердая</Radio>
                           </Radio.Group>
                         </Form.Item>
@@ -611,22 +560,7 @@ export default function RunwayConditionCreate() {
               </Radio.Group>
             </Form.Item>
 
-            <div>
-              <h3>Измеренный коэффициент сцепления</h3>
-              <div className="flex gap-3">
-                {[1, 2, 3].map((item) => (
-                  <div key={item}>
-                    <Form.Item rules={[{
-                      required: true,
-                      message: "Обязательное поле"
-                    }]} name={["details", `coefficient${item}`]}>
-                      <Input min={0} max={"99"} maxLength={2} type="number" className="w-16 h-16 text-center flex justify-center text-lg" />
-                    </Form.Item>
-                  </div>
-                ))}
-              </div>
-              <p>Коэффициент сцепления включает в ситуационный раздел представлении (RCR) в SNOWTAM</p>
-            </div>
+
           </div>
 
         </div>
@@ -680,7 +614,6 @@ export default function RunwayConditionCreate() {
   // console.log(FormValuesState.form3["improvementProcedure"][0].procedureType, "procedureType-procedureType");
 
   const handleFinish = async (values: any) => {
-
     const RequestMock: RunwayConditionCreateRequest = {
       // reportDateTime: dayjs(FormValuesState.form3["date-of-implementation"]).format('YYYY-MM-DD HH:mm:ss'),
       deviceForImprovement: FormValuesState.form3["device-of-implementation"] as any,
@@ -689,7 +622,8 @@ export default function RunwayConditionCreate() {
       //   procedureType: i["improvementProcedure"] == ProcedureType.CHEMICAL_TREATMENT ? i["details"].chemicalType : i["improvementProcedure"],
       // })),
       improvementProcedures: [{
-        applicationTime: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+        applicationTime: dayjs(FormValuesState.form3.applicationTime).format('YYYY-MM-DDTHH:mm:ss'),
+        // applicationTime: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
         procedureType: FormValuesState.form3.improvementProcedure,
       }],
       deviceId: Number(FormValuesState.form3["device-of-implementation"]),
@@ -762,6 +696,15 @@ export default function RunwayConditionCreate() {
 
 
   useEffect(() => {
+    if (isCreateMode) {
+      form.setFieldsValue({
+        details: {
+          coefficient1: 50,
+          coefficient2: 50,
+          coefficient3: 50,
+        },
+      });
+    }
     if (!isCreateMode && RunwayConditionDataById.data) {
       const data = RunwayConditionDataById.data;
 
@@ -856,7 +799,7 @@ export default function RunwayConditionCreate() {
       // Перейти сразу на последний шаг (4)
       setCurrentStep(3);
     }
-  }, [RunwayConditionDataById.data]);
+  }, [RunwayConditionDataById.data, isCreateMode]);
 
 
 
@@ -896,7 +839,7 @@ export default function RunwayConditionCreate() {
                   size="large"
                   disabled={!isCreateMode}
                 >
-                  {isPending ? "Создание..." : "Создать"}
+                  {isPending ? "Создание..." : "Создать RCR"}
                 </Button>
               )}
               {/* For future steps, show Next button */}
