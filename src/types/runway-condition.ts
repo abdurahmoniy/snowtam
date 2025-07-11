@@ -19,6 +19,7 @@ export interface RunwayConditionCreateRequest {
   }[];
   improvementProcedures: ImprovementProcedure[];
   runwayId?: number;
+  deviceId: number;
 }
 
 // {
@@ -86,6 +87,7 @@ export interface RunwayCondition {
   remarks: null;
   deviceForImprovement: null | number;
   finalRCR: string;
+  runwayId: number | null;
   runwayThirds: {
     id: number;
     runwayConditionId: number;

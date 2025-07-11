@@ -70,7 +70,7 @@ export default function Home() {
               },
               {
                 title: 'Дата и время отчёта', dataIndex: 'createdAt', key: 'createdAt', render: (date) => {
-                  return date.length != 0 ? dayjs(date[0].applicationTime).format('YYYY-MM-DD HH:mm:ss') : date[0]
+                  return date.length != 0 ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : date
                 }
               },
               { title: 'Температура воздуха', dataIndex: 'ambientTemperature', key: 'ambientTemperature' },

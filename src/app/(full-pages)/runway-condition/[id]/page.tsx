@@ -133,7 +133,7 @@ interface Form1Values {
 
   "airport": string | null;
   "datetime": string | null;
-  "VPP": string | null;
+  "VPP": string | null | number;
   "temperature": number | null;
   "initials": string | null;
   "position": string | null;
@@ -161,6 +161,7 @@ interface Form3Values {
   }
   RCR?: string | null;
   applicationTime: string | null
+  VPP?: number
 }
 
 export interface FormValuesState {
@@ -387,9 +388,9 @@ export default function RunwayConditionCreate() {
                                     { validator: customNumberValidator },
                                   ] : []}
                                 >
-                                
 
-                                  <TextArea style={{ width: "100%", resize: "both", minHeight: "60px" }} size="small" 
+
+                                  <TextArea style={{ width: "100%", resize: "both", minHeight: "60px" }} size="small"
                                     onChange={(e) => {
                                       if (e.target.value.trim() !== "") {
                                         setCheckedFields((prev) =>
@@ -692,6 +693,7 @@ export default function RunwayConditionCreate() {
         applicationTime: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
         procedureType: FormValuesState.form3["improvementProcedure"],
       }],
+      deviceId: Number(FormValuesState.form3["device-of-implementation"]),
       runwayDesignation: String(UserData.data?.data.airportDto.runwayDtos.find(i => String(i.id) == FormValuesState.form1.VPP)?.runwayDesignation),
       runwayThirds: [{
         depthMm: Number(FormValuesState.form1.depth1),
@@ -787,7 +789,7 @@ export default function RunwayConditionCreate() {
 
         "airport": data.data.airportCode,
         "datetime": data.data.reportDateTime,
-        "VPP": data.data.runwayDesignation,
+        "VPP": data.data.runwayId,
         "temperature": data.data.ambientTemperature,
         "initials": data.data.initials,
         "position": null
@@ -826,7 +828,7 @@ export default function RunwayConditionCreate() {
           coefficient3: undefined,
         },
         RCR: data.data.finalRCR,
-        applicationTime: ""
+        applicationTime: "",
       };
 
       console.log(form3, "form3");
