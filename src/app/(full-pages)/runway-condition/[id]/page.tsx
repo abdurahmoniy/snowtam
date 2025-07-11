@@ -725,7 +725,7 @@ export default function RunwayConditionCreate() {
         additionalDetails: item == NotificationType.OTHER ? String(FormValuesState.form2[`${item}`]) : "",
         notificationType: item,
         runwayConditionId: 0,
-        runwayLengthReductionM: Number(FormValuesState.form2.notification_details?.[`${item}`])
+        runwayLengthReductionM: Number(FormValuesState.form2.notification_details?.[`${item}`]),
       })),
       runwayId: 1
     };
@@ -821,7 +821,7 @@ export default function RunwayConditionCreate() {
       const firstProc = data.data.improvementProcedures?.[0];
 
       const form3: Form3Values = {
-        "device-of-implementation": Number(data.data.deviceForImprovement) ?? null,
+        "device-of-implementation": Number(data.data.deviceDto.id) ?? null,
         improvementProcedure: firstProc
           ? firstProc.procedureType
           : null,
