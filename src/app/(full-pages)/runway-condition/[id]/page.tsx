@@ -152,7 +152,7 @@ interface Form2Values {
 
 interface Form3Values {
   "device-of-implementation": number | null;
-  "improvementProcedure": ProcedureType | null,
+  "improvementProcedure": ProcedureType | null;
   "details": {
     "coefficient1": number | undefined,
     "coefficient2": number | undefined,
@@ -388,8 +388,6 @@ export default function RunwayConditionCreate() {
                                     { validator: customNumberValidator },
                                   ] : []}
                                 >
-
-
                                   <TextArea style={{ width: "100%", resize: "both", minHeight: "60px" }} size="small"
                                     onChange={(e) => {
                                       if (e.target.value.trim() !== "") {
@@ -399,9 +397,7 @@ export default function RunwayConditionCreate() {
                                       }
                                     }}></TextArea>
                                 </Form.Item>
-
                               </>
-
                                 : item.showInput === true && (
                                   <Form.Item
                                     name={["notification_details", item.field as any]}
@@ -642,6 +638,9 @@ export default function RunwayConditionCreate() {
     },
   ];
 
+  console.log(form.getFieldsValue([["improvementProcedures"]]), "improvementProcedures");
+
+
   const next = async () => {
     form.validateFields().then((value) => {
       console.log(value, "next-value");
@@ -691,7 +690,7 @@ export default function RunwayConditionCreate() {
       // })),
       improvementProcedures: [{
         applicationTime: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
-        procedureType: FormValuesState.form3["improvementProcedure"],
+        procedureType: FormValuesState.form3.improvementProcedure,
       }],
       deviceId: Number(FormValuesState.form3["device-of-implementation"]),
       runwayDesignation: String(UserData.data?.data.airportDto.runwayDtos.find(i => String(i.id) == FormValuesState.form1.VPP)?.runwayDesignation),
@@ -701,33 +700,37 @@ export default function RunwayConditionCreate() {
         surfaceCondition: FormValuesState.form1.surfaceCondition1 as any,
         rwycValue: Number(FormValuesState.form1.runwayConditionType1),
         frictionCoefficient: Number(FormValuesState.form3.details.coefficient1),
-        temperatureCelsius: 0
+        temperatureCelsius: 0,
+        coveragePercentage: Number(FormValuesState.form1.coveragePercentage1)
       }, {
         depthMm: Number(FormValuesState.form1.depth2),
-        partNumber: 1,
+        partNumber: 2,
         surfaceCondition: FormValuesState.form1.surfaceCondition2 as any,
         rwycValue: Number(FormValuesState.form1.runwayConditionType2),
-        frictionCoefficient: Number(FormValuesState.form3.details.coefficient1),
-        temperatureCelsius: 0
+        frictionCoefficient: Number(FormValuesState.form3.details.coefficient2),
+        temperatureCelsius: 0,
+        coveragePercentage: Number(FormValuesState.form1.coveragePercentage2)
+
       }, {
         depthMm: Number(FormValuesState.form1.depth3),
-        partNumber: 1,
+        partNumber: 3,
         surfaceCondition: FormValuesState.form1.surfaceCondition3 as any,
         rwycValue: Number(FormValuesState.form1.runwayConditionType3),
-        frictionCoefficient: Number(FormValuesState.form3.details.coefficient1),
-        temperatureCelsius: 0
+        frictionCoefficient: Number(FormValuesState.form3.details.coefficient3),
+        temperatureCelsius: 0,
+        coveragePercentage: Number(FormValuesState.form1.coveragePercentage3)
+
       }],
       situationalNotifications: FormValuesState.form2.notificationType.map((item) => ({
         additionalDetails: item == NotificationType.OTHER ? String(FormValuesState.form2[`${item}`]) : "",
         notificationType: item,
         runwayConditionId: 0,
-        runwayLengthReductionM: Number(FormValuesState.form2[`${item}`])
+        runwayLengthReductionM: Number(FormValuesState.form2.notification_details?.[`${item}`])
       })),
       runwayId: 1
     };
 
     setRunWayData(JSON.stringify([RequestMock]));
-
 
     try {
       const allFormValues = form.getFieldsValue(true);
@@ -767,25 +770,27 @@ export default function RunwayConditionCreate() {
         // если будешь показывать в inputs (не обязательно)
       });
 
+      console.log(data.data, "data-data");
       // Переводим runwayThirds -> form1
       const thirds = data.data.runwayThirds || [];
       const getThird = (index: number) => thirds.find(t => t.partNumber === index);
+
 
       const form1 = {
         runwayConditionType1: String(getThird(1)?.rwycValue ?? ""),
         surfaceCondition1: String(getThird(1)?.surfaceCondition ?? ""),
         depth1: String(getThird(1)?.depthMm ?? ""),
-        coveragePercentage1: "",
+        coveragePercentage1: thirds[0]?.coveragePercentage ?? "",
 
         runwayConditionType2: String(getThird(2)?.rwycValue ?? ""),
         surfaceCondition2: String(getThird(2)?.surfaceCondition ?? ""),
         depth2: String(getThird(2)?.depthMm ?? ""),
-        coveragePercentage2: "",
+        coveragePercentage2: thirds[1]?.coveragePercentage ?? "",
 
         runwayConditionType3: String(getThird(3)?.rwycValue ?? ""),
         surfaceCondition3: String(getThird(3)?.surfaceCondition ?? ""),
         depth3: String(getThird(3)?.depthMm ?? ""),
-        coveragePercentage3: "",
+        coveragePercentage3: thirds[2]?.coveragePercentage ?? "",
 
         "airport": data.data.airportCode,
         "datetime": data.data.reportDateTime,
@@ -806,7 +811,6 @@ export default function RunwayConditionCreate() {
       };
 
       if (!form2.notification_details) {
-
         return
       }
       for (const notif of notifs) {
@@ -823,21 +827,30 @@ export default function RunwayConditionCreate() {
           : null,
         details: {
           chemicalType: firstProc?.procedureType as any,
-          coefficient1: undefined,
-          coefficient2: undefined,
-          coefficient3: undefined,
+          coefficient1: data.data.runwayThirds[0]?.frictionCoefficient,
+          coefficient2: data.data.runwayThirds[1]?.frictionCoefficient,
+          coefficient3: data.data.runwayThirds[2]?.frictionCoefficient,
         },
         RCR: data.data.finalRCR,
         applicationTime: "",
       };
 
-      console.log(form3, "form3");
+      console.log(data.data.runwayThirds, "data.data.runwayThirds[0]");
 
 
       setFormValuesState({
         form1,
         form2,
         form3,
+      });
+
+
+      form.setFieldsValue({
+        details: {
+          coefficient1: form3.details.coefficient1,
+          coefficient2: form3.details.coefficient2,
+          coefficient3: form3.details.coefficient3,
+        }
       });
 
       // Перейти сразу на последний шаг (4)
