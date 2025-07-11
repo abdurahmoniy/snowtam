@@ -604,7 +604,7 @@ export default function RunwayConditionCreate() {
                   </Col>
                   <Col span={24}>
                     <Radio value={ProcedureType.PLOWING} className="text-lg">
-                      Предув
+                      Продув
                     </Radio>
                   </Col>
                 </Row>

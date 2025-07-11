@@ -317,7 +317,7 @@ interface ReviewStepProps {
       applicationTime: string;
       details: {
         coefficient1: undefined,
-        chemicalType: ("HARD" | "LIQUID") | undefined,
+        chemicalType: ("HARD" | "LIQUID") | null,
         coefficient2: undefined,
         coefficient3: undefined
       },
@@ -395,7 +395,10 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
     "DRY_SNOW": "Сухой снег",
     "MOISTURIZE_SNOW": "Мокрый снег",
     "HOARFROST": "Иней"
-
+  }
+  const ChemicalType = {
+    "HARD": "Жёсткий",
+    "LIQUID": "Жидкий"
   }
 
 
@@ -406,7 +409,7 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
 
   console.log(AllDevicesData, "AllDevicesData");
 
-  
+
 
 
 
@@ -536,7 +539,7 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
               <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
                 <div className="space-y-1">
                   <div><strong>Тип(ы):</strong> {proc.improvementProcedure ? ProcedureNames[proc.improvementProcedure] : <Text type="secondary">Нет</Text>}</div>
-                  <div><strong>Тип химии:</strong> {proc.details.chemicalType ?? <Text type="secondary">Нет данных</Text>}</div>
+                  <div><strong>Тип химии:</strong> {proc?.details?.chemicalType && (ChemicalType[proc?.details?.chemicalType] ?? <Text type="secondary">Нет данных</Text>)}</div>
                 </div>
               </Descriptions.Item>
             ))}
