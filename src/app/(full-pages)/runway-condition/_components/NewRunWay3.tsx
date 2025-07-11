@@ -1,8 +1,10 @@
 "use client";
 
+import { useUserMe } from "@/hooks/use-me";
 import { GetSurfaceCondition } from "@/services/enums";
 import { useQuery } from "@tanstack/react-query";
-import { Col, Divider, Form, FormInstance, InputNumber, Row, Select } from "antd";
+import { Col, Divider, Form, FormInstance, Input, InputNumber, Row, Select } from "antd";
+import dayjs from "dayjs";
 import { CircleDot } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -28,7 +30,10 @@ const sostoyanie = [
   { label: "Dry / Quruq / Сухой", value: "DRY" },
   { label: "Wet / Ho'l / Мокрый", value: "WET" },
   { label: "Ice / Muz / Лед", value: "ICE" },
-  { label: "Snow / Qor / Снег", value: "SNOW" },
+  // { label: "Snow / Qor / Снег", value: "SNOW" },
+  { label: "Dry Snow / Quruq qor / Сухой снег", value: "DRY_SNOW" },
+  { label: "Wet Snow / Nam qor / Мокрый снег", value: "MOISTURIZE_SNOW" },
+  { label: "Frost / Iney / Иней", value: "HOARFROST" },
 ]
 
 const RunwayThird = ({
@@ -49,8 +54,14 @@ const RunwayThird = ({
 
 
 
+
   return (
     <div className="rounded-md border border-primary p-2 md:max-w-[650px] lg:max-w-full">
+      <div className="flex justify-end ">
+        <div className="border-[1px] border-[#000] h-[50px] w-[50px] justify-center items-center flex text-lg">
+          {formInstance.getFieldValue(`runwayConditionType${orderIndex}`)}
+        </div>
+      </div>
       <div className="flex flex-col items-center justify-center pt-2">
         <div className="text-lg font-semibold text-center">{title}</div>
         <div className="text-sm text-center">
@@ -80,6 +91,11 @@ const RunwayThird = ({
               onChange={(value) => {
                 if (value && typeof value === 'number' && [0, 1, 2, 3, 4, 5, 6].includes(value)) {
                   onValueChange(value as RunwayConditionType);
+                  if (value == 6) {
+                    formInstance.setFieldsValue({
+                      [`coveragePercentage${orderIndex}`]: 100,
+                    });
+                  }
                 }
               }}
               className="w-[80px]"
@@ -103,7 +119,10 @@ const RunwayThird = ({
             value={value === 6 ? 100 : coverage}
             placeholder="Процент"
             disabled={value === 6}
-            onSelect={(val) => onCoverageChange(val as CoveragePercentage)}
+            onSelect={(val) => {
+              onCoverageChange(val as CoveragePercentage);
+
+            }}
             options={[
               { value: 25, label: "25%" },
               { value: 50, label: "50%" },
@@ -116,7 +135,8 @@ const RunwayThird = ({
         <div className="">
           {value !== 6 && <Form.Item name={`depth${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
             <InputNumber size="large"
-              value={depth}
+              
+              value={depth === "N/R" ? undefined : Number(depth)}
               placeholder="Глубина"
               // onChange={(e) => {
               //   if (e && Number(e) >= 0) {
@@ -130,25 +150,44 @@ const RunwayThird = ({
               //   }
               // }}
 
-              min={"4"}
-              onChange={(e) => {
-                if (e === null || e === undefined || Number(e) < Number("4")) {
-                  // Устанавливаем N/R если меньше 3 или пусто
+              min={3}
+              // onChange={(e) => {
+              //   if (e === null || e === undefined || Number(e) < Number("3")) {
+              //     // Устанавливаем N/R если меньше 3 или пусто
+              //     onDepthChange("N/R");
+              //     formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
+              //   } else {
+              //     onDepthChange(e.toString());
+              //     formInstance.setFieldsValue({ [`depth${orderIndex}`]: e });
+              //   }
+              // }}
+
+              // onBlur={(e) => {
+              //   const val = e.target.value.trim();
+              //   const numeric = Number(val);
+              //   if (!val || isNaN(numeric) || numeric < 3) {
+              //     onDepthChange("N/R");
+              //     formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
+              //   }
+              // }}
+
+              onChange={(value) => {
+                if (value === null || value === undefined || Number(value) <= 3) {
                   onDepthChange("N/R");
                   formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
                 } else {
-                  onDepthChange(e.toString());
-                  formInstance.setFieldsValue({ [`depth${orderIndex}`]: e });
+                  onDepthChange(value.toString());
+                  formInstance.setFieldsValue({ [`depth${orderIndex}`]: value });
                 }
               }}
               onBlur={(e) => {
-                const val = e.target.value.trim();
-                const numeric = Number(val);
-                if (!val || isNaN(numeric) || numeric < 3) {
+                const val = Number(e.target.value);
+                if (isNaN(val) || val <= 3) {
                   onDepthChange("N/R");
                   formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
                 }
               }}
+              
 
               className="text-center" /></Form.Item>}
         </div>
@@ -174,8 +213,15 @@ const RunwayThird = ({
             <div className="flex flex-col items-center gap-2">
               <div className="">Сухая</div>
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(6)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(6);
+                  onCoverageChange(100);
+                  formInstance.setFieldsValue({
+                    [`runwayConditionType${orderIndex}`]: 6,
+                    [`coveragePercentage${orderIndex}`]: 100,
+                  });
+                }}
               >
                 6
               </div>
@@ -183,8 +229,11 @@ const RunwayThird = ({
             <div className="flex flex-col items-center gap-2">
               <div className="">Мокрая</div>
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(5)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(5);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 5 });
+                }}
               >
                 5
               </div>
@@ -193,8 +242,11 @@ const RunwayThird = ({
             <div className="flex flex-col items-center gap-2">
               <div className="">Иней</div>
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(5)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(5);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 5 });
+                }}
               >
                 5
               </div>
@@ -212,8 +264,11 @@ const RunwayThird = ({
             </div>
             <div className="flex flex-col items-center gap-2">
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(3)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(3);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 3 });
+                }}
               >
                 3
               </div>
@@ -232,8 +287,11 @@ const RunwayThird = ({
             <div className="flex flex-col items-center gap-2">
               <div className="">Слякоть</div>
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(2)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(2);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 2 });
+                }}
               >
                 2
               </div>
@@ -243,8 +301,11 @@ const RunwayThird = ({
             <div className="flex flex-col items-center gap-2">
               <div className="">Слякоть</div>
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(5)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(5);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 5 });
+                }}
               >
                 5
               </div>
@@ -261,8 +322,11 @@ const RunwayThird = ({
             <div className="flex flex-col items-center gap-2">
               <div className="">Слякоть</div>
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(3)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(3);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 3 });
+                }}
               >
                 3
               </div>
@@ -271,8 +335,11 @@ const RunwayThird = ({
             <div className="flex flex-col items-center gap-2">
               <div className="">Слякоть</div>
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(5)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(5);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 5 });
+                }}
               >
                 5
               </div>
@@ -288,8 +355,11 @@ const RunwayThird = ({
           <div className="flex justify-center">
             <div className="flex flex-col items-center gap-2">
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(3)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(3);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 3 });
+                }}
               >
                 3
               </div>
@@ -320,8 +390,11 @@ const RunwayThird = ({
             <div className="flex items-center justify-center gap-2 sm:justify-start">
               <div className="text-gray-6">25/50/75/100</div>
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(4)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(4);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 4 });
+                }}
               >
                 4
               </div>
@@ -332,8 +405,11 @@ const RunwayThird = ({
             <div className="">Выше -15°C</div>
             <div className="flex items-center justify-center gap-2 sm:justify-start">
               <div
-                className="cursor-pointer border px-4 py-2"
-                onClick={() => onValueChange(3)}
+                className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                onClick={() => {
+                  onValueChange(3);
+                  formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 3 });
+                }}
               >
                 3
               </div>
@@ -351,8 +427,11 @@ const RunwayThird = ({
               <div className="flex flex-col items-center">
                 <div className="">Лед</div>
                 <div
-                  className="cursor-pointer border px-4 py-2"
-                  onClick={() => onValueChange(1)}
+                  className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                  onClick={() => {
+                    onValueChange(1);
+                    formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 1 });
+                  }}
                 >
                   1
                 </div>
@@ -367,8 +446,11 @@ const RunwayThird = ({
             <div className="flex flex-col items-center gap-2">
               <div className="flex flex-col items-center">
                 <div
-                  className="cursor-pointer border px-4 py-2"
-                  onClick={() => onValueChange(0)}
+                  className="cursor-pointer border px-4 py-2 border-[#0000007e]"
+                  onClick={() => {
+                    onValueChange(0);
+                    formInstance.setFieldsValue({ [`runwayConditionType${orderIndex}`]: 0 });
+                  }}
                 >
                   0
                 </div>
@@ -395,6 +477,8 @@ const NewRunWay3 = ({ form }: { form: FormInstance }) => {
     surfaceConditions: [null, null, null],
     depths: ["", "", ""]
   });
+
+  const UserData = useUserMe();
 
   const { data: surfaceConditionsData } = useQuery({
     queryFn: () => GetSurfaceCondition(),
@@ -431,53 +515,117 @@ const NewRunWay3 = ({ form }: { form: FormInstance }) => {
   };
 
 
+  useEffect(() => {
+    const values = form.getFieldsValue();
+
+    setThirds({
+      values: [
+        values.runwayConditionType1 ?? null,
+        values.runwayConditionType2 ?? null,
+        values.runwayConditionType3 ?? null
+      ],
+      coverages: [
+        values.coveragePercentage1 ?? null,
+        values.coveragePercentage2 ?? null,
+        values.coveragePercentage3 ?? null
+      ],
+      surfaceConditions: [
+        values.surfaceCondition1 ?? null,
+        values.surfaceCondition2 ?? null,
+        values.surfaceCondition3 ?? null
+      ],
+      depths: [
+        values.depth1 ?? "",
+        values.depth2 ?? "",
+        values.depth3 ?? ""
+      ]
+    });
+
+    form.setFieldsValue({
+      airport: UserData.data?.data?.airportDto.name,
+      datetime: dayjs(UserData.data?.data.airportDto.createdAt).format("YYYY-MM-DD HH:mm"),
+      VPP: UserData.data?.data.airportDto.runwayDtos[0].id,
+      temperature: UserData.data?.data.airportDto.temperature,
+      initials: UserData.data?.data.airportDto.initialName,
+      position: UserData.data?.data.position
+    });
+  }, [UserData.data?.data.airportDto]);
+
+
+
+  console.log(UserData.data?.data, "UserData");
 
 
 
   return (
     <div className="flex flex-col items-center">
-      <div className="mb-4 flex flex-col items-center gap-4 px-4">
-        <div className="text-center">Оцените % покрытия загрязнения ВПП для каждой трети ВПП</div>
-        <div className="flex flex-col gap-2 lg:flex-row">
-          {[
-            {
-              value: 0,
-              label: "< 10% покрытие",
-              color: "text-green-500",
-              description: "RWYCC – 6 для данной трети не сообщается о загрязнении"
-            },
-            {
-              value: 1,
-              label: "≥ 10% - ≤ 25% покрытие",
-              color: "text-red-500",
-              description: "RWYCC – 6 для данной трети Сообщите о загрязнении с 25% зоной покрытия"
-            },
-            {
-              value: 2,
-              label: "> 25% покрытие",
-              color: "text-green-500",
-              description: "Присвоить RWYCC на основе присутствия загрязняющих веществ и температуры"
-            }
-          ].map((option) => (
-            <div
-              key={option.value}
-              className={`rounded-md border-[#272727] dark:border-white border-[1px] flex max-w-[500px]  cursor-pointer flex-col gap-2 p-2`}
-            >
-              <div className="flex items-center gap-2">
-                <CircleDot className="dark:text-white text-#272727" />
-                <div className={option.color}>{option.label}</div>
+      <div className="flex justify-between">
+        <div className="flex flex-col gap-2 mb-4">
+          <Form.Item layout="horizontal" label="Аэродром" initialValue={UserData.data?.data?.airportDto.name} name={"airport"} className="mb-0">
+            <Input readOnly></Input>
+          </Form.Item >
+          <Form.Item layout="horizontal" label="Дата/Время" name={"datetime"} className="mb-0">
+            <Input readOnly></Input>
+          </Form.Item>
+          <Form.Item layout="horizontal" label="ВПП" name={"VPP"} className="mb-0">
+            <Select options={UserData.data?.data.airportDto.runwayDtos.map(i => ({
+              label: i.name + " | " + i.runwayDesignation,
+              value: i.id
+            }))}></Select>
+          </Form.Item>
+          <Form.Item layout="horizontal" label="Температура окр. среды" name={"temperature"} className="mb-0" >
+            <Input readOnly suffix="°C"></Input>
+          </Form.Item>
+          <Form.Item layout="horizontal" label="Инициалы" name={"initials"} className="mb-0">
+            <Input readOnly></Input>
+          </Form.Item>
+          <Form.Item layout="horizontal" label="Должность" name={"position"} className="mb-0">
+            <Input readOnly></Input>
+          </Form.Item>
+        </div>
+        <div className="mb-4 flex flex-col items-center gap-4 px-4">
+          <div className="text-center">Оцените % покрытия загрязнения ВПП для каждой трети ВПП</div>
+          <div className="flex flex-col gap-2 lg:flex-row">
+            {[
+              {
+                value: 0,
+                label: "< 10% покрытие",
+                color: "text-green-500",
+                description: "RWYCC – 6 для данной трети не сообщается о загрязнении"
+              },
+              {
+                value: 1,
+                label: "≥ 10% - ≤ 25% покрытие",
+                color: "text-red-500",
+                description: "RWYCC – 6 для данной трети Сообщите о загрязнении с 25% зоной покрытия"
+              },
+              {
+                value: 2,
+                label: "> 25% покрытие",
+                color: "text-green-500",
+                description: "Присвоить RWYCC на основе присутствия загрязняющих веществ и температуры"
+              }
+            ].map((option) => (
+              <div
+                key={option.value}
+                className={`rounded-md border-[#272727] dark:border-white border-[1px] flex max-w-[300px]  cursor-pointer flex-col gap-2 p-2`}
+              >
+                <div className="flex items-center gap-2">
+                  <CircleDot className="dark:text-white text-#272727" />
+                  <div className={option.color}>{option.label}</div>
+                </div>
+                <div className="text-sm">{option.description}</div>
               </div>
-              <div className="text-sm">{option.description}</div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="text-center">
+            <span className="text-red-500">Прим: </span>
+            Отчет RCR не требуется, когда зона покрытия трети ВПП {"<10%"} (за
+            исключением, когда выпускается донесение о чистой ВПП)
+          </div>
         </div>
-        <div className="text-center">
-          <span className="text-red-500">Прим: </span>
-          Отчет RCR не требуется, когда зона покрытия трети ВПП {"<10%"} (за
-          исключением, когда выпускается донесение о чистой ВПП)
-        </div>
-      </div>
 
+      </div>
       <div className="grid grid-cols-1 gap-4 px-4 lg:grid-cols-3 md:grid-cols-1">
         {[1, 2, 3].map((thirdNumber, index) => (
           <RunwayThird

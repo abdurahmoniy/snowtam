@@ -64,8 +64,8 @@ export interface SituationalNotification {
 
 export interface ImprovementProcedure {
   runwayConditionId?: number;
-  procedureType: ProcedureType;
-  applicationTime: string;
+  procedureType: ProcedureType | null;
+  applicationTime: string | null;
 }
 
 export interface RunwayConditionCreateResponse {
@@ -84,7 +84,7 @@ export interface RunwayCondition {
   rwycCode: null;
   overallConditionCode: null;
   remarks: null;
-  deviceForImprovement: null | string;
+  deviceForImprovement: null | number;
   finalRCR: string;
   runwayThirds: {
     id: number;

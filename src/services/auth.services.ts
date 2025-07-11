@@ -1,6 +1,6 @@
-import { IUser } from "@/consts/authOptions";
 import { httpClient } from "@/consts/http";
 import { LoginRequest, LoginResponse, MainResponse, RegisterRequest, SignUpRequest } from "@/types/auth";
+import { IUser } from "@/types/user.auth";
 import { AxiosRequestConfig, AxiosRequestHeaders } from "axios";
 
 export async function SignUp(
