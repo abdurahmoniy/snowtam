@@ -50,7 +50,7 @@ export interface RunwayThird {
   frictionCoefficient: number;
   rwycValue: number;
   temperatureCelsius: number;
-   "coveragePercentage": number,
+  coveragePercentage: number;
 }
 
 export interface ContaminationDetail {}
@@ -125,4 +125,10 @@ export interface RunwayCondition {
     createdAt: string;
     updatedAt: string;
   }[];
+  deviceDto: {
+    id: number;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
