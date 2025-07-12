@@ -1,6 +1,6 @@
 "use client";
 
-import { RunwayConditionCreateRequest, SituationalNotification } from "@/types/runway-condition";
+import { RunwayConditionCreateRequest, RunwayConditionCreateResponse, SituationalNotification } from "@/types/runway-condition";
 import { useQuery } from "@tanstack/react-query";
 import {
   Button,
@@ -9,6 +9,7 @@ import {
   DatePicker,
   Form,
   Input,
+  Modal,
   Radio,
   RadioChangeEvent,
   Row,
@@ -204,9 +205,14 @@ export default function RunwayConditionCreate() {
 
   const [checkedFields, setCheckedFields] = useState<string[]>([]);
 
+  const [CreateResponse, setCreateResponse] = useState<RunwayConditionCreateResponse | null>(null);
+
   console.log(checkedFields, "checkedFields");
 
   const [notificationFieldValues, setNotificationFieldValues] = useState<Partial<Record<NotificationType, string>>>({});
+
+  const [FinalRCRModalOpen, setFinalRCRModalOpen] = useState(false);
+  const [finalRCRModalIsEnglish, setFinalRCRModalIsEnglish] = useState(false);
 
   const { id } = useParams();
   const isCreateMode = id === "create";
@@ -215,6 +221,8 @@ export default function RunwayConditionCreate() {
 
   console.log(notificationFieldValues, "notificationFieldValues");
 
+
+  console.log(CreateResponse, "CreateResponse");
 
 
 
@@ -298,6 +306,17 @@ export default function RunwayConditionCreate() {
 
     return () => clearInterval(interval); // очищаем при размонтировании
   }, []);
+
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Runway condition created successfully!");
+      // router.push("/");
+    }
+  }, [isSuccess]);
+
+
+
 
   const steps = [
     {
@@ -471,7 +490,7 @@ export default function RunwayConditionCreate() {
               Какие процедуры по улучшению состояния ВПП были применены{" "}
             </h1>
             <h2 className="mb-4 flex  gap-2 text-lg">Время применения:{" "}
-              <Form.Item className="mb-0" name={"applicationTime"}  rules={[{ required: true, message: "Обязательное поле" }]}>
+              <Form.Item className="mb-0" name={"applicationTime"} rules={[{ required: true, message: "Обязательное поле" }]}>
                 <DatePicker placeholder="Выберите дату" showTime format={"YYYY-MM-DD HH:mm:ss"} />
               </Form.Item>
               {/* <span>{currentTime}</span> */}
@@ -531,21 +550,16 @@ export default function RunwayConditionCreate() {
                     <Col span={24}>
                       <div className="ml-6">
                         <Form.Item rules={[{ required: true, message: "Обязательное поле" }]} name={["details", "chemicalType"]}>
-                          
-                          <Radio.Group 
-                           className="flex flex-col !text-lg">
-                            <Radio  value="HARD">Жидкая</Radio>
+                          <Radio.Group
+                            className="flex flex-col !text-lg">
+                            <Radio value="HARD">Жидкая</Radio>
                             <Radio value="LIQUID">Твердая</Radio>
                           </Radio.Group>
                         </Form.Item>
                       </div>
                     </Col>
                   )}
-                  {/* <Col span={24}>
-                    <Radio value={ProcedureType.SAND_APPLICATION} className="text-lg">
-                      Песок
-                    </Radio>
-                  </Col> */}
+
                   <Col span={24}>
                     <Radio value={ProcedureType.BRUSHING} className="text-lg">
                       Щеточ
@@ -676,7 +690,15 @@ export default function RunwayConditionCreate() {
       };
 
       console.log("Final processed payload:", processedValues);
-      mutate(RequestMock);
+      mutate(RequestMock, {
+        onSuccess(data, variables, context) {
+          if (data) {
+            setCreateResponse(data)
+            setFinalRCRModalOpen(true);
+
+          }
+        },
+      });
     } catch (error) {
       console.error("Error processing form values:", error);
     }
@@ -686,12 +708,6 @@ export default function RunwayConditionCreate() {
     setValue(e.target.value);
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Runway condition created successfully!");
-      router.push("/");
-    }
-  }, [isSuccess]);
 
 
 
@@ -806,6 +822,33 @@ export default function RunwayConditionCreate() {
   return (
     <div>
 
+      <Modal centered width={600} title={<div className="flex items-center min-w-52 justify-between pr-8"><p>RCR успешно создан</p> <Radio.Group buttonStyle="solid" value={finalRCRModalIsEnglish == true ? "ENG" : "RU"} onChange={(e) => {
+        setFinalRCRModalIsEnglish(e.target.value === "ENG");
+      }}>
+        <Radio.Button value={"RU"}>RU</Radio.Button>
+        <Radio.Button value={"ENG"}>ENG</Radio.Button>
+      </Radio.Group></div>} maskClosable={false} footer={null} open={FinalRCRModalOpen} onOk={() => { }} onCancel={() => {
+        setFinalRCRModalOpen(false);
+        toast.success("Runway condition created successfully!");
+        router.push("/");
+      }}>
+
+        <div className="flex justify-center">
+          <div className="flex gap-6 flex-col py-6">
+            {
+              finalRCRModalIsEnglish ? <div>
+                <p>{CreateResponse?.data.finalRCR}</p>
+              </div> : <div>
+                <p>{CreateResponse?.data.finalRCRru}</p>
+              </div>
+            }
+
+          </div>
+        </div>
+      </Modal>
+      <Button onClick={() => {
+        toast.success("Runway condition created successfully!");
+      }}>CLick</Button>
       <Steps
         progressDot
         current={currentStep}

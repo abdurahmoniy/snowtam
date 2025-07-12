@@ -74,7 +74,116 @@ export interface ImprovementProcedure {
 export interface RunwayConditionCreateResponse {
   status: string;
   message: string;
-  data: any; // Adjust if you know the response shape
+  data: {
+    id: number;
+    ambientTemperature: number;
+    finalRCR: string;
+    finalRCRru: string;
+    runwayThirds: {
+      id: number;
+      runwayConditionId: number;
+      partNumber: number;
+      surfaceCondition: string;
+      depthMm: number;
+      frictionCoefficient: number;
+      coveragePercentage: number;
+      rwycValue: number;
+      createdAt: string;
+      updatedAt: string;
+    }[];
+    situationalNotifications: {
+      id: number;
+      runwayConditionId: number;
+      notificationType: NotificationType;
+      runwayLengthReductionM: number;
+      additionalDetails: string;
+      createdAt: string;
+      updatedAt: string;
+    }[];
+    improvementProcedures: {
+      id: number;
+      runwayConditionId: number;
+      procedureType: ProcedureType;
+      applicationTime: string;
+      createdAt: string;
+      updatedAt: string;
+    }[];
+    applicationStatus: string;
+    createdBy: {
+      email: string;
+      fullname: string;
+      status: string;
+      position: string;
+      airportDto: {
+        id: number;
+        name: string;
+        initialName: string;
+        airportCode: string;
+        temperature: number;
+        longitude: null;
+        latitude: null;
+        createdAt: string;
+        updatedAt: string;
+        runwayDtos: {
+          id: number;
+          name: string;
+          longitude: string | null;
+          latitude: string | null;
+          length: number | null;
+          width: number;
+          runwayDesignation: string;
+          airportDto: null;
+          createdAt: string;
+          updatedAt: string;
+        }[];
+      };
+      role: string[];
+    };
+    deviceDto: {
+      id: number;
+      name: string;
+      createdAt: string;
+      updatedAt: string;
+    };
+    runwayDto: {
+      id: number;
+      name: string;
+      longitude: string;
+      latitude: string;
+      length: null;
+      width: number;
+      runwayDesignation: string;
+      airportDto: {
+        id: number;
+        name: string;
+        initialName: string;
+        airportCode: string;
+        temperature: number;
+        longitude: null;
+        latitude: null;
+        createdAt: string;
+        updatedAt: string;
+        runwayDtos: {
+          id: number;
+          name: string;
+          longitude: string;
+          latitude: string;
+          length: null | number;
+          width: number;
+          runwayDesignation: string;
+          airportDto: null;
+          createdAt: string;
+          updatedAt: string;
+        }[];
+      };
+      createdAt: string;
+      updatedAt: string;
+    };
+    initialName: null;
+    position: null;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 export interface RunwayCondition {
