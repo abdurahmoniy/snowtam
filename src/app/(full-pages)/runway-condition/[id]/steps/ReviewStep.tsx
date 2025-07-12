@@ -426,10 +426,10 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
             <Descriptions.Item styles={{}} style={{
             }} key={idx} label={t.part} className="">
               <div className="space-y-1">
-                <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">Нет данных</Text>}</div>
-                <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">Нет данных</Text>}</div>
-                <div><strong>Глубина:</strong> {t.depth ?? <Text type="secondary">Нет данных</Text>}</div>
-                <div><strong>Состояние поверхности:</strong> {t.surface ?? <Text type="secondary">Нет данных</Text>}</div>
+                <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">N/R</Text>}</div>
+                <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">N/R</Text>}</div>
+                <div><strong>Глубина:</strong> {t.depth ?? <Text type="secondary">N/R</Text>}</div>
+                <div><strong>Состояние поверхности:</strong> {t.surface ?? <Text type="secondary">N/R</Text>}</div>
               </div>
             </Descriptions.Item>
           ))}
@@ -467,10 +467,10 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
             {thirds.map((t, idx) => (
               <Card key={idx} title={t.part} className="flex-1 border-[2px] border-[#00000060] dark:border-[#2c48c4cc]" size="small" bordered >
                 <div className="space-y-2">
-                  <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">Нет данных</Text>}</div>
-                  <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">Нет данных</Text>}</div>
-                  <div><strong>Глубина:</strong> {t.depth ?? <Text type="secondary">Нет данных</Text>}</div>
-                  <div><strong>Состояние поверхности:</strong> {sostoyanie[t.surface as any] ?? <Text type="secondary">Нет данных</Text>}</div>
+                  <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">N/R</Text>}</div>
+                  <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">N/R</Text>}</div>
+                  <div><strong>Глубина:</strong> {t.depth ?? <Text type="secondary">N/R</Text>}</div>
+                  <div><strong>Состояние поверхности:</strong> {sostoyanie[t.surface as any] ?? <Text type="secondary">N/R</Text>}</div>
                 </div>
               </Card>
             ))}
@@ -485,30 +485,30 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
           <Descriptions bordered column={1} size="small">
             <Descriptions.Item label="Типы уведомлений">
               {form2.notificationType ? form2.notificationType.length > 0
-                ? form2.notificationType.map((type) => NotificationNames[type as NotificationType]).join(", ") : "Нет данных"
-                : <Text type="secondary">Нет данных</Text>}
+                ? form2.notificationType.map((type) => NotificationNames[type as NotificationType]).join(", ") : "N/R"
+                : <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
             <Descriptions.Item label="Сокращение длины ВПП">
-              {(form2.notification_details[NotificationType.REDUCED_RUNWAY_LENGTH]) ?? <Text type="secondary">Нет данных</Text>}
+              {(form2.notification_details[NotificationType.REDUCED_RUNWAY_LENGTH]) ?? <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
             <Descriptions.Item label="Сугробы на ВПП (Л/П)">
               {(!!form2.notification_details[NotificationType.DEBRIS_ON_RUNWAY_LEFT] && !!form2.notification_details[NotificationType.DEBRIS_ON_RUNWAY_RIGHT])
                 ? `${form2.notification_details[NotificationType.DEBRIS_ON_RUNWAY_LEFT] ?? 0} / ${form2.notification_details[NotificationType.DEBRIS_ON_RUNWAY_RIGHT] ?? 0} м`
-                : <Text type="secondary">Нет данных</Text>}
+                : <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
             <Descriptions.Item label="Сугробы на РД (Л/П)">
               {(form2.notification_details[NotificationType.DEBRIS_ON_TAXIWAY_LEFT] !== null && form2.notification_details[NotificationType.DEBRIS_ON_TAXIWAY_RIGHT] !== null)
                 ? `${form2.notification_details[NotificationType.DEBRIS_ON_TAXIWAY_LEFT] ?? 0} / ${form2.notification_details[NotificationType.DEBRIS_ON_TAXIWAY_RIGHT] ?? 0} м`
-                : <Text type="secondary">Нет данных</Text>}
+                : <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
             <Descriptions.Item label="Плохое состояние перрона">
-              {form2.notification_details[NotificationType.APRON_POOR_CONDITION] ?? <Text type="secondary">Нет данных</Text>}
+              {form2.notification_details[NotificationType.APRON_POOR_CONDITION] ?? <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
             <Descriptions.Item label="Плохое состояние РД">
-              {form2.notification_details[NotificationType.TAXIWAY_POOR_CONDITION] ?? <Text type="secondary">Нет данных</Text>}
+              {form2.notification_details[NotificationType.TAXIWAY_POOR_CONDITION] ?? <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
             <Descriptions.Item label="Другое">
-              {form2.notification_details[NotificationType.OTHER] ?? <Text type="secondary">Нет данных</Text>}
+              {form2.notification_details[NotificationType.OTHER] ?? <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
           </Descriptions>
         </Card>
@@ -539,7 +539,7 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
               <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
                 <div className="space-y-1">
                   <div><strong>Тип(ы):</strong> {proc.improvementProcedure ? ProcedureNames[proc.improvementProcedure] : <Text type="secondary">Нет</Text>}</div>
-                  <div><strong>Тип химии:</strong> {proc?.details?.chemicalType && (ChemicalType[proc?.details?.chemicalType] ?? <Text type="secondary">Нет данных</Text>)}</div>
+                  <div><strong>Тип химии:</strong> {proc?.details?.chemicalType && (ChemicalType[proc?.details?.chemicalType] ?? <Text type="secondary">N/R</Text>)}</div>
                 </div>
               </Descriptions.Item>
             ))}
@@ -547,7 +547,7 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
               {AllDevicesData.data?.data.find(d => d.id === form3["device-of-implementation"])?.name
                 // form3["device-of-implementation"] 
 
-                ?? <Text type="secondary">Нет данных</Text>}
+                ?? <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
           </Descriptions>
         </Card>
