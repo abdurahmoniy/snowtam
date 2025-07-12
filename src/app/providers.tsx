@@ -9,7 +9,6 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "../contexts/ThemeContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  // Ensure QueryClient is not recreated on every render
   const [queryClient] = useState(() => new QueryClient());
 
   return (
