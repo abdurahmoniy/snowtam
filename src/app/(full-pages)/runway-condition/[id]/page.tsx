@@ -541,11 +541,11 @@ export default function RunwayConditionCreate() {
                       </div>
                     </Col>
                   )}
-                  <Col span={24}>
+                  {/* <Col span={24}>
                     <Radio value={ProcedureType.SAND_APPLICATION} className="text-lg">
                       Песок
                     </Radio>
-                  </Col>
+                  </Col> */}
                   <Col span={24}>
                     <Radio value={ProcedureType.BRUSHING} className="text-lg">
                       Щеточ
