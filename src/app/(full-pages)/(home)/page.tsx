@@ -57,7 +57,7 @@ export default function Home() {
           <Alert type="error" message="Failed to load data" description={RWConditionData.error?.message || ''} />
         ) : RWConditionData.data?.data && RWConditionData.data.data.length > 0 ? (
           <Table
-            className="!min-w-[1400px]"
+            className="!min-w-[1100px]"
             rowKey="id"
             dataSource={RWConditionData.data.data as RunwayCondition[]}
             columns={[

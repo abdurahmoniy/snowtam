@@ -9,6 +9,7 @@ import {
   DatePicker,
   Form,
   Input,
+  InputNumber,
   Modal,
   Radio,
   RadioChangeEvent,
@@ -345,6 +346,9 @@ export default function RunwayConditionCreate() {
                                       ? [{ validator: customNumberValidator }]
                                       : []),
                                   ] : []}
+                                  normalize={(value) => {
+                                    return value.replace(/\D/g, ""); // Удаляет все НЕ цифры
+                                  }}
                                 >
                                   <Input
                                     value={notificationFieldValues[item.field] || ""}
@@ -383,6 +387,9 @@ export default function RunwayConditionCreate() {
                                           ? [{ validator: customNumberValidator }]
                                           : []),
                                       ] : []}
+                                      normalize={(value) => {
+                                        return value.replace(/\D/g, ""); // Удаляет все НЕ цифры
+                                      }}
                                     >
                                       <Input
                                         size="small" style={{ width: 60 }} suffix={sf.suffix || ""} />
@@ -438,6 +445,7 @@ export default function RunwayConditionCreate() {
                                         ? [{ validator: customNumberValidator }]
                                         : []),
                                     ] : []}
+                                    normalize={(value) => value.replace(/\d/g, "")}
                                   >
                                     <Input
                                       size="small"
@@ -509,8 +517,14 @@ export default function RunwayConditionCreate() {
                       <Form.Item rules={[{
                         required: true,
                         message: "Обязательное поле"
-                      }]} name={["details", `coefficient${item}`]}>
-                        <Input min={0} max={"99"} maxLength={2} type="number" className="w-16 h-16 text-center flex justify-center text-lg" />
+                      }]} name={["details", `coefficient${item}`]} className="flex items-center justify-center">
+                        <InputNumber  min={0}
+                          max={1}
+                          step={0.1}
+                          defaultValue={0.5}
+                          className="w-16 h-16 text-center flex justify-center text-lg items-center" maxLength={2} type="number"
+
+                        />
                       </Form.Item>
                     </div>
                   ))}
@@ -619,6 +633,10 @@ export default function RunwayConditionCreate() {
     });
 
 
+    console.log(processedNotificationTypes, "processedNotificationTypes");
+
+
+
     const RequestMock: RunwayConditionCreateRequest = {
       // reportDateTime: dayjs(FormValuesState.form3["date-of-implementation"]).format('YYYY-MM-DD HH:mm:ss'),
       deviceForImprovement: FormValuesState.form3["device-of-implementation"] as any,
@@ -649,7 +667,6 @@ export default function RunwayConditionCreate() {
         frictionCoefficient: Number(FormValuesState.form3.details.coefficient2),
         temperatureCelsius: 0,
         coveragePercentage: Number(FormValuesState.form1.coveragePercentage2)
-
       }, {
         depthMm: Number(FormValuesState.form1.depth3),
         partNumber: 3,
@@ -661,10 +678,10 @@ export default function RunwayConditionCreate() {
 
       }],
       situationalNotifications: processedNotificationTypes.map((item) => ({
-        additionalDetails: item == NotificationType.OTHER ? String(FormValuesState.form2.notification_details?.[`${item}`]) || "" : String(FormValuesState.form2.notification_details?.[`${item}`]) || "",
+        additionalDetails: item == NotificationType.OTHER ? String(FormValuesState.form2.notification_details?.[`${item}`]) || "" : !!FormValuesState.form2.notification_details?.[`${item}`] ? String(FormValuesState.form2.notification_details?.[`${item}`]) : "",
         notificationType: item,
         runwayConditionId: 0,
-        runwayLengthReductionM: Number(FormValuesState.form2.notification_details?.[`${item}`]),
+        runwayLengthReductionM: Number(FormValuesState.form2.notification_details?.[`${item}`] ?? 0),
       })),
       runwayId: Number(FormValuesState.form1.VPP),
       initialName: String(FormValuesState.form1.initials),
@@ -672,7 +689,11 @@ export default function RunwayConditionCreate() {
       temperature: Number(FormValuesState.form1.temperature),
     };
 
+    console.log(RequestMock, "RequestMock");
+
     setRunWayData(JSON.stringify([RequestMock]));
+
+
 
     try {
       const allFormValues = form.getFieldsValue(true);
