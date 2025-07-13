@@ -464,7 +464,7 @@ const RunwayThird = ({
   );
 };
 
-const NewRunWay3 = ({ form }: { form: FormInstance }) => {
+const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: boolean }) => {
   const [currentTime, setCurrentTime] = useState(dayjs().format("YYYY-MM-DD HH:mm:ss"));
 
   const [coverageType, setCoverageType] = useState(1);
@@ -519,7 +519,6 @@ const NewRunWay3 = ({ form }: { form: FormInstance }) => {
 
   useEffect(() => {
     const values = form.getFieldsValue();
-
     setThirds({
       values: [
         values.runwayConditionType1 ?? null,
@@ -542,16 +541,24 @@ const NewRunWay3 = ({ form }: { form: FormInstance }) => {
         values.depth3 ?? ""
       ]
     });
+    if (isCreateMode) {
 
-    form.setFieldsValue({
-      airport: UserData.data?.data?.airportDto.name,
-      datetime: dayjs().format("YYYY-MM-DD HH:mm"),
-      VPP: UserData.data?.data.airportDto.runwayDtos[0].id,
-      temperature: UserData.data?.data.airportDto.temperature,
-      initials: UserData.data?.data.airportDto.initialName,
-      position: UserData.data?.data.position
-    });
-  }, [UserData.data?.data.airportDto]);
+
+
+      form.setFieldsValue({
+        airport: UserData.data?.data?.airportDto.name,
+        datetime: dayjs().format("YYYY-MM-DD HH:mm"),
+        VPP: UserData.data?.data.airportDto.runwayDtos[0].id,
+        temperature: UserData.data?.data.airportDto.temperature,
+        initials: UserData.data?.data.airportDto.initialName,
+        position: UserData.data?.data.position
+      });
+    }
+    else {
+        
+    }
+
+  }, [UserData.data?.data.airportDto, isCreateMode]);
 
 
 
@@ -601,19 +608,19 @@ const NewRunWay3 = ({ form }: { form: FormInstance }) => {
           <div className="flex items-center justify-between">
             <div className="flex w-[150px]">Температура окр. среды:</div>
             <Form.Item layout="horizontal" label="" name={"temperature"} className="mb-0 w-[250px]" >
-              <Input readOnly suffix="°C"></Input>
+              <Input suffix="°C"></Input>
             </Form.Item>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex w-[150px]">Инициалы:</div>
             <Form.Item layout="horizontal" label="" name={"initials"} className="mb-0 w-[250px]">
-              <Input readOnly></Input>
+              <Input ></Input>
             </Form.Item>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex w-[150px]">Должность:</div>
             <Form.Item layout="horizontal" label="" name={"position"} className="mb-0 w-[250px]">
-              <Input readOnly></Input>
+              <Input ></Input>
             </Form.Item>
           </div>
         </div>

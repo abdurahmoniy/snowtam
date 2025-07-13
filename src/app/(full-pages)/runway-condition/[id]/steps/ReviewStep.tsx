@@ -285,9 +285,11 @@ import { NotificationType, ProcedureType } from "@/consts/data";
 import { useUserMe } from "@/hooks/use-me";
 import { getAllDevices } from "@/services/device.services";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Card, Descriptions, Form, Input, Select, Typography } from "antd";
+import { Button, Card, Descriptions, Form, FormInstance, Input, Select, Typography } from "antd";
+import dayjs from "dayjs";
 import { ArrowLeftFromLine, MoveLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 const { Title, Text } = Typography;
 
 interface ReviewStepProps {
@@ -325,11 +327,14 @@ interface ReviewStepProps {
       RCR: string | null;
     };
   };
+  formInstance: FormInstance
 }
 
-const ReviewStep = ({ values }: ReviewStepProps) => {
+const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
   const { form1, form2, form3 } = values;
   const router = useRouter();
+  const [currentTime, setCurrentTime] = useState(dayjs().format("YYYY-MM-DD HH:mm:ss"));
+
 
   const { id } = useParams();
   const isCreateMode = id === "create";
@@ -412,6 +417,18 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
 
 
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = dayjs().format("YYYY-MM-DD HH:mm");
+      setCurrentTime(now);
+      formInstance.setFieldsValue({ datetime: now }); // ⬅️ добавлено!
+    }, 1000);
+
+    return () => clearInterval(interval); // очищаем при размонтировании
+  }, []);
+
+
+
 
   return (
     <div className="space-y-6">
@@ -437,7 +454,7 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
       </Card> */}
       <div className="flex gap-4">
         <Card title="Общие сведения" className="" size="small" bordered >
-          <div className="flex flex-col gap-2 mb-4">
+          {/* <div className="flex flex-col gap-2 mb-4">
             <Form.Item layout="horizontal" label="Аэродром" initialValue={UserData.data?.data?.airportDto.name} name={"airport"} className="mb-0">
               <Input readOnly></Input>
             </Form.Item >
@@ -459,6 +476,49 @@ const ReviewStep = ({ values }: ReviewStepProps) => {
             <Form.Item layout="horizontal" label="Должность" name={"position"} className="mb-0">
               <Input readOnly></Input>
             </Form.Item>
+          </div> */}
+          <div className="flex flex-col gap-2 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex w-[150px]">Аэродром:</div>
+              <Form.Item layout="horizontal" label="" initialValue={UserData.data?.data?.airportDto.name} name={"airport"} className="mb-0 w-[250px]">
+                <Input readOnly></Input>
+              </Form.Item >
+
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex w-[150px]">Дата/Время:</div>
+              <Form.Item layout="horizontal" label="" name={"datetime"} className="mb-0 w-[250px]">
+                <Input readOnly value={currentTime}></Input>
+              </Form.Item>
+
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex w-[150px]">ВПП:</div>
+              <Form.Item layout="horizontal" label="" name={"VPP"} className="mb-0 w-[250px]">
+                <Select options={UserData.data?.data.airportDto.runwayDtos.map(i => ({
+                  label: i.runwayDesignation,
+                  value: i.id
+                }))}></Select>
+              </Form.Item>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex w-[150px]">Температура окр. среды:</div>
+              <Form.Item layout="horizontal" label="" name={"temperature"} className="mb-0 w-[250px]" >
+                <Input suffix="°C"></Input>
+              </Form.Item>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex w-[150px]">Инициалы:</div>
+              <Form.Item layout="horizontal" label="" name={"initials"} className="mb-0 w-[250px]">
+                <Input ></Input>
+              </Form.Item>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex w-[150px]">Должность:</div>
+              <Form.Item layout="horizontal" label="" name={"position"} className="mb-0 w-[250px]">
+                <Input ></Input>
+              </Form.Item>
+            </div>
           </div>
         </Card>
         <Card title="Состояние ВПП по третям" className="flex-grow">
