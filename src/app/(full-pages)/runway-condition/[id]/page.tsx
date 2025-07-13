@@ -260,9 +260,9 @@ export default function RunwayConditionCreate() {
       "device-of-implementation": null,
       details: {
         chemicalType: undefined,
-        coefficient1: 50,
-        coefficient2: 50,
-        coefficient3: 50
+        coefficient1: 0.5,
+        coefficient2: 0.5,
+        coefficient3: 0.5
       },
       improvementProcedure: null,
       applicationTime: null
@@ -724,9 +724,9 @@ export default function RunwayConditionCreate() {
     if (isCreateMode) {
       form.setFieldsValue({
         details: {
-          coefficient1: 50,
-          coefficient2: 50,
-          coefficient3: 50,
+          coefficient1: 0.5,
+          coefficient2: 0.5,
+          coefficient3: 0.5,
         },
       });
     }
