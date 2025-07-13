@@ -38,8 +38,6 @@ export default function Home() {
   })
 
 
-
-
   const localStorageItem = localStorage.getItem("user");
   const user = localStorageItem ? JSON.parse(localStorageItem) : null;
 
@@ -59,23 +57,34 @@ export default function Home() {
           <Alert type="error" message="Failed to load data" description={RWConditionData.error?.message || ''} />
         ) : RWConditionData.data?.data && RWConditionData.data.data.length > 0 ? (
           <Table
+            className="!min-w-[1400px]"
             rowKey="id"
             dataSource={RWConditionData.data.data as RunwayCondition[]}
             columns={[
-              { title: 'Код аэропорта', dataIndex: 'airportCode', key: 'airportCode' },
+              {
+                title: 'Код аэропорта', dataIndex: 'airportCode', key: 'airportCode', render(value, record, index) {
+                  return <div>{record.runwayDto.airportDto.airportCode}</div>
+                },
+                align: "center"
+              },
               {
                 title: 'Обозначение ВПП',
-                dataIndex: 'initials', key: 'initials'
+                dataIndex: 'initials', key: 'initials',
+
+                align: "center",
+                render(value, record, index) {
+                  return <div>{record.runwayDto.runwayDesignation}</div>
+                }
               },
               {
                 title: 'Дата и время отчёта', dataIndex: 'createdAt', key: 'createdAt', render: (date) => {
                   return date.length != 0 ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : date
                 }
               },
-              { title: 'Температура воздуха', dataIndex: 'ambientTemperature', key: 'ambientTemperature' },
-              { title: 'Трети', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds) => thirds?.length || 0 },
-              { title: 'Ситуационные уведомления', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => n?.length || 0 },
-              { title: 'Процедуры улучшения', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => p?.length || 0 },
+              { title: 'Температура воздуха', dataIndex: 'ambientTemperature', key: 'ambientTemperature', align: "center" },
+              { title: 'Трети', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds) => thirds?.length || 0, align: "center" },
+              { title: 'Ситуационные уведомления', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => n?.length || 0, align: "center" },
+              { title: 'Процедуры улучшения', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => p?.length || 0, align: "center" },
             ]}
             pagination={{
               current: page,

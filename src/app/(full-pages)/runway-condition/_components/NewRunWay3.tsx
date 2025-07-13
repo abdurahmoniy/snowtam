@@ -555,7 +555,7 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
       });
     }
     else {
-        
+
     }
 
   }, [UserData.data?.data.airportDto, isCreateMode]);
@@ -608,19 +608,19 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
           <div className="flex items-center justify-between">
             <div className="flex w-[150px]">Температура окр. среды:</div>
             <Form.Item layout="horizontal" label="" name={"temperature"} className="mb-0 w-[250px]" >
-              <Input suffix="°C"></Input>
+              <Input readOnly suffix="°C"></Input>
             </Form.Item>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex w-[150px]">Инициалы:</div>
             <Form.Item layout="horizontal" label="" name={"initials"} className="mb-0 w-[250px]">
-              <Input ></Input>
+              <Input readOnly ></Input>
             </Form.Item>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex w-[150px]">Должность:</div>
             <Form.Item layout="horizontal" label="" name={"position"} className="mb-0 w-[250px]">
-              <Input ></Input>
+              <Input readOnly ></Input>
             </Form.Item>
           </div>
         </div>

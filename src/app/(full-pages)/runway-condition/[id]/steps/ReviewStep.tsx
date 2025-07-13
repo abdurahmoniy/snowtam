@@ -285,7 +285,7 @@ import { NotificationType, ProcedureType } from "@/consts/data";
 import { useUserMe } from "@/hooks/use-me";
 import { getAllDevices } from "@/services/device.services";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Card, Descriptions, Form, FormInstance, Input, Select, Typography } from "antd";
+import { Button, Card, Descriptions, Form, FormInstance, Input, Radio, Select, Typography } from "antd";
 import dayjs from "dayjs";
 import { ArrowLeftFromLine, MoveLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -325,6 +325,7 @@ interface ReviewStepProps {
       },
       improvementProcedure: ProcedureType | null;
       RCR: string | null;
+      RCRru: string | null;
     };
   };
   formInstance: FormInstance
@@ -333,13 +334,16 @@ interface ReviewStepProps {
 const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
   const { form1, form2, form3 } = values;
   const router = useRouter();
-  const [currentTime, setCurrentTime] = useState(dayjs().format("YYYY-MM-DD HH:mm:ss"));
+  const [currentTime, setCurrentTime] = useState(dayjs().format("DD-MM HH:mm"));
 
 
   const { id } = useParams();
   const isCreateMode = id === "create";
 
   const UserData = useUserMe();
+  const [finalRCRModalIsEnglish, setFinalRCRModalIsEnglish] = useState(false);
+
+
 
   const thirds = [
     {
@@ -419,7 +423,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = dayjs().format("YYYY-MM-DD HH:mm");
+      const now = dayjs().format("DD-MM HH:mm");
       setCurrentTime(now);
       formInstance.setFieldsValue({ datetime: now }); // ⬅️ добавлено!
     }, 1000);
@@ -427,6 +431,8 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
     return () => clearInterval(interval); // очищаем при размонтировании
   }, []);
 
+
+  console.log(thirds, "thirds");
 
 
 
@@ -452,6 +458,29 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
           ))}
         </Descriptions>
       </Card> */}
+      {!isCreateMode && (
+
+        <Card title={
+          // "RCR:"
+          <div className="flex items-center min-w-52 justify-between pr-8"><p>RCR:</p> <Radio.Group buttonStyle="solid" value={finalRCRModalIsEnglish == true ? "ENG" : "RU"} onChange={(e) => {
+            setFinalRCRModalIsEnglish(e.target.value === "ENG");
+          }}>
+            <Radio.Button value={"RU"}>RU</Radio.Button>
+            <Radio.Button value={"ENG"}>ENG</Radio.Button>
+          </Radio.Group></div>
+        }>
+          <Descriptions bordered column={1} size="small">
+            {
+              finalRCRModalIsEnglish ? <div>
+                <p>{form3?.RCR}</p>
+              </div> : <div>
+                <p>{form3?.RCRru}</p>
+              </div>
+            }
+          </Descriptions>
+        </Card>
+      )}
+
       <div className="flex gap-4">
         <Card title="Общие сведения" className="" size="small" bordered >
           {/* <div className="flex flex-col gap-2 mb-4">
@@ -486,7 +515,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex w-[150px]">Дата/Время:</div>
+              <div className="flex w-[150px]">Дата/Время: <br />(ДД-ММ ЧЧ:ММ)</div>
               <Form.Item layout="horizontal" label="" name={"datetime"} className="mb-0 w-[250px]">
                 <Input readOnly value={currentTime}></Input>
               </Form.Item>
@@ -495,28 +524,29 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
             <div className="flex items-center justify-between">
               <div className="flex w-[150px]">ВПП:</div>
               <Form.Item layout="horizontal" label="" name={"VPP"} className="mb-0 w-[250px]">
-                <Select options={UserData.data?.data.airportDto.runwayDtos.map(i => ({
+                {/* <Select  options={UserData.data?.data.airportDto.runwayDtos.map(i => ({
                   label: i.runwayDesignation,
                   value: i.id
-                }))}></Select>
+                }))}></Select> */}
+                <Input readOnly></Input>
               </Form.Item>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex w-[150px]">Температура окр. среды:</div>
               <Form.Item layout="horizontal" label="" name={"temperature"} className="mb-0 w-[250px]" >
-                <Input suffix="°C"></Input>
+                <Input readOnly suffix="°C"></Input>
               </Form.Item>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex w-[150px]">Инициалы:</div>
               <Form.Item layout="horizontal" label="" name={"initials"} className="mb-0 w-[250px]">
-                <Input ></Input>
+                <Input readOnly ></Input>
               </Form.Item>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex w-[150px]">Должность:</div>
               <Form.Item layout="horizontal" label="" name={"position"} className="mb-0 w-[250px]">
-                <Input ></Input>
+                <Input readOnly></Input>
               </Form.Item>
             </div>
           </div>
@@ -529,7 +559,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
                 <div className="space-y-2">
                   <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">N/R</Text>}</div>
                   <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">N/R</Text>}</div>
-                  <div><strong>Глубина:</strong> {t.depth ?? <Text type="secondary">N/R</Text>}</div>
+                  <div><strong>Глубина:</strong> {!!t.depth ? t.depth : <Text type="secondary">N/R</Text>}</div>
                   <div><strong>Состояние поверхности:</strong> {sostoyanie[t.surface as any] ?? <Text type="secondary">N/R</Text>}</div>
                 </div>
               </Card>
@@ -537,6 +567,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
           </div>
         </Card>
       </div>
+
 
 
 
@@ -612,14 +643,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
           </Descriptions>
         </Card>
       )}
-      {!isCreateMode && (
 
-        <Card title="RCR:">
-          <Descriptions bordered column={1} size="small">
-            <div>{form3.RCR}</div>
-          </Descriptions>
-        </Card>
-      )}
     </div>
   );
 };
