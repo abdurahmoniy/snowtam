@@ -135,7 +135,7 @@ const RunwayThird = ({
         <div className="">
           {value !== 6 && <Form.Item name={`depth${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
             <InputNumber size="large"
-              
+
               value={depth === "N/R" ? undefined : Number(depth)}
               placeholder="Глубина"
               // onChange={(e) => {
@@ -187,7 +187,7 @@ const RunwayThird = ({
                   formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
                 }
               }}
-              
+
 
               className="text-center" /></Form.Item>}
         </div>
@@ -465,6 +465,8 @@ const RunwayThird = ({
 };
 
 const NewRunWay3 = ({ form }: { form: FormInstance }) => {
+  const [currentTime, setCurrentTime] = useState(dayjs().format("YYYY-MM-DD HH:mm:ss"));
+
   const [coverageType, setCoverageType] = useState(1);
   const [thirds, setThirds] = useState<{
     values: (RunwayConditionType | null)[];
@@ -543,7 +545,7 @@ const NewRunWay3 = ({ form }: { form: FormInstance }) => {
 
     form.setFieldsValue({
       airport: UserData.data?.data?.airportDto.name,
-      datetime: dayjs(UserData.data?.data.airportDto.createdAt).format("YYYY-MM-DD HH:mm"),
+      datetime: dayjs().format("YYYY-MM-DD HH:mm"),
       VPP: UserData.data?.data.airportDto.runwayDtos[0].id,
       temperature: UserData.data?.data.airportDto.temperature,
       initials: UserData.data?.data.airportDto.initialName,
@@ -556,32 +558,64 @@ const NewRunWay3 = ({ form }: { form: FormInstance }) => {
   console.log(UserData.data?.data, "UserData");
 
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = dayjs().format("YYYY-MM-DD HH:mm");
+      setCurrentTime(now);
+      form.setFieldsValue({ datetime: now }); // ⬅️ добавлено!
+    }, 1000);
+
+    return () => clearInterval(interval); // очищаем при размонтировании
+  }, []);
+
+
+
 
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-between">
         <div className="flex flex-col gap-2 mb-4">
-          <Form.Item layout="horizontal" label="Аэродром" initialValue={UserData.data?.data?.airportDto.name} name={"airport"} className="mb-0">
-            <Input readOnly></Input>
-          </Form.Item >
-          <Form.Item layout="horizontal" label="Дата/Время" name={"datetime"} className="mb-0">
-            <Input readOnly></Input>
-          </Form.Item>
-          <Form.Item layout="horizontal" label="ВПП" name={"VPP"} className="mb-0">
-            <Select options={UserData.data?.data.airportDto.runwayDtos.map(i => ({
-              label: i.name + " | " + i.runwayDesignation,
-              value: i.id
-            }))}></Select>
-          </Form.Item>
-          <Form.Item layout="horizontal" label="Температура окр. среды" name={"temperature"} className="mb-0" >
-            <Input readOnly suffix="°C"></Input>
-          </Form.Item>
-          <Form.Item layout="horizontal" label="Инициалы" name={"initials"} className="mb-0">
-            <Input readOnly></Input>
-          </Form.Item>
-          <Form.Item layout="horizontal" label="Должность" name={"position"} className="mb-0">
-            <Input readOnly></Input>
-          </Form.Item>
+          <div className="flex items-center justify-between">
+            <div className="flex w-[150px]">Аэродром:</div>
+            <Form.Item layout="horizontal" label="" initialValue={UserData.data?.data?.airportDto.name} name={"airport"} className="mb-0 w-[250px]">
+              <Input readOnly></Input>
+            </Form.Item >
+
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex w-[150px]">Дата/Время:</div>
+            <Form.Item layout="horizontal" label="" name={"datetime"} className="mb-0 w-[250px]">
+              <Input readOnly value={currentTime}></Input>
+            </Form.Item>
+
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex w-[150px]">ВПП:</div>
+            <Form.Item layout="horizontal" label="" name={"VPP"} className="mb-0 w-[250px]">
+              <Select options={UserData.data?.data.airportDto.runwayDtos.map(i => ({
+                label: i.runwayDesignation,
+                value: i.id
+              }))}></Select>
+            </Form.Item>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex w-[150px]">Температура окр. среды:</div>
+            <Form.Item layout="horizontal" label="" name={"temperature"} className="mb-0 w-[250px]" >
+              <Input readOnly suffix="°C"></Input>
+            </Form.Item>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex w-[150px]">Инициалы:</div>
+            <Form.Item layout="horizontal" label="" name={"initials"} className="mb-0 w-[250px]">
+              <Input readOnly></Input>
+            </Form.Item>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex w-[150px]">Должность:</div>
+            <Form.Item layout="horizontal" label="" name={"position"} className="mb-0 w-[250px]">
+              <Input readOnly></Input>
+            </Form.Item>
+          </div>
         </div>
         <div className="mb-4 flex flex-col items-center gap-4 px-4">
           <div className="text-center">Оцените % покрытия загрязнения ВПП для каждой трети ВПП</div>

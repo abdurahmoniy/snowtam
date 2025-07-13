@@ -296,16 +296,6 @@ export default function RunwayConditionCreate() {
     return Promise.reject("Значение должно быть больше 0");
   };
 
-  const [currentTime, setCurrentTime] = useState(dayjs().format("YYYY-MM-DD HH:mm:ss"));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(dayjs().format("YYYY-MM-DD HH:mm:ss"));
-    }, 1000); // обновляем каждую секунду
-
-
-    return () => clearInterval(interval); // очищаем при размонтировании
-  }, []);
 
 
   useEffect(() => {
@@ -846,9 +836,6 @@ export default function RunwayConditionCreate() {
           </div>
         </div>
       </Modal>
-      <Button onClick={() => {
-        toast.success("Runway condition created successfully!");
-      }}>CLick</Button>
       <Steps
         progressDot
         current={currentStep}

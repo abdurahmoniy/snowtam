@@ -30,10 +30,6 @@ export function Sidebar() {
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
 
-    // Uncomment the following line to enable multiple expanded items
-    // setExpandedItems((prev) =>
-    //   prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title],
-    // );
   };
 
   useEffect(() => {
@@ -87,15 +83,6 @@ export function Sidebar() {
                 Dashboard
               </h1>
             </Link>
-
-            {/* <button
-              onClick={toggleSidebar}
-              className="absolute left-3/4 right-4.5 top-1/2 -translate-y-1/2 text-right"
-            >
-              <span className="sr-only">Menuni yopish</span>
-
-              <ArrowLeftIcon className="ml-auto size-7" />
-            </button> */}
 
           </div>
 

@@ -20,5 +20,10 @@ export const NAV_DATA = [
     title: "Boshqaruv Paneli",
     icon: Icons.HomeIcon,
     url: "/",
+  },
+  {
+    title: "Aeroportlar",
+    icon: Icons.PlaneTakeOffIcon,
+    url: "/airports",
   }
 ];
