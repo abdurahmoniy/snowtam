@@ -573,12 +573,10 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
   }, []);
 
 
-
-
   return (
     <div className="flex flex-col items-center">
-      <div className="flex justify-between">
-        <div className="flex flex-col gap-2 mb-4">
+      <div className="flex justify-between flex-col  items-center lg:flex-row">
+        <div className="flex flex-col gap-2 mb-4 max-w-[400px]">
           <div className="flex items-center justify-between">
             <div className="flex w-[150px]">Аэродром:</div>
             <Form.Item layout="horizontal" label="" initialValue={UserData.data?.data?.airportDto.name} name={"airport"} className="mb-0 w-[250px]">
@@ -662,7 +660,6 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
             исключением, когда выпускается донесение о чистой ВПП)
           </div>
         </div>
-
       </div>
       <div className="grid grid-cols-1 gap-4 px-4 lg:grid-cols-3 md:grid-cols-1">
         {[1, 2, 3].map((thirdNumber, index) => (
