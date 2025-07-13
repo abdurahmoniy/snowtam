@@ -524,11 +524,11 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
             <div className="flex items-center justify-between">
               <div className="flex w-[150px]">ВПП:</div>
               <Form.Item layout="horizontal" label="" name={"VPP"} className="mb-0 w-[250px]">
-                {/* <Select  options={UserData.data?.data.airportDto.runwayDtos.map(i => ({
+                <Select open={false} options={UserData.data?.data.airportDto.runwayDtos.map(i => ({
                   label: i.runwayDesignation,
                   value: i.id
-                }))}></Select> */}
-                <Input readOnly></Input>
+                }))}></Select>
+                {/* <Input readOnly></Input> */}
               </Form.Item>
             </div>
             <div className="flex items-center justify-between">

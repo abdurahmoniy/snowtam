@@ -542,15 +542,12 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
       ]
     });
     if (isCreateMode) {
-
-
-
       form.setFieldsValue({
         airport: UserData.data?.data?.airportDto.name,
-        datetime: dayjs().format("YYYY-MM-DD HH:mm"),
+        datetime: dayjs().format("MM-DD HH:mm"),
         VPP: UserData.data?.data.airportDto.runwayDtos[0].id,
         temperature: UserData.data?.data.airportDto.temperature,
-        initials: UserData.data?.data.airportDto.initialName,
+        initials: UserData.data?.data.fullname,
         position: UserData.data?.data.position
       });
     }
