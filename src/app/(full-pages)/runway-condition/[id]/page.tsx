@@ -14,6 +14,7 @@ import {
   RadioChangeEvent,
   Row,
   Select,
+  Spin,
   Steps
 } from "antd";
 import { useParams, useRouter } from "next/navigation";
@@ -161,6 +162,7 @@ interface Form3Values {
     "chemicalType": ("HARD" | "LIQUID") | undefined
   }
   RCR?: string | null;
+  RCRru?: string | null;
   applicationTime: string | null
   VPP?: number
 }
@@ -320,12 +322,10 @@ export default function RunwayConditionCreate() {
           <h1 className="mb-4 text-lg font-semibold">
             Ситуационной осведомленности.
           </h1>
-          {/* <Form.List name="situationalNotifications">
-            {(fields, { add, remove }) => ( */}
           <div>
             <Form.Item name={"notificationType"}>
-              <Checkbox.Group<string> value={checkedFields} onChange={(value) => {
-                setCheckedFields((value));
+              <Checkbox.Group<string> value={checkedFields} onChange={(value: string[]) => {
+                setCheckedFields(value);
               }} style={{ width: "100%" }}>
                 <Row gutter={[16, 16]}>
                   <Col span={12}>
@@ -481,7 +481,7 @@ export default function RunwayConditionCreate() {
             </h1>
             <h2 className="mb-4 flex  gap-2 text-lg">Время применения:{" "}
               <Form.Item className="mb-0" name={"applicationTime"} rules={[{ required: true, message: "Обязательное поле" }]}>
-                <DatePicker placeholder="Выберите дату" showTime format={"YYYY-MM-DD HH:mm:ss"} />
+                <DatePicker placeholder="Выберите дату" showTime format={"MM-DD HH:mm"} />
               </Form.Item>
               {/* <span>{currentTime}</span> */}
             </h2>
@@ -530,8 +530,8 @@ export default function RunwayConditionCreate() {
                   setChemicalTreatmentChecked(selected === ProcedureType.CHEMICAL_TREATMENT);
                 }}
               >
-                <Row gutter={[0, 8]}>
-                  <Col span={24}>
+                <Row gutter={[0, 8]} className="flex flex-col !w-[340px] !max-w-[340px] !min-w-[340px] overflow-hidden">
+                  <Col span={24} className="">
                     <Radio value={ProcedureType.CHEMICAL_TREATMENT} className="text-lg">
                       Хим. обработка
                     </Radio>
@@ -539,7 +539,7 @@ export default function RunwayConditionCreate() {
                   {chemicalTreatmentChecked && (
                     <Col span={24}>
                       <div className="ml-6">
-                        <Form.Item rules={[{ required: true, message: "Обязательное поле" }]} name={["details", "chemicalType"]}>
+                        <Form.Item className="w-full" rules={[{ required: true, message: "Обязательное поле" }]} name={["details", "chemicalType"]}>
                           <Radio.Group
                             className="flex flex-col !text-lg">
                             <Radio value="HARD">Жидкая</Radio>
@@ -563,8 +563,6 @@ export default function RunwayConditionCreate() {
                 </Row>
               </Radio.Group>
             </Form.Item>
-
-
           </div>
 
         </div>
@@ -583,31 +581,14 @@ export default function RunwayConditionCreate() {
     form.validateFields().then((value) => {
       console.log(value, "next-value");
 
-      // if (currentStep == 2) {
-      //   setFormValuesState({
-      //     ...FormValuesState,
-      //     [`form${currentStep + 1}`]: 
-      //     },
-      //   });
-      // }
-      // else {
-
-      // }
-
       setFormValuesState({
         ...FormValuesState,
         [`form${currentStep + 1}`]: value,
       });
-
-      // if ((currentStep + 1) == 2) {
-      //   return
-      // }
-
       try {
         setCurrentStep(currentStep + 1);
       } catch (error) {
         console.error("Validation failed:", error);
-        // Form validation errors will be displayed automatically by Ant Design
       }
 
     });
@@ -615,9 +596,29 @@ export default function RunwayConditionCreate() {
   const prev = () => {
     setCurrentStep(currentStep - 1);
   };
-  // console.log(FormValuesState.form3["improvementProcedure"][0].procedureType, "procedureType-procedureType");
 
   const handleFinish = async (values: any) => {
+
+
+    const processedNotificationTypes: NotificationType[] = [];
+
+    FormValuesState.form2.notificationType.forEach((type) => {
+      if (type === NotificationType.DEBRIS_ON_RUNWAY) {
+        processedNotificationTypes.push(
+          NotificationType.DEBRIS_ON_RUNWAY_LEFT,
+          NotificationType.DEBRIS_ON_RUNWAY_RIGHT
+        );
+      } else if (type === NotificationType.DEBRIS_ON_TAXIWAY) {
+        processedNotificationTypes.push(
+          NotificationType.DEBRIS_ON_TAXIWAY_LEFT,
+          NotificationType.DEBRIS_ON_TAXIWAY_RIGHT
+        );
+      } else {
+        processedNotificationTypes.push(type);
+      }
+    });
+
+
     const RequestMock: RunwayConditionCreateRequest = {
       // reportDateTime: dayjs(FormValuesState.form3["date-of-implementation"]).format('YYYY-MM-DD HH:mm:ss'),
       deviceForImprovement: FormValuesState.form3["device-of-implementation"] as any,
@@ -659,8 +660,8 @@ export default function RunwayConditionCreate() {
         coveragePercentage: Number(FormValuesState.form1.coveragePercentage3)
 
       }],
-      situationalNotifications: FormValuesState.form2.notificationType.map((item) => ({
-        additionalDetails: item == NotificationType.OTHER ? String(FormValuesState.form2[`${item}`]) : "",
+      situationalNotifications: processedNotificationTypes.map((item) => ({
+        additionalDetails: item == NotificationType.OTHER ? String(FormValuesState.form2.notification_details?.[`${item}`]) || "" : String(FormValuesState.form2.notification_details?.[`${item}`]) || "",
         notificationType: item,
         runwayConditionId: 0,
         runwayLengthReductionM: Number(FormValuesState.form2.notification_details?.[`${item}`]),
@@ -697,12 +698,6 @@ export default function RunwayConditionCreate() {
     }
   };
 
-  const onChange = (e: RadioChangeEvent) => {
-    setValue(e.target.value);
-  };
-
-
-
 
   useEffect(() => {
     if (isCreateMode) {
@@ -717,22 +712,18 @@ export default function RunwayConditionCreate() {
     if (!isCreateMode && RunwayConditionDataById.data) {
       const data = RunwayConditionDataById.data;
 
-      // Подставляем в form'у если нужно
       form.setFieldsValue({
-        // если будешь показывать в inputs (не обязательно)
       });
 
       form.setFieldsValue({
         "airport": data.data.runwayDto.airportDto.name,
-        "datetime": dayjs(data.data.improvementProcedures[0].applicationTime).format('YYYY-MM-DD HH:mm'),
-        "VPP": data.data.runwayDto.id,
+        "datetime": dayjs(data.data.improvementProcedures[0].applicationTime).format('DD-MM HH:mm'),
+        "VPP": data.data.runwayDto.runwayDesignation,
         "temperature": Number(data.data.ambientTemperature),
         "initials": data.data.initialName,
         "position": data.data.position
       });
 
-      console.log(data.data, "data-data");
-      // Переводим runwayThirds -> form1
       const thirds = data.data.runwayThirds || [];
       const getThird = (index: number) => thirds.find(t => t.partNumber === index);
 
@@ -755,7 +746,7 @@ export default function RunwayConditionCreate() {
 
         "airport": data.data.airportCode,
         "datetime": data.data.reportDateTime,
-        "VPP": data.data.runwayDto.id,
+        "VPP": data.data.runwayDto.runwayDesignation,
         "temperature": data.data.ambientTemperature,
         "initials": data.data.initialName,
         "position": data.data.position
@@ -793,7 +784,9 @@ export default function RunwayConditionCreate() {
           coefficient3: data.data.runwayThirds[2]?.frictionCoefficient,
         },
         RCR: data.data.finalRCR,
+        RCRru: data.data.finalRCRru,
         applicationTime: data.data.improvementProcedures?.[0]?.applicationTime ?? null,
+
       };
 
       console.log(data.data.runwayThirds, "data.data.runwayThirds[0]");
@@ -804,7 +797,6 @@ export default function RunwayConditionCreate() {
         form2,
         form3,
       });
-
 
       form.setFieldsValue({
         details: {
@@ -819,7 +811,14 @@ export default function RunwayConditionCreate() {
     }
   }, [RunwayConditionDataById.data, isCreateMode]);
 
+  const isLoadingData = !isCreateMode && RunwayConditionDataById.isLoading;
 
+
+  if (isLoadingData) {
+    return <div className="flex justify-center flex-col items-center p-8 min-w-[1000px] min-h-[500px] gap-5">
+      <Spin size="large" />
+      <p className="text-lg">Загрузка данных...</p></div>;
+  }
 
   return (
     <div>
@@ -844,7 +843,6 @@ export default function RunwayConditionCreate() {
                 <p>{CreateResponse?.data.finalRCRru}</p>
               </div>
             }
-
           </div>
         </div>
       </Modal>
@@ -859,21 +857,19 @@ export default function RunwayConditionCreate() {
         layout="vertical"
         onFinish={handleFinish}
         initialValues={{
-
         }}
         className=""
       >
         {steps[currentStep].content}
         <Form.Item>
           <div className="mt-4 flex justify-between">
-            {currentStep > 0 && (
+            {!isCreateMode || currentStep > 0 && (
               <Button disabled={!isCreateMode} onClick={prev} size="large">
                 Назад
               </Button>
             )}
             <div className="ml-auto flex gap-2">
-              {/* Only show submit on last step */}
-              {currentStep === steps.length - 1 && (
+              {!isCreateMode || currentStep === steps.length - 1 && (
                 <Button
                   type="primary"
                   loading={isPending}
