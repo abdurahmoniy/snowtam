@@ -20,6 +20,9 @@ export interface RunwayConditionCreateRequest {
   improvementProcedures: ImprovementProcedure[];
   runwayId?: number;
   deviceId: number;
+  initialName: string;
+  position: string;
+  temperature: number;
   [key: string]: any;
 }
 
@@ -198,7 +201,6 @@ export interface RunwayCondition {
   remarks: null;
   deviceForImprovement: null | number;
   finalRCR: string;
-  runwayId: number | null;
   runwayThirds: {
     id: number;
     runwayConditionId: number;
@@ -240,4 +242,42 @@ export interface RunwayCondition {
     createdAt: string;
     updatedAt: string;
   };
+  runwayDto: {
+    id: number;
+    name: string;
+    longitude: string;
+    latitude: string;
+    length: null;
+    width: number;
+    runwayDesignation: string;
+    airportDto: {
+      id: number;
+      name: string;
+      initialName: string;
+      airportCode: string;
+      temperature: number;
+      longitude: string;
+      latitude: string;
+      createdAt: string;
+      updatedAt: string;
+      runwayDtos: {
+        id: number;
+        name: string;
+        longitude: string;
+        latitude: string;
+        length: null;
+        width: number;
+        runwayDesignation: string;
+        airportDto: null;
+        createdAt: string;
+        updatedAt: string;
+      }[];
+    };
+    createdAt: string;
+    updatedAt: string;
+  };
+  initialName: string;
+  position: string;
+  createdAt: string;
+  updatedAt: string;
 }

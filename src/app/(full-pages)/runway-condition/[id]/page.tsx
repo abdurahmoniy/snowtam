@@ -311,7 +311,7 @@ export default function RunwayConditionCreate() {
   const steps = [
     {
       title: "Состояние ВПП",
-      content: <NewRunWay3 form={form} />,
+      content: <NewRunWay3 form={form} isCreateMode={isCreateMode} />,
     },
     {
       title: "Ситуационные уведомления",
@@ -572,7 +572,7 @@ export default function RunwayConditionCreate() {
     },
     {
       title: "Общие сведения",
-      content: <ReviewStep values={FormValuesState as any} />,
+      content: <ReviewStep formInstance={form} values={FormValuesState as any} />,
     },
   ];
 
@@ -665,7 +665,10 @@ export default function RunwayConditionCreate() {
         runwayConditionId: 0,
         runwayLengthReductionM: Number(FormValuesState.form2.notification_details?.[`${item}`]),
       })),
-      runwayId: 1
+      runwayId: Number(FormValuesState.form1.VPP),
+      initialName: String(FormValuesState.form1.initials),
+      position: String(FormValuesState.form1.position),
+      temperature: Number(FormValuesState.form1.temperature),
     };
 
     setRunWayData(JSON.stringify([RequestMock]));
@@ -719,6 +722,15 @@ export default function RunwayConditionCreate() {
         // если будешь показывать в inputs (не обязательно)
       });
 
+      form.setFieldsValue({
+        "airport": data.data.runwayDto.airportDto.name,
+        "datetime": dayjs(data.data.improvementProcedures[0].applicationTime).format('YYYY-MM-DD HH:mm'),
+        "VPP": data.data.runwayDto.id,
+        "temperature": Number(data.data.ambientTemperature),
+        "initials": data.data.initialName,
+        "position": data.data.position
+      });
+
       console.log(data.data, "data-data");
       // Переводим runwayThirds -> form1
       const thirds = data.data.runwayThirds || [];
@@ -743,10 +755,10 @@ export default function RunwayConditionCreate() {
 
         "airport": data.data.airportCode,
         "datetime": data.data.reportDateTime,
-        "VPP": data.data.runwayId,
+        "VPP": data.data.runwayDto.id,
         "temperature": data.data.ambientTemperature,
-        "initials": data.data.initials,
-        "position": null
+        "initials": data.data.initialName,
+        "position": data.data.position
       };
 
       // situationalNotifications -> form2
@@ -781,7 +793,7 @@ export default function RunwayConditionCreate() {
           coefficient3: data.data.runwayThirds[2]?.frictionCoefficient,
         },
         RCR: data.data.finalRCR,
-        applicationTime: "",
+        applicationTime: data.data.improvementProcedures?.[0]?.applicationTime ?? null,
       };
 
       console.log(data.data.runwayThirds, "data.data.runwayThirds[0]");
