@@ -60,7 +60,6 @@ export async function GetAllRunWayConditionByPeriod({
 export async function GetRunWayConditionById({
   id
 }:{
-
   id: string;
 }){
   const searchParams = new URLSearchParams();
