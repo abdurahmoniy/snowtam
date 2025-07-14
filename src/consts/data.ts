@@ -17,7 +17,7 @@ export enum NotificationType {
 
 export enum ProcedureType {
   SAND_APPLICATION = "SAND_APPLICATION", // Песок
-  CHEMICAL_TREATMENT = "CHEMICAL_TREATMENT", // Реагенты
+  CHEMICAL_TREATMENT = "CHEMICAL_TREATMENT", // Реагенты // Хим обработка
   HARD = "HARD",
   LIQUID = "LIQUID",
   BRUSHING = "BRUSHING", // Щетки

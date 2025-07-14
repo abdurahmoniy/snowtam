@@ -389,7 +389,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
   const ProcedureNames: Record<ProcedureType | any, string> = {
     [ProcedureType.OTHER]: "Другое",
     [ProcedureType.BRUSHING]: "Щетки",
-    [ProcedureType.CHEMICAL_TREATMENT]: "Реагенты",
+    [ProcedureType.CHEMICAL_TREATMENT]: "Хим обработка",
     [ProcedureType.HARD]: "Жёсткий",
     [ProcedureType.LIQUID]: "Жидкий",
     [ProcedureType.PLOWING]: "Продув",
@@ -659,7 +659,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
               if (proc.procedureType == ProcedureType.HARD || proc.procedureType == ProcedureType.LIQUID) {
                 return <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
                   <div className="space-y-1">
-                    <div><strong>Тип(ы):</strong> {proc ? "Реагенты" : <Text type="secondary">Нет</Text>}</div>
+                    <div><strong>Тип(ы):</strong> {proc ? "Хим обработка" : <Text type="secondary">Нет</Text>}</div>
                     <div><strong>Тип химии:</strong> {ProcedureNames[proc.procedureType] ?? <Text type="secondary">N/R</Text>}</div>
                   </div>
                 </Descriptions.Item>
