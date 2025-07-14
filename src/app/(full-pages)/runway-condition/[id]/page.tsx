@@ -642,21 +642,25 @@ export default function RunwayConditionCreate() {
 
     const processedNotificationTypes: NotificationType[] = [];
 
-    FormValuesState.form2.notificationType.forEach((type) => {
-      if (type === NotificationType.DEBRIS_ON_RUNWAY) {
-        processedNotificationTypes.push(
-          NotificationType.DEBRIS_ON_RUNWAY_LEFT,
-          NotificationType.DEBRIS_ON_RUNWAY_RIGHT
-        );
-      } else if (type === NotificationType.DEBRIS_ON_TAXIWAY) {
-        processedNotificationTypes.push(
-          NotificationType.DEBRIS_ON_TAXIWAY_LEFT,
-          NotificationType.DEBRIS_ON_TAXIWAY_RIGHT
-        );
-      } else {
-        processedNotificationTypes.push(type);
-      }
-    });
+    if (!!FormValuesState.form2.notificationType) {
+      FormValuesState.form2.notificationType.forEach((type) => {
+        if (type === NotificationType.DEBRIS_ON_RUNWAY) {
+          processedNotificationTypes.push(
+            NotificationType.DEBRIS_ON_RUNWAY_LEFT,
+            NotificationType.DEBRIS_ON_RUNWAY_RIGHT
+          );
+        } else if (type === NotificationType.DEBRIS_ON_TAXIWAY) {
+          processedNotificationTypes.push(
+            NotificationType.DEBRIS_ON_TAXIWAY_LEFT,
+            NotificationType.DEBRIS_ON_TAXIWAY_RIGHT
+          );
+        } else {
+          processedNotificationTypes.push(type);
+        }
+      });
+    }
+
+
 
 
     console.log(processedNotificationTypes, "processedNotificationTypes");
