@@ -260,9 +260,9 @@ export default function RunwayConditionCreate() {
       "device-of-implementation": null,
       details: {
         chemicalType: undefined,
-        coefficient1: 0.5,
-        coefficient2: 0.5,
-        coefficient3: 0.5
+        coefficient1: 50,
+        coefficient2: 50,
+        coefficient3: 50
       },
       improvementProcedure: null,
       applicationTime: null
@@ -519,9 +519,9 @@ export default function RunwayConditionCreate() {
                         message: "Обязательное поле"
                       }]} name={["details", `coefficient${item}`]} className="flex items-center justify-center">
                         <InputNumber  min={0}
-                          max={1}
-                          step={0.1}
-                          defaultValue={0.5}
+                          max={100}
+                          step={1}
+                          defaultValue={50}
                           className="w-16 h-16 text-center flex justify-center text-lg items-center" maxLength={2} type="number"
 
                         />
@@ -724,9 +724,9 @@ export default function RunwayConditionCreate() {
     if (isCreateMode) {
       form.setFieldsValue({
         details: {
-          coefficient1: 0.5,
-          coefficient2: 0.5,
-          coefficient3: 0.5,
+          coefficient1: 50,
+          coefficient2: 50,
+          coefficient3: 50,
         },
       });
     }
