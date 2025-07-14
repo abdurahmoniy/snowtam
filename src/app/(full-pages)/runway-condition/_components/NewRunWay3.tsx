@@ -465,7 +465,7 @@ const RunwayThird = ({
 };
 
 const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: boolean }) => {
-  const [currentTime, setCurrentTime] = useState(dayjs().format("YYYY-MM-DD HH:mm:ss"));
+  const [currentTime, setCurrentTime] = useState(dayjs().format("MM-DD HH:mm:ss"));
 
   const [coverageType, setCoverageType] = useState(1);
   const [thirds, setThirds] = useState<{
@@ -564,7 +564,7 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = dayjs().format("YYYY-MM-DD HH:mm");
+      const now = dayjs().format("MM-DD HH:mm");
       setCurrentTime(now);
       form.setFieldsValue({ datetime: now }); // ⬅️ добавлено!
     }, 1000);
@@ -585,7 +585,7 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
 
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex w-[150px]">Дата/Время:</div>
+            <div className="flex w-[150px]">Дата/Время: <br />(ДД-ММ ЧЧ:ММ)</div>
             <Form.Item layout="horizontal" label="" name={"datetime"} className="mb-0 w-[250px]">
               <Input readOnly value={currentTime}></Input>
             </Form.Item>

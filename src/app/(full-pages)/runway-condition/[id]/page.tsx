@@ -155,7 +155,7 @@ interface Form2Values {
 
 interface Form3Values {
   "device-of-implementation": number | null;
-  "improvementProcedure": ProcedureType | null;
+  "improvementProcedure": ProcedureType[] | null;
   "details": {
     "coefficient1": number | undefined,
     "coefficient2": number | undefined,
@@ -445,7 +445,7 @@ export default function RunwayConditionCreate() {
                                         ? [{ validator: customNumberValidator }]
                                         : []),
                                     ] : []}
-                                    normalize={(value) => value.replace(/\d/g, "")}
+                                  // normalize={(value) => value.replace(/\d/g, "")}
                                   >
                                     <Input
                                       size="small"
@@ -518,7 +518,7 @@ export default function RunwayConditionCreate() {
                         required: true,
                         message: "Обязательное поле"
                       }]} name={["details", `coefficient${item}`]} className="flex items-center justify-center">
-                        <InputNumber  min={0}
+                        <InputNumber min={0}
                           max={100}
                           step={1}
                           defaultValue={50}
@@ -533,7 +533,7 @@ export default function RunwayConditionCreate() {
               </div>
             </div>
             <Form.Item name={["improvementProcedure"]}>
-              <Radio.Group
+              {/* <Radio.Group
                 onChange={(e) => {
                   const selected = e.target.value;
                   form.setFieldsValue({
@@ -575,7 +575,34 @@ export default function RunwayConditionCreate() {
                     </Radio>
                   </Col>
                 </Row>
-              </Radio.Group>
+              </Radio.Group> */}
+
+
+              <Checkbox.Group
+                onChange={(checkedValues: ProcedureType[]) => {
+                  setChemicalTreatmentChecked(checkedValues.includes(ProcedureType.CHEMICAL_TREATMENT));
+                }}
+              >
+                <Row className="flex flex-col gap-2 text-lg">
+                  <Checkbox value={ProcedureType.CHEMICAL_TREATMENT}>Хим. обработка</Checkbox>
+                  {chemicalTreatmentChecked && (
+                    <div className="ml-6">
+                      <Form.Item
+                        className="w-full"
+                        name={["details", "chemicalType"]}
+                        rules={[{ required: true, message: "Обязательное поле" }]}
+                      >
+                        <Radio.Group className="flex flex-col">
+                          <Radio value="HARD">Жидкая</Radio>
+                          <Radio value="LIQUID">Твердая</Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                    </div>
+                  )}
+                  <Checkbox value={ProcedureType.BRUSHING}>Щеточ</Checkbox>
+                  <Checkbox value={ProcedureType.PLOWING}>Продув</Checkbox>
+                </Row>
+              </Checkbox.Group>
             </Form.Item>
           </div>
 
@@ -613,7 +640,6 @@ export default function RunwayConditionCreate() {
 
   const handleFinish = async (values: any) => {
 
-
     const processedNotificationTypes: NotificationType[] = [];
 
     FormValuesState.form2.notificationType.forEach((type) => {
@@ -635,8 +661,6 @@ export default function RunwayConditionCreate() {
 
     console.log(processedNotificationTypes, "processedNotificationTypes");
 
-
-
     const RequestMock: RunwayConditionCreateRequest = {
       // reportDateTime: dayjs(FormValuesState.form3["date-of-implementation"]).format('YYYY-MM-DD HH:mm:ss'),
       deviceForImprovement: FormValuesState.form3["device-of-implementation"] as any,
@@ -644,11 +668,10 @@ export default function RunwayConditionCreate() {
       //   applicationTime: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
       //   procedureType: i["improvementProcedure"] == ProcedureType.CHEMICAL_TREATMENT ? i["details"].chemicalType : i["improvementProcedure"],
       // })),
-      improvementProcedures: [{
+      improvementProcedures: FormValuesState.form3.improvementProcedure ? (!!FormValuesState.form3.improvementProcedure.find(i => i == ProcedureType.CHEMICAL_TREATMENT) ? [FormValuesState.form3.details.chemicalType as any, ...FormValuesState.form3.improvementProcedure] : FormValuesState.form3.improvementProcedure)?.map(i => ({
         applicationTime: dayjs(FormValuesState.form3.applicationTime).format('YYYY-MM-DDTHH:mm:ss'),
-        // applicationTime: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
-        procedureType: FormValuesState.form3.improvementProcedure,
-      }],
+        procedureType: i,
+      })) : [],
       deviceId: Number(FormValuesState.form3["device-of-implementation"]),
       runwayDesignation: String(UserData.data?.data.airportDto.runwayDtos.find(i => String(i.id) == FormValuesState.form1.VPP)?.runwayDesignation),
       runwayThirds: [{
@@ -675,7 +698,6 @@ export default function RunwayConditionCreate() {
         frictionCoefficient: Number(FormValuesState.form3.details.coefficient3),
         temperatureCelsius: 0,
         coveragePercentage: Number(FormValuesState.form1.coveragePercentage3)
-
       }],
       situationalNotifications: processedNotificationTypes.map((item) => ({
         additionalDetails: item == NotificationType.OTHER ? String(FormValuesState.form2.notification_details?.[`${item}`]) || "" : !!FormValuesState.form2.notification_details?.[`${item}`] ? String(FormValuesState.form2.notification_details?.[`${item}`]) : "",
@@ -690,6 +712,8 @@ export default function RunwayConditionCreate() {
     };
 
     console.log(RequestMock, "RequestMock");
+
+    // return;
 
     setRunWayData(JSON.stringify([RequestMock]));
 
@@ -791,15 +815,13 @@ export default function RunwayConditionCreate() {
       }
 
       // procedures -> form3
-      const firstProc = data.data.improvementProcedures?.[0];
+      const firstProc = data.data.improvementProcedures;
 
       const form3: Form3Values = {
         "device-of-implementation": Number(data.data.deviceDto.id) ?? null,
-        improvementProcedure: firstProc
-          ? firstProc.procedureType
-          : null,
+        improvementProcedure: data.data.improvementProcedures.filter(i => i.procedureType != ProcedureType.CHEMICAL_TREATMENT).map(i => (i.procedureType)),
         details: {
-          chemicalType: firstProc?.procedureType as any,
+          chemicalType: "HARD",
           coefficient1: data.data.runwayThirds[0]?.frictionCoefficient,
           coefficient2: data.data.runwayThirds[1]?.frictionCoefficient,
           coefficient3: data.data.runwayThirds[2]?.frictionCoefficient,
@@ -811,7 +833,6 @@ export default function RunwayConditionCreate() {
       };
 
       console.log(data.data.runwayThirds, "data.data.runwayThirds[0]");
-
 
       setFormValuesState({
         form1,
@@ -844,7 +865,7 @@ export default function RunwayConditionCreate() {
   return (
     <div>
 
-      <Modal centered width={600} title={<div className="flex items-center min-w-52 justify-between pr-8"><p>RCR успешно создан</p> <Radio.Group buttonStyle="solid" value={finalRCRModalIsEnglish == true ? "ENG" : "RU"} onChange={(e) => {
+      <Modal centered width={600} closeIcon={null} title={<div className="flex items-center min-w-52 justify-between pr-2"><p>RCR успешно создан</p> <Radio.Group buttonStyle="solid" value={finalRCRModalIsEnglish == true ? "ENG" : "RU"} onChange={(e) => {
         setFinalRCRModalIsEnglish(e.target.value === "ENG");
       }}>
         <Radio.Button value={"RU"}>RU</Radio.Button>
@@ -865,6 +886,13 @@ export default function RunwayConditionCreate() {
               </div>
             }
           </div>
+        </div>
+
+        <div className="flex justify-between w-full items-center">
+          <Button onClick={() => {
+            setFinalRCRModalOpen(false);
+          }}>Назад</Button>
+          <Button type="primary">Отправить</Button>
         </div>
       </Modal>
       <Steps
@@ -909,11 +937,11 @@ export default function RunwayConditionCreate() {
               )}
             </div>
           </div>
-          {isSuccess && (
+          {/* {isSuccess && (
             <div className="mt-2 text-green-600">
               Runway condition created successfully!
             </div>
-          )}
+          )} */}
           {isError && (
             <div className="mt-2 text-red-600">
               {error?.message || "Error creating runway condition."}
