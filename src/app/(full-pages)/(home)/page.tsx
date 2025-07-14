@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Alert, Button, DatePicker, Empty, Popover, Spin, Table } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GetAllRunWayCondition, GetAllRunWayConditionByPeriod } from "../../../services/runway-condition.services";
 import type { RunwayCondition } from "../../../types/runway-condition";
 
@@ -24,6 +24,24 @@ export default function Home() {
   console.log(RunWayData, "RunWayData");
 
   const [rangePickerValue, setRangePickerValue] = useState<any>([dayjs().subtract(7, 'day'), dayjs()]);
+
+
+  const [tableSize, setTableSize] = useState<'small' | 'middle' | 'large'>('middle');
+
+  useEffect(() => {
+    const updateTableSize = () => {
+      if (window.innerWidth < 992) {
+        setTableSize('small'); // планшеты и меньше
+      } else {
+        setTableSize('middle'); // desktop
+      }
+    };
+
+    updateTableSize(); // начальное состояние
+
+    window.addEventListener('resize', updateTableSize);
+    return () => window.removeEventListener('resize', updateTableSize);
+  }, []);
 
 
   const RWConditionData = useQuery({
@@ -57,7 +75,8 @@ export default function Home() {
           <Alert type="error" message="Failed to load data" description={RWConditionData.error?.message || ''} />
         ) : RWConditionData.data?.data && RWConditionData.data.data.length > 0 ? (
           <Table
-            className="!min-w-[1250px]"
+            size={tableSize}
+            className={tableSize == 'small' ? "!min-w-[600px]" : "!min-w-[1200px]"}
             rowKey="id"
             dataSource={RWConditionData.data.data as RunwayCondition[]}
             columns={[
