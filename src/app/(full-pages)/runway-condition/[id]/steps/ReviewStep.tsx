@@ -141,13 +141,16 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = dayjs().format("DD-MM HH:mm");
-      setCurrentTime(now);
-      formInstance.setFieldsValue({ datetime: now }); // ⬅️ добавлено!
-    }, 1000);
+    if (isCreateMode) {
+      const interval = setInterval(() => {
+        const now = dayjs().format("DD-MM HH:mm");
+        setCurrentTime(now);
+        formInstance.setFieldsValue({ datetime: now }); // ⬅️ добавлено!
+      }, 1000);
+      return () => clearInterval(interval); // очищаем при размонтировании
 
-    return () => clearInterval(interval); // очищаем при размонтировании
+    }
+
   }, []);
 
 
@@ -204,9 +207,9 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
           <Descriptions bordered column={1} size="small">
             {
               finalRCRModalIsEnglish ? <div>
-                <p>{form3?.RCR}</p>
+                <p style={{ whiteSpace: "pre-line" }}>{form3?.RCR}</p>
               </div> : <div>
-                <p>{form3?.RCRru}</p>
+                <p style={{ whiteSpace: "pre-line" }}>{form3?.RCRru}</p>
               </div>
             }
           </Descriptions>
@@ -335,7 +338,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
             </Descriptions.Item>
           </Descriptions>
         </Card>
-        {form3.details.coefficient1 == null ? null : <Card title="Коэффициенты сцепления">
+        {(form3.details.coefficient1 == null || form3.details.coefficient1 == "N/R") ? null : <Card title="Коэффициенты сцепления">
           <div className="max-w-[300px]">
             <h3>Измеренный коэффициент сцепления</h3>
             <div className="flex gap-3 py-2">

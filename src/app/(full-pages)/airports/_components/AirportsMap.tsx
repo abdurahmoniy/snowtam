@@ -159,7 +159,8 @@ export default function AirportsMap({
                                     cx={x}
                                     cy={y}
                                     r={2.5}
-                                    fill={selectedWarehouse?.id == w.id ? "#36463a" : "#FF6B6B"}
+
+                                    fill={(w.id == 22 || w.id == 9) ? "#36be00" : "#FF6B6B"}
                                     stroke="#FFF"
                                     strokeWidth={0.5}
                                     style={{ cursor: "pointer" }}
