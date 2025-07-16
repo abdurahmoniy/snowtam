@@ -9,6 +9,7 @@ import { GetAllRunWayCondition, GetAllRunWayConditionByPeriod } from "../../../s
 import type { RunwayCondition } from "../../../types/runway-condition";
 
 import useLocalStorage from "use-local-storage";
+import Loading from "@/components/Loading";
 
 function truncateText(text: string, maxLength = 12) {
   if (!text) return '';
@@ -68,21 +69,25 @@ export default function Home() {
           Создать
         </Button>
       </div>
-      <div className="mt-6 flex justify-center">
+      <div className="mt-6 flex justify-center items-start">
         {RWConditionData.isLoading ? (
-          <Spin size="large" />
+          // <Spin size="large" />
+          <div className="flex justify-center items-start">
+            <Loading/>
+          </div>
         ) : RWConditionData.isError ? (
           <Alert type="error" message="Failed to load data" description={RWConditionData.error?.message || ''} />
         ) : RWConditionData.data?.data && RWConditionData.data.data.length > 0 ? (
           <Table
-            size={tableSize}
-            className={tableSize == 'small' ? "!min-w-[600px]" : "!min-w-[1200px]"}
+            size={"large"}
+            className={[tableSize == 'small' ? "!min-w-[600px]" : "!min-w-[1200px] !text-lg"].join(' ')}
+
             rowKey="id"
             dataSource={RWConditionData.data.data as RunwayCondition[]}
             columns={[
               {
                 title: 'Код аэропорта', dataIndex: 'airportCode', key: 'airportCode', render(value, record, index) {
-                  return <div>{record.runwayDto.airportDto.airportCode}</div>
+                  return <div className=" !text-lg">{record.runwayDto.airportDto.airportCode}</div>
                 },
                 align: "center"
               },
@@ -92,18 +97,25 @@ export default function Home() {
 
                 align: "center",
                 render(value, record, index) {
-                  return <div>{record.runwayDto.runwayDesignation}</div>
+                  return <div className="!text-lg">{record.runwayDto.runwayDesignation}</div>
                 }
               },
               {
                 title: 'Дата и время отчёта', dataIndex: 'createdAt', key: 'createdAt', render: (date) => {
-                  return date.length != 0 ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : date
+                  return <div className="!text-lg">{date.length != 0 ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : date}</div>
                 }
               },
-              { title: 'Температура воздуха', dataIndex: 'ambientTemperature', key: 'ambientTemperature', align: "center" },
-              { title: 'Трети', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds) => thirds?.length || 0, align: "center" },
-              { title: 'Ситуационные уведомления', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => n?.length || 0, align: "center" },
-              { title: 'Процедуры улучшения', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => p?.length || 0, align: "center" },
+              {
+                title: 'Температура воздуха', dataIndex: 'ambientTemperature', key: 'ambientTemperature', align: "center", render(value, record, index) {
+                  return <div className="!text-lg">{value}</div>
+                },
+              },
+              {
+                title: 'Трети', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds) => <div className="!text-lg">{thirds?.length || 0}</div>, align: "center",
+              },
+
+              { title: 'Ситуационные уведомления', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => <div className="!text-lg">{n?.length || 0}</div>, align: "center" },
+              { title: 'Процедуры улучшения', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => <div className="!text-lg">{p?.length || 0}</div>, align: "center" },
             ]}
             pagination={{
               current: page,

@@ -1,282 +1,3 @@
-// "use client";
-
-// import { RunwayConditionCreateRequest } from "@/types/runway-condition";
-// import { Card, Descriptions, List, Space, Typography } from "antd";
-
-// const { Title, Text } = Typography;
-
-// interface ReviewStepProps {
-//   values: RunwayConditionCreateRequest;
-// }
-
-// const ReviewStep = ({ values }: ReviewStepProps) => {
-//   return (
-//     <div className="space-y-6">
-//       <Title level={4}>Review Runway Condition Report</Title>
-
-//       {/* Basic Information */}
-//       {/* <Card title="Basic Information">
-//         <Descriptions column={2}>
-//           <Descriptions.Item label="Airport Code">
-//             {values.airportCode || <Text type="secondary">Not provided</Text>}
-//           </Descriptions.Item>
-//           <Descriptions.Item label="Runway Designation">
-//             {values.runwayDesignation || (
-//               <Text type="secondary">Not provided</Text>
-//             )}
-//           </Descriptions.Item>
-//           <Descriptions.Item label="Report Date/Time">
-//             {values.reportDateTime ? (
-//               new Date(values.reportDateTime).toLocaleString()
-//             ) : (
-//               <Text type="secondary">Not provided</Text>
-//             )}
-//           </Descriptions.Item>
-//           <Descriptions.Item label="Ambient Temperature">
-//             {values.ambientTemperature !== null ? (
-//               `${values.ambientTemperature}°C`
-//             ) : (
-//               <Text type="secondary">Not provided</Text>
-//             )}
-//           </Descriptions.Item>
-//           <Descriptions.Item label="Initials">
-//             {values.initials || <Text type="secondary">Not provided</Text>}
-//           </Descriptions.Item>
-//           <Descriptions.Item label="RWYC Code">
-//             {values.rwycCode || <Text type="secondary">Not provided</Text>}
-//           </Descriptions.Item>
-//           <Descriptions.Item label="Overall Condition Code">
-//             {values.overallConditionCode !== null ? (
-//               values.overallConditionCode
-//             ) : (
-//               <Text type="secondary">Not provided</Text>
-//             )}
-//           </Descriptions.Item>
-//         </Descriptions>
-//       </Card> */}
-
-//       {/* Runway Thirds */}
-//       <Card title="Runway Thirds Conditions">
-//         <List
-//           dataSource={values.runwayThirds || []}
-//           renderItem={(third, index) => (
-//             <List.Item key={index}>
-//               <Space direction="vertical" style={{ width: "100%" }}>
-//                 <Text strong>Third {third.partNumber}</Text>
-//                 <Descriptions column={2} size="small">
-//                   <Descriptions.Item label="Coverage">
-//                     {third.contaminationCoverage || (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </Descriptions.Item>
-//                   <Descriptions.Item label="Surface Condition">
-//                     {third.surfaceCondition || (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </Descriptions.Item>
-//                   <Descriptions.Item label="Depth (mm)">
-//                     {third.depthMm !== null ? (
-//                       third.depthMm
-//                     ) : (
-//                       <Text type="secondary">Not applicable</Text>
-//                     )}
-//                   </Descriptions.Item>
-//                   <Descriptions.Item label="Friction Coefficient">
-//                     {third.frictionCoefficient !== null ? (
-//                       third.frictionCoefficient
-//                     ) : (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </Descriptions.Item>
-//                   <Descriptions.Item label="RWYC Value">
-//                     {third.rwycValue !== null ? (
-//                       third.rwycValue
-//                     ) : (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </Descriptions.Item>
-//                   <Descriptions.Item label="Temperature (°C)">
-//                     {third.temperatureCelsius !== null ? (
-//                       third.temperatureCelsius
-//                     ) : (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </Descriptions.Item>
-//                 </Descriptions>
-//               </Space>
-//             </List.Item>
-//           )}
-//         />
-//       </Card>
-
-//       {/* Situational Notifications */}
-//       {values.situationalNotifications?.length > 0 && (
-//         <Card title="Situational Notifications">
-//           <List
-//             dataSource={values.situationalNotifications}
-//             renderItem={(notification, index) => (
-//               <List.Item key={index}>
-//                 <Space direction="vertical">
-//                   <Text strong>Notification {index + 1}</Text>
-//                   <div>
-//                     <Text>Type: </Text>
-//                     {notification.notificationType ? (
-//                       Array.isArray(notification.notificationType) ? (
-//                         <Text>{notification.notificationType.join(", ")}</Text>
-//                       ) : (
-//                         <Text>{notification.notificationType}</Text>
-//                       )
-//                     ) : (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </div>
-//                   <div>
-//                     <Text>Runway Length Reduction: </Text>
-//                     {notification.runwayLengthReductionM !== null ? (
-//                       <Text>{notification.runwayLengthReductionM}m</Text>
-//                     ) : (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </div>
-//                   {notification.additionalDetails && (
-//                     <div>
-//                       <Text>Additional Details: </Text>
-//                       <Text>{notification.additionalDetails}</Text>
-//                     </div>
-//                   )}
-//                 </Space>
-//               </List.Item>
-//             )}
-//           />
-//         </Card>
-//       )}
-
-//       {/* Improvement Procedures */}
-//       {values.improvementProcedures?.length > 0 && (
-//         <Card title="Improvement Procedures">
-//           <List
-//             dataSource={values.improvementProcedures}
-//             renderItem={(procedure, index) => (
-//               <List.Item key={index}>
-//                 <Space direction="vertical">
-//                   <Text strong>Procedure {index + 1}</Text>
-//                   <div>
-//                     <Text>Type: </Text>
-//                     {procedure.procedureType ? (
-//                       Array.isArray(procedure.procedureType) ? (
-//                         <Text>{procedure.procedureType.join(", ")}</Text>
-//                       ) : (
-//                         <Text>{procedure.procedureType}</Text>
-//                       )
-//                     ) : (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </div>
-//                   <div>
-//                     <Text>Application Time: </Text>
-//                     {procedure.applicationTime ? (
-//                       <Text>
-//                         {new Date(procedure.applicationTime).toLocaleString()}
-//                       </Text>
-//                     ) : (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </div>
-//                   <div>
-//                     <Text>Effectiveness Rating: </Text>
-//                     {procedure.effectivenessRating !== null ? (
-//                       <Text>{procedure.effectivenessRating}</Text>
-//                     ) : (
-//                       <Text type="secondary">Not provided</Text>
-//                     )}
-//                   </div>
-//                 </Space>
-//               </List.Item>
-//             )}
-//           />
-//         </Card>
-//       )}
-
-//       {/* Remarks */}
-//       {values.remarks && (
-//         <Card title="Remarks">
-//           <Text>{values.remarks}</Text>
-//         </Card>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default ReviewStep;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 "use client";
@@ -285,7 +6,7 @@ import { NotificationType, ProcedureType } from "@/consts/data";
 import { useUserMe } from "@/hooks/use-me";
 import { getAllDevices } from "@/services/device.services";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Card, Descriptions, Form, FormInstance, Input, Radio, Select, Typography } from "antd";
+import { Button, Card, Descriptions, Form, FormInstance, Input, InputNumber, Radio, Select, Typography } from "antd";
 import dayjs from "dayjs";
 import { ArrowLeftFromLine, MoveLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -390,8 +111,8 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
     [ProcedureType.OTHER]: "Другое",
     [ProcedureType.BRUSHING]: "Щетки",
     [ProcedureType.CHEMICAL_TREATMENT]: "Хим обработка",
-    [ProcedureType.HARD]: "Жёсткий",
-    [ProcedureType.LIQUID]: "Жидкий",
+    [ProcedureType.HARD]: "Твердый",
+    [ProcedureType.LIQUID]: "Жидкая",
     [ProcedureType.PLOWING]: "Продув",
     [ProcedureType.SAND_APPLICATION]: "Песок",
 
@@ -406,10 +127,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
     "MOISTURIZE_SNOW": "Мокрый снег",
     "HOARFROST": "Иней"
   }
-  const ChemicalType = {
-    "HARD": "Жёсткий",
-    "LIQUID": "Жидкий"
-  }
+
 
 
   const AllDevicesData = useQuery({
@@ -436,18 +154,18 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
   console.log(thirds, "thirds");
 
 
-  console.log((form3.improvementProcedure 
-            ? 
-            (!!form3.improvementProcedure.find(i => i == ProcedureType.CHEMICAL_TREATMENT) 
-            ? 
-              [...form3.improvementProcedure.filter(i => i != ProcedureType.CHEMICAL_TREATMENT), form3.details.chemicalType as any] 
-              : 
-              form3.improvementProcedure)?.map(i => ({
-              applicationTime: dayjs(form3.applicationTime).format('YYYY-MM-DDTHH:mm:ss'),
-              procedureType: i,
-            })) 
-            : []), "AAAAAAAAA");
-  
+  console.log((form3.improvementProcedure
+    ?
+    (!!form3.improvementProcedure.find(i => i == ProcedureType.CHEMICAL_TREATMENT)
+      ?
+      [...form3.improvementProcedure.filter(i => i != ProcedureType.CHEMICAL_TREATMENT), form3.details.chemicalType as any]
+      :
+      form3.improvementProcedure)?.map(i => ({
+        applicationTime: dayjs(form3.applicationTime).format('YYYY-MM-DDTHH:mm:ss'),
+        procedureType: i,
+      }))
+    : []), "AAAAAAAAA");
+
 
 
   return (
@@ -617,7 +335,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
             </Descriptions.Item>
           </Descriptions>
         </Card>
-        <Card title="Коэффициенты сцепления">
+        {form3.details.coefficient1 == null ? null : <Card title="Коэффициенты сцепления">
           <div className="max-w-[300px]">
             <h3>Измеренный коэффициент сцепления</h3>
             <div className="flex gap-3 py-2">
@@ -627,60 +345,95 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
                     required: true,
                     message: "Обязательное поле"
                   }]} name={["details", `coefficient${item}`]}>
-                    <Input readOnly={true} min={0} max={"99"} maxLength={2} type="number" className="w-16 h-16 text-center flex justify-center text-lg" />
+                    <InputNumber
+                      min={0}
+                      max={100}
+                      step={1}
+                      className="flex h-16 w-16 items-center justify-center text-center text-lg"
+                      maxLength={2}
+                      type="number"
+                      readOnly
+                    />
                   </Form.Item>
                 </div>
               ))}
             </div>
             <p>Коэффициент сцепления включает в ситуационный раздел представлении (RCR) в SNOWTAM</p>
           </div>
-        </Card>
+        </Card>}
+
       </div>
 
       {form3?.improvementProcedure && (
+        // <Card title="Процедуры улучшения">
+        //   <Descriptions bordered column={1} size="small">
+        //     {(form3.improvementProcedure 
+        //     ? 
+        //     (!!form3.improvementProcedure.find(i => i == ProcedureType.CHEMICAL_TREATMENT) 
+        //     ? 
+        //       [...form3.improvementProcedure.filter(i => i != ProcedureType.CHEMICAL_TREATMENT), form3.details.chemicalType as any] 
+        //       : 
+        //       form3.improvementProcedure)?.map(i => ({
+        //       applicationTime: dayjs(form3.applicationTime).format('YYYY-MM-DDTHH:mm:ss'),
+        //       procedureType: i,
+        //     })) 
+        //     : [])
+
+
+
+        //     .filter(i => i.procedureType != ProcedureType.CHEMICAL_TREATMENT).map((proc, idx) => {
+
+        //       if (proc.procedureType == ProcedureType.HARD || proc.procedureType == ProcedureType.LIQUID) {
+        //         return <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
+        //           <div className="space-y-1">
+        //             <div><strong>Тип(ы):</strong> {proc ? "Хим обработка" : <Text type="secondary">Нет</Text>}</div>
+        //             <div><strong>Тип химии:</strong> {ProcedureNames[proc.procedureType] ?? <Text type="secondary">N/R</Text>}</div>
+        //           </div>
+        //         </Descriptions.Item>
+        //       }
+
+        //       return (
+        //         <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
+        //           <div className="space-y-1">
+        //             <div><strong>Тип(ы):</strong> {proc ? ProcedureNames[proc.procedureType] : <Text type="secondary">Нет</Text>}</div>
+        //             <div><strong>Тип химии:</strong> {(<Text type="secondary">N/R</Text>)}</div>
+        //           </div>
+        //         </Descriptions.Item>
+        //       )
+        //     })}
+        //     <Descriptions.Item label="Устройство">
+        //       {AllDevicesData.data?.data.find(d => d.id === form3["device-of-implementation"])?.name
+
+        //         ?? <Text type="secondary">N/R</Text>}
+        //     </Descriptions.Item>
+        //   </Descriptions>
+        // </Card>
         <Card title="Процедуры улучшения">
           <Descriptions bordered column={1} size="small">
-            {(form3.improvementProcedure 
-            ? 
-            (!!form3.improvementProcedure.find(i => i == ProcedureType.CHEMICAL_TREATMENT) 
-            ? 
-              [...form3.improvementProcedure.filter(i => i != ProcedureType.CHEMICAL_TREATMENT), form3.details.chemicalType as any] 
-              : 
-              form3.improvementProcedure)?.map(i => ({
-              applicationTime: dayjs(form3.applicationTime).format('YYYY-MM-DDTHH:mm:ss'),
-              procedureType: i,
-            })) 
-            : [])
-            
-            
-            
-            .filter(i => i.procedureType != ProcedureType.CHEMICAL_TREATMENT).map((proc, idx) => {
+            <Descriptions.Item label="Процедуры">
+              {form3.improvementProcedure.length === 0 ? (
+                <Text type="secondary">N/R</Text>
+              ) : (
+                form3.improvementProcedure
+                  .map((type) => {
+                    if (type === ProcedureType.CHEMICAL_TREATMENT) {
+                      const chemicalType = ProcedureNames[form3.details.chemicalType || ""] ?? "N/R";
+                      return `${ProcedureNames[type]} (${chemicalType})`;
+                    }
+                    return ProcedureNames[type];
+                  })
+                  .join(", ")
+              )}
+            </Descriptions.Item>
 
-              if (proc.procedureType == ProcedureType.HARD || proc.procedureType == ProcedureType.LIQUID) {
-                return <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
-                  <div className="space-y-1">
-                    <div><strong>Тип(ы):</strong> {proc ? "Хим обработка" : <Text type="secondary">Нет</Text>}</div>
-                    <div><strong>Тип химии:</strong> {ProcedureNames[proc.procedureType] ?? <Text type="secondary">N/R</Text>}</div>
-                  </div>
-                </Descriptions.Item>
-              }
-
-              return (
-                <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
-                  <div className="space-y-1">
-                    <div><strong>Тип(ы):</strong> {proc ? ProcedureNames[proc.procedureType] : <Text type="secondary">Нет</Text>}</div>
-                    <div><strong>Тип химии:</strong> {(<Text type="secondary">N/R</Text>)}</div>
-                  </div>
-                </Descriptions.Item>
-              )
-            })}
             <Descriptions.Item label="Устройство">
               {AllDevicesData.data?.data.find(d => d.id === form3["device-of-implementation"])?.name
-
                 ?? <Text type="secondary">N/R</Text>}
             </Descriptions.Item>
           </Descriptions>
         </Card>
+
+
       )}
 
     </div>

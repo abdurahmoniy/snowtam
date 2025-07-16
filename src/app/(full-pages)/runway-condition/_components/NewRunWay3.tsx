@@ -94,7 +94,10 @@ const RunwayThird = ({
                   if (value == 6) {
                     formInstance.setFieldsValue({
                       [`coveragePercentage${orderIndex}`]: 100,
+                      [`depth${orderIndex}`]: 'N/R',
+                      [`surfaceCondition${orderIndex}`]: 'DRY',
                     });
+
                   }
                 }
               }}
@@ -133,9 +136,9 @@ const RunwayThird = ({
         </Form.Item>
 
         <div className="">
-          {value !== 6 && <Form.Item name={`depth${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
+          {<Form.Item name={`depth${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
             <InputNumber size="large"
-
+              disabled={value === 6}
               value={depth === "N/R" ? undefined : Number(depth)}
               placeholder="Глубина"
               // onChange={(e) => {
@@ -192,9 +195,10 @@ const RunwayThird = ({
               className="text-center" /></Form.Item>}
         </div>
 
-        {value !== 6 && (
+        {(
           <Form.Item name={`surfaceCondition${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
             <Select
+              disabled={value === 6}
               size="large"
               placeholder="Состояние"
               onSelect={(val) => onSurfaceConditionChange(val as SurfaceConditionType)}
@@ -218,8 +222,10 @@ const RunwayThird = ({
                   onValueChange(6);
                   onCoverageChange(100);
                   formInstance.setFieldsValue({
-                    [`runwayConditionType${orderIndex}`]: 6,
-                    [`coveragePercentage${orderIndex}`]: 100,
+                   [`coveragePercentage${orderIndex}`]: 100,
+                      [`depth${orderIndex}`]: 'N/R',
+                      [`surfaceCondition${orderIndex}`]: 'DRY',
+                      [`runwayConditionType${orderIndex}`]: 6
                   });
                 }}
               >
@@ -280,11 +286,11 @@ const RunwayThird = ({
 
       <Divider />
 
-      <Row gutter={16} className="flex !flex-row !md:flex-row !lg:flex-col">
-        <Col xs={24} md={8} className="border-r">
+      <Row gutter={16} className="!flex md:flex-wrap">
+        <Col xs={24} md={8} className="border-r flex flex-col md:w-[45%] ">
           <div className="text-lg font-semibold text-center sm:text-left">Стоячая вода</div>
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col gap-4 sm:flex-row flex-wrap">
+            <div className="flex flex-col items-center gap-2 flex-wrap">
               <div className="">Слякоть</div>
               <div
                 className="cursor-pointer border px-4 py-2 border-[#0000007e]"
@@ -314,12 +320,12 @@ const RunwayThird = ({
             </div>
           </div>
         </Col>
-        <Col xs={24} md={8} className="border-r">
+        <Col xs={24} md={8} className="border-r flex flex-col md:w-[45%] ">
           <div className="text-lg font-semibold text-center sm:text-left">
-            Мокрий снег или Сухой снег
+            Мокрый снег или Сухой снег
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col gap-4 sm:flex-row flex-wrap">
+            <div className="flex flex-col items-center gap-2 w-[65%]">
               <div className="">Слякоть</div>
               <div
                 className="cursor-pointer border px-4 py-2 border-[#0000007e]"
@@ -348,9 +354,9 @@ const RunwayThird = ({
           </div>
           <div className="text-xs text-gray-6 text-center sm:text-left">25/50/75/100</div>
         </Col>
-        <Col xs={24} md={8}>
+        <Col xs={24} md={8} className="flex flex-col md:w-[45%] ">
           <div className="text-lg font-semibold text-center sm:text-left">
-            Сухой/мокрий снег на уплот. снегу
+            Сухой/мокрый снег на уплот. снегу
           </div>
           <div className="flex justify-center">
             <div className="flex flex-col items-center gap-2">
@@ -400,7 +406,7 @@ const RunwayThird = ({
               </div>
             </div>
           </div>
-          <div className="font-semibold text-center sm:text-left">Уплетненный снег</div>
+          <div className="font-semibold text-center sm:text-left">Уплотненный снег</div>
           <div className="flex flex-col gap-2 text-center sm:text-left">
             <div className="">Выше -15°C</div>
             <div className="flex items-center justify-center gap-2 sm:justify-start">
@@ -465,7 +471,7 @@ const RunwayThird = ({
 };
 
 const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: boolean }) => {
-  const [currentTime, setCurrentTime] = useState(dayjs().format("MM-DD HH:mm:ss"));
+  const [currentTime, setCurrentTime] = useState(dayjs().format("DD-MM HH:mm"));
 
   const [coverageType, setCoverageType] = useState(1);
   const [thirds, setThirds] = useState<{
@@ -544,7 +550,7 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
     if (isCreateMode) {
       form.setFieldsValue({
         airport: UserData.data?.data?.airportDto.name,
-        datetime: dayjs().format("MM-DD HH:mm"),
+        datetime: dayjs().format("DD-MM HH:mm"),
         VPP: UserData.data?.data.airportDto.runwayDtos[0].id,
         temperature: UserData.data?.data.airportDto.temperature,
         initials: UserData.data?.data.fullname,
@@ -564,7 +570,7 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = dayjs().format("MM-DD HH:mm");
+      const now = dayjs().format("DD-MM HH:mm");
       setCurrentTime(now);
       form.setFieldsValue({ datetime: now }); // ⬅️ добавлено!
     }, 1000);
