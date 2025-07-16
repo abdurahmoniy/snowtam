@@ -11,6 +11,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { BellIcon } from "./icons";
+import { useQuery } from "@tanstack/react-query";
+import { getAllNotificationData } from "@/services/notification.services";
 
 const notificationList = [
   {
@@ -44,6 +46,14 @@ export function Notification() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDotVisible, setIsDotVisible] = useState(true);
   const isMobile = useIsMobile();
+
+  const NotificationsData = useQuery({
+    queryKey: ["notification-data"],
+    queryFn: () => getAllNotificationData()
+  })
+
+  console.log(NotificationsData.data, "NotificationsData");
+  
 
   return (
     <Dropdown

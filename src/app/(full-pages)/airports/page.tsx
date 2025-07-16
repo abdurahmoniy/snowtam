@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Button, DatePicker, Empty, Popover, Spin, Table } from "antd";
+import { Alert, Button, DatePicker, Empty, Modal, Popover, Radio, Spin, Table } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,6 +24,11 @@ export default function AirportsPage() {
 
   const [RunWayData, setRunWayData] = useLocalStorage("runway-condition-draft", null);
   console.log(RunWayData, "RunWayData");
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+    const [finalRCRModalIsEnglish, setFinalRCRModalIsEnglish] = useState(false);
+  
 
   const [rangePickerValue, setRangePickerValue] = useState<any>([dayjs().subtract(7, 'day'), dayjs()]);
 
@@ -75,47 +80,69 @@ export default function AirportsPage() {
   };
 
   return (
-    <div className="">
+    <>
+      <Modal closeIcon={null} open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} centered title={
+          <div className="flex min-w-52 items-center justify-between pr-2">
+            <p>RCR:</p>{" "}
+            <Radio.Group
+              buttonStyle="solid"
+              value={finalRCRModalIsEnglish == true ? "ENG" : "RU"}
+              onChange={(e) => {
+                setFinalRCRModalIsEnglish(e.target.value === "ENG");
+              }}
+            >
+              <Radio.Button value={"RU"}>RU</Radio.Button>
+              <Radio.Button value={"ENG"}>ENG</Radio.Button>
+            </Radio.Group>
+          </div>
+        }>
 
-      <div className="flex justify-center">
-        <div className="w-[700px]">
-          <AirportsMap regionColors={regionFillColors} warehouses={AirportsData.data?.data ?? []}></AirportsMap>
+        {
+          finalRCRModalIsEnglish ? <p style={{ whiteSpace: "pre-line" }}>{"UTTT\n\n15071901RWY 08L 2/6/6 50/100/100 90/NR/NR ICE/СУХАЯ/СУХАЯ\n\n\nRUNWAY LENGTH REDUCED 3000M. BRUSHED. MEASURED FRICTION COEFFICIENTS: 50/50/50 ATT-ВПП."}</p> : <p style={{ whiteSpace: "pre-line" }}>{"UTTT\n\n16070109 ВПП 08L 6/6/6 100/100/100 NR/NR/NR СУХАЯ/СУХАЯ/СУХАЯ\n\n\nОБРАБОТАН ТВЁРДЫМ РЕАГЕНТОМ. ХИМИЧЕСКИ ОБРАБОТАН. ИЗМЕРЕННЫЕ КОЭФФИЦИЕНТЫ СЦЕПЛЕНИЯ: 0/0/0."}</p>
+        }
+      </Modal>
+      <div className="">
+
+        <div className="flex justify-center">
+          <div className="w-[700px]">
+            <AirportsMap onAirportClick={(id) => setModalOpen(true)} regionColors={regionFillColors} warehouses={AirportsData.data?.data ?? []}></AirportsMap>
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-center">
+          <Table
+            rowKey="id"
+            dataSource={AirportsData.data?.data.map(i => ({ ...i, key: i.id })) || []}
+            columns={[
+              { title: 'Aeroport nomi', dataIndex: 'initialName', key: 'initialName' },
+              { title: 'Температура воздуха', dataIndex: 'temperature', key: 'temperature' },
+              { title: 'Трети', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds, record) => record.runwayDtos?.length || 0 },
+              // { title: 'Ситуационные уведомления', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => n?.length || 0 },
+              // { title: 'Процедуры улучшения', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => p?.length || 0 },
+            ]}
+            pagination={{
+              current: page,
+              pageSize: pageSize,
+              total: AirportsData.data?.elements || 0,
+              onChange: (newPage, newPageSize) => {
+                setPage(newPage);
+                setPageSize(newPageSize);
+              },
+              showSizeChanger: true,
+              pageSizeOptions: [5, 10, 20, 50, 100],
+            }}
+            onRow={(record) => {
+              return {
+                onClick: () => {
+                  router.push(`/runway-condition/${""}`);
+                },
+                style: { cursor: 'pointer' },
+              };
+            }}
+            loading={RWConditionData.isLoading}
+          />
         </div>
       </div>
-
-      <div className="mt-6 flex justify-center">
-        <Table
-          rowKey="id"
-          dataSource={AirportsData.data?.data.map(i => ({ ...i, key: i.id })) || []}
-          columns={[
-            { title: 'Aeroport nomi', dataIndex: 'initialName', key: 'initialName' },
-            { title: 'Температура воздуха', dataIndex: 'temperature', key: 'temperature' },
-            { title: 'Трети', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds, record) => record.runwayDtos?.length || 0 },
-            // { title: 'Ситуационные уведомления', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => n?.length || 0 },
-            // { title: 'Процедуры улучшения', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => p?.length || 0 },
-          ]}
-          pagination={{
-            current: page,
-            pageSize: pageSize,
-            total: AirportsData.data?.elements || 0,
-            onChange: (newPage, newPageSize) => {
-              setPage(newPage);
-              setPageSize(newPageSize);
-            },
-            showSizeChanger: true,
-            pageSizeOptions: [5, 10, 20, 50, 100],
-          }}
-          onRow={(record) => {
-            return {
-              onClick: () => {
-                router.push(`/runway-condition/${""}`);
-              },
-              style: { cursor: 'pointer' },
-            };
-          }}
-          loading={RWConditionData.isLoading}
-        />
-      </div>
-    </div>
+    </>
   );
 }

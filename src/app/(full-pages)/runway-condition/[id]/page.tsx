@@ -169,9 +169,9 @@ interface Form3Values {
   "device-of-implementation": number | null;
   improvementProcedure: ProcedureType[] | null;
   details: {
-    coefficient1: number | undefined;
-    coefficient2: number | undefined;
-    coefficient3: number | undefined;
+    coefficient1: number | undefined | string;
+    coefficient2: number | undefined | string;
+    coefficient3: number | undefined | string;
     chemicalType: ("HARD" | "LIQUID") | undefined;
   };
   RCR?: string | null;
@@ -269,9 +269,9 @@ export default function RunwayConditionCreate() {
       "device-of-implementation": null,
       details: {
         chemicalType: undefined,
-        coefficient1: 50,
-        coefficient2: 50,
-        coefficient3: 50,
+        coefficient1: "N/R",
+        coefficient2: "N/R",
+        coefficient3: "N/R",
       },
       improvementProcedure: null,
       applicationTime: null,
@@ -972,9 +972,9 @@ export default function RunwayConditionCreate() {
     if (isCreateMode) {
       form.setFieldsValue({
         details: {
-          coefficient1: 50,
-          coefficient2: 50,
-          coefficient3: 50,
+          coefficient1: "N/R",
+          coefficient2: "N/R",
+          coefficient3: "N/R",
         },
       });
     }
@@ -986,7 +986,7 @@ export default function RunwayConditionCreate() {
       form.setFieldsValue({
         airport: data.data.runwayDto.airportDto.name,
         datetime: dayjs(
-          data.data.improvementProcedures[0].applicationTime,
+          data.data.createdAt,
         ).format("DD-MM HH:mm"),
         VPP: data.data.runwayDto.runwayDesignation,
         temperature: Number(data.data.ambientTemperature),
@@ -1048,7 +1048,7 @@ export default function RunwayConditionCreate() {
       const firstProc = data.data.improvementProcedures;
 
       const form3: Form3Values = {
-        "device-of-implementation": Number(data.data.deviceDto.id) ?? null,
+        "device-of-implementation": Number(data.data?.deviceDto?.id) ?? null,
         improvementProcedure: data.data.improvementProcedures
           .filter((i) => i.procedureType != ProcedureType.CHEMICAL_TREATMENT)
           .map((i) => i.procedureType),
