@@ -89,7 +89,7 @@ const RunwayThird = ({
               size="large"
               placeholder="1-6"
               onChange={(value) => {
-                if (value && typeof value === 'number' && [0, 1, 2, 3, 4, 5, 6].includes(value)) {
+                if (typeof value === 'number' && [0, 1, 2, 3, 4, 5, 6].includes(value)) {
                   onValueChange(value as RunwayConditionType);
                   if (value == 6) {
                     formInstance.setFieldsValue({
@@ -222,10 +222,10 @@ const RunwayThird = ({
                   onValueChange(6);
                   onCoverageChange(100);
                   formInstance.setFieldsValue({
-                   [`coveragePercentage${orderIndex}`]: 100,
-                      [`depth${orderIndex}`]: 'N/R',
-                      [`surfaceCondition${orderIndex}`]: 'DRY',
-                      [`runwayConditionType${orderIndex}`]: 6
+                    [`coveragePercentage${orderIndex}`]: 100,
+                    [`depth${orderIndex}`]: 'N/R',
+                    [`surfaceCondition${orderIndex}`]: 'DRY',
+                    [`runwayConditionType${orderIndex}`]: 6
                   });
                 }}
               >
@@ -494,11 +494,13 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
   });
 
   const handleThirdValueChange = (index: number, value: RunwayConditionType) => {
+
     setThirds(prev => ({
       ...prev,
       values: prev.values.map((v, i) => i === index ? value : v)
     }));
   };
+
 
   const handleThirdCoverageChange = (index: number, coverage: CoveragePercentage) => {
     setThirds(prev => ({
@@ -564,6 +566,8 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
   }, [UserData.data?.data.airportDto, isCreateMode]);
 
 
+  console.log(thirds, "thirds-thirds");
+  
 
   console.log(UserData.data?.data, "UserData");
 
