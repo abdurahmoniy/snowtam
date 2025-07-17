@@ -52,6 +52,17 @@ interface ReviewStepProps {
   formInstance: FormInstance
 }
 
+
+const surfaceConditionColors: Record<string, string> = {
+  DRY: "#40deb65",             // светло-зелёный
+  WET: "#2196F3",             // светло-синий
+  ICE: "#3F51B5",             // светло-фиолетовый
+  DRY_SNOW: "#9E9E9E",        // светло-серый
+  MOISTURIZE_SNOW: "#00BCD4",// голубой
+  HOARFROST: "#E91E63",       // розовый
+};
+
+
 const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
   const { form1, form2, form3 } = values;
   const router = useRouter();
@@ -64,6 +75,8 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
   const UserData = useUserMe();
   const [finalRCRModalIsEnglish, setFinalRCRModalIsEnglish] = useState(false);
 
+
+  console.log(form3, "form3-form3");
 
 
   const thirds = [
@@ -168,6 +181,11 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
         procedureType: i,
       }))
     : []), "AAAAAAAAA");
+
+
+
+  console.log(formInstance.getFieldsValue(), "DDDDD");
+
 
 
 
@@ -295,7 +313,9 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
                   <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">N/R</Text>}</div>
                   <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">N/R</Text>}</div>
                   <div><strong>Глубина:</strong> {!!t.depth ? t.depth : <Text type="secondary">N/R</Text>}</div>
-                  <div><strong>Состояние поверхности:</strong> {sostoyanie[t.surface as any] ?? <Text type="secondary">N/R</Text>}</div>
+                  <div><strong>Состояние поверхности:</strong> {sostoyanie[t.surface as any] ?? <Text type="secondary">N/R</Text>} {!!sostoyanie[t.surface as any] ? <div className="w-4 h-4 rounded-full flex" style={{
+                    backgroundColor: surfaceConditionColors[t.surface as any]
+                  }}></div> : ""}</div>
                 </div>
               </Card>
             ))}
@@ -367,7 +387,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
       </div>
 
-      {form3?.improvementProcedure && (
+      {(form3["device-of-implementation"]) && (
         // <Card title="Процедуры улучшения">
         //   <Descriptions bordered column={1} size="small">
         //     {(form3.improvementProcedure 
@@ -414,7 +434,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
         <Card title="Процедуры улучшения">
           <Descriptions bordered column={1} size="small">
             <Descriptions.Item label="Процедуры">
-              {form3.improvementProcedure.length === 0 ? (
+              {(form3.improvementProcedure?.length == 0 || form3.improvementProcedure == null) ? (
                 <Text type="secondary">N/R</Text>
               ) : (
                 form3.improvementProcedure

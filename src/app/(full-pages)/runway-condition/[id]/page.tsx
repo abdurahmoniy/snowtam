@@ -930,9 +930,9 @@ export default function RunwayConditionCreate() {
               : "",
         notificationType: item,
         runwayConditionId: 0,
-        runwayLengthReductionM: Number(
-          FormValuesState.form2.notification_details?.[`${item}`] ?? 0,
-        ),
+        runwayLengthReductionM: 
+          Number(FormValuesState.form2.notification_details?.[`${item}`]) ?? null,
+        
       })),
       runwayId: Number(FormValuesState.form1.VPP),
       initialName: String(FormValuesState.form1.initials),

@@ -11,8 +11,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { BellIcon } from "./icons";
-import { useQuery } from "@tanstack/react-query";
-import { getAllNotificationData } from "@/services/notification.services";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getAllNotificationData, MarkAsReadNotification } from "@/services/notification.services";
+import { Button } from "antd";
+import { Eye } from "lucide-react";
 
 const notificationList = [
   {
@@ -52,8 +54,14 @@ export function Notification() {
     queryFn: () => getAllNotificationData()
   })
 
+  const MarkAsRead = useMutation({
+    mutationFn: ({ notificationId }: { notificationId: string }) => MarkAsReadNotification({
+      notificationId
+    })
+  })
+
   console.log(NotificationsData.data, "NotificationsData");
-  
+
 
   return (
     <Dropdown
@@ -97,42 +105,42 @@ export function Notification() {
         </div>
 
         <ul className="mb-3 max-h-[23rem] space-y-1.5 overflow-y-auto">
-          {notificationList.map((item, index) => (
+          {NotificationsData.data?.data?.map((item, index) => (
             <li key={index} role="menuitem">
               <Link
                 href="#"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-4 rounded-lg px-2 py-1.5 outline-none hover:bg-gray-2 focus-visible:bg-gray-2 dark:hover:bg-dark-3 dark:focus-visible:bg-dark-3"
               >
-                <Image
-                  src={item.image}
-                  className="size-14 rounded-full object-cover"
-                  width={200}
-                  height={200}
-                  alt="User"
-                />
 
-                <div>
+                <div className="flex justify-between items-center w-full">
                   <strong className="block text-sm font-medium text-dark dark:text-white">
-                    {item.title}
+                    {item.text}
                   </strong>
 
-                  <span className="truncate text-sm font-medium text-dark-5 dark:text-dark-6">
+                  {/* <span className="truncate text-sm font-medium text-dark-5 dark:text-dark-6">
                     {item.subTitle}
-                  </span>
+                  </span> */}
+
+                  <Button size={"small"} onClick={() => 
+                    
+                    // MarkAsRead.mutate(item.) 
+
+                    {}
+                    }><Eye /></Button>
                 </div>
               </Link>
             </li>
           ))}
         </ul>
 
-        <Link
+        {/* <Link
           href="#"
           onClick={() => setIsOpen(false)}
           className="block rounded-lg border border-primary p-2 text-center text-sm font-medium tracking-wide text-primary outline-none transition-colors hover:bg-blue-light-5 focus:bg-blue-light-5 focus:text-primary focus-visible:border-primary dark:border-dark-3 dark:text-dark-6 dark:hover:border-dark-5 dark:hover:bg-dark-3 dark:hover:text-dark-7 dark:focus-visible:border-dark-5 dark:focus-visible:bg-dark-3 dark:focus-visible:text-dark-7"
         >
           Barcha bildirishnomalarni ko&apos;rish
-        </Link>
+        </Link> */}
       </DropdownContent>
     </Dropdown>
   );

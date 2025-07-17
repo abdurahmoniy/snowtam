@@ -14,7 +14,7 @@ export interface RunwayConditionCreateRequest {
   situationalNotifications: {
     runwayConditionId: number;
     notificationType: NotificationType;
-    runwayLengthReductionM: number;
+    runwayLengthReductionM: number | null;
     additionalDetails: string;
   }[];
   improvementProcedures: ImprovementProcedure[];
