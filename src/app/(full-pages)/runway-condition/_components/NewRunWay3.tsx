@@ -44,6 +44,7 @@ const sostoyanie = [
   { label: "Dry Snow / Quruq qor / Сухой снег", value: "DRY_SNOW" },
   { label: "Wet Snow / Nam qor / Мокрый снег", value: "MOISTURIZE_SNOW" },
   { label: "Frost / Iney / Иней", value: "HOARFROST" },
+  { label: "Compacted snow / Siqilgan qor / Уплотнённый снег", value: "COMPACTED_SNOW" },
 ]
 
 const RunwayThird = ({
@@ -64,7 +65,7 @@ const RunwayThird = ({
 
 
   console.log("surface-color", formInstance.getFieldValue(`surfaceCondition${orderIndex}`));
-  
+
 
 
 
