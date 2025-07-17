@@ -5,8 +5,10 @@ import { GetSurfaceCondition } from "@/services/enums";
 import { useQuery } from "@tanstack/react-query";
 import { Col, Divider, Form, FormInstance, Input, InputNumber, Row, Select } from "antd";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { CircleDot } from "lucide-react";
 import { useEffect, useState } from "react";
+dayjs.extend(utc);
 
 type RunwayConditionType = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 type CoveragePercentage = 25 | 50 | 75 | 100;
@@ -470,7 +472,7 @@ const RunwayThird = ({
 };
 
 const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: boolean }) => {
-  const [currentTime, setCurrentTime] = useState(dayjs().format("DD-MM HH:mm"));
+  const [currentTime, setCurrentTime] = useState(dayjs.utc().format("DD-MM HH:mm"));
 
   const [coverageType, setCoverageType] = useState(1);
   const [thirds, setThirds] = useState<{
@@ -575,7 +577,7 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = dayjs().format("DD-MM HH:mm");
+      const now = dayjs.utc().format("DD-MM HH:mm");
       setCurrentTime(now);
       form.setFieldsValue({ datetime: now }); // ⬅️ добавлено!
     }, 1000);

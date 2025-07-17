@@ -639,7 +639,7 @@ export default function RunwayConditionCreate() {
               Какие процедуры по улучшению состояния ВПП были применены{" "}
             </h1>
             <h2 className="mb-4 flex gap-2 text-lg">
-              Время применения:{" "}
+              Время применения (UTC):{" "}
               <Form.Item
                 className="mb-0"
                 name={"applicationTime"}
@@ -821,8 +821,8 @@ export default function RunwayConditionCreate() {
                         ]}
                       >
                         <Radio.Group className="flex flex-col">
-                          <Radio value="HARD">Жидкая</Radio>
-                          <Radio value="LIQUID">Твердая</Radio>
+                          <Radio value="HARD">Твердая</Radio>
+                          <Radio value="LIQUID">Жидкая</Radio>
                         </Radio.Group>
                       </Form.Item>
                     </div>
