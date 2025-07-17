@@ -77,7 +77,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
 
   console.log(form3, "form3-form3");
-  
+
 
   const thirds = [
     {
@@ -181,6 +181,11 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
         procedureType: i,
       }))
     : []), "AAAAAAAAA");
+
+
+
+  console.log(formInstance.getFieldsValue(), "DDDDD");
+
 
 
 
@@ -308,7 +313,9 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
                   <div><strong>RWYC:</strong> {t.rwyc ?? <Text type="secondary">N/R</Text>}</div>
                   <div><strong>Процент покрытия:</strong> {t.coverage ?? <Text type="secondary">N/R</Text>}</div>
                   <div><strong>Глубина:</strong> {!!t.depth ? t.depth : <Text type="secondary">N/R</Text>}</div>
-                  <div><strong>Состояние поверхности:</strong> <div>{sostoyanie[t.surface as any]}</div> ?? <Text type="secondary">N/R</Text>}</div>
+                  <div><strong>Состояние поверхности:</strong> {sostoyanie[t.surface as any] ?? <Text type="secondary">N/R</Text>} {!!sostoyanie[t.surface as any] ? <div className="w-4 h-4 rounded-full flex" style={{
+                    backgroundColor: surfaceConditionColors[t.surface as any]
+                  }}></div> : ""}</div>
                 </div>
               </Card>
             ))}

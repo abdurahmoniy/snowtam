@@ -28,7 +28,7 @@ interface RunwayThirdProps {
 
 
 const surfaceConditionColors: Record<string, string> = {
-  DRY: "#40deb65",             // светло-зелёный
+  DRY: "#40deb6",             // светло-зелёный
   WET: "#2196F3",             // светло-синий
   ICE: "#3F51B5",             // светло-фиолетовый
   DRY_SNOW: "#9E9E9E",        // светло-серый
