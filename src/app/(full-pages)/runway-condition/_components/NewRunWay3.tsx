@@ -26,6 +26,16 @@ interface RunwayThirdProps {
   formInstance: FormInstance;
 }
 
+
+const surfaceConditionColors: Record<string, string> = {
+  DRY: "#40deb65",             // светло-зелёный
+  WET: "#2196F3",             // светло-синий
+  ICE: "#3F51B5",             // светло-фиолетовый
+  DRY_SNOW: "#9E9E9E",        // светло-серый
+  MOISTURIZE_SNOW: "#00BCD4",// голубой
+  HOARFROST: "#E91E63",       // розовый
+};
+
 const sostoyanie = [
   { label: "Dry / Quruq / Сухой", value: "DRY" },
   { label: "Wet / Ho'l / Мокрый", value: "WET" },
@@ -52,6 +62,9 @@ const RunwayThird = ({
 }: RunwayThirdProps) => {
 
 
+
+  console.log("surface-color", formInstance.getFieldValue(`surfaceCondition${orderIndex}`));
+  
 
 
 
@@ -141,38 +154,9 @@ const RunwayThird = ({
               disabled={value === 6}
               value={depth === "N/R" ? undefined : Number(depth)}
               placeholder="Глубина"
-              // onChange={(e) => {
-              //   if (e && Number(e) >= 0) {
-              //     onDepthChange(e.toString());
-              //   }
-              // }}
-              // onBlur={(e) => {
-              //   if (!e.target.value.trim()) {
-              //     onDepthChange("N/R");
-              //     formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
-              //   }
-              // }}
+
 
               min={3}
-              // onChange={(e) => {
-              //   if (e === null || e === undefined || Number(e) < Number("3")) {
-              //     // Устанавливаем N/R если меньше 3 или пусто
-              //     onDepthChange("N/R");
-              //     formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
-              //   } else {
-              //     onDepthChange(e.toString());
-              //     formInstance.setFieldsValue({ [`depth${orderIndex}`]: e });
-              //   }
-              // }}
-
-              // onBlur={(e) => {
-              //   const val = e.target.value.trim();
-              //   const numeric = Number(val);
-              //   if (!val || isNaN(numeric) || numeric < 3) {
-              //     onDepthChange("N/R");
-              //     formInstance.setFieldsValue({ [`depth${orderIndex}`]: "N/R" });
-              //   }
-              // }}
 
               onChange={(value) => {
                 if (value === null || value === undefined || Number(value) <= 3) {
@@ -193,20 +177,34 @@ const RunwayThird = ({
 
 
               className="text-center" /></Form.Item>}
+
+
         </div>
 
-        {(
-          <Form.Item name={`surfaceCondition${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
-            <Select
-              disabled={value === 6}
-              size="large"
-              placeholder="Состояние"
-              onSelect={(val) => onSurfaceConditionChange(val as SurfaceConditionType)}
-              options={sostoyanie}
-              className="!w-[200px] sm:w-[200px] "
-            />
-          </Form.Item>
-        )}
+        <div className="flex items-center gap-4">
+          {(
+            <Form.Item name={`surfaceCondition${orderIndex}`} rules={[{ required: true, message: 'Обязательное поле' }]} className="mb-0">
+              <Select
+                disabled={value === 6}
+                size="large"
+                placeholder="Состояние"
+                // onSelect={(val) => {
+                //   onSurfaceConditionChange(val as SurfaceConditionType);
+                //   formInstance.setFieldValue([`surfaceCondition${orderIndex}`], val);
+                // }}
+                onChange={(val) => {
+                  onSurfaceConditionChange(val as SurfaceConditionType);
+                  formInstance.setFieldValue(`surfaceCondition${orderIndex}`, val);
+                }}
+                options={sostoyanie}
+                className="!w-[200px] sm:w-[200px] "
+              />
+            </Form.Item>
+          )}
+          <div style={{
+            backgroundColor: surfaceConditionColors[formInstance.getFieldValue(`surfaceCondition${orderIndex}`)]
+          }} className={`rounded-full w-5 h-5`}></div>
+        </div>
       </div>
 
       <Divider />
@@ -515,6 +513,8 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
       ...prev,
       surfaceConditions: prev.surfaceConditions.map((s, i) => i === index ? val : s)
     }));
+
+
   };
 
   const handleThirdDepthChange = (index: number, val: string) => {
@@ -567,7 +567,7 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
 
 
   console.log(thirds, "thirds-thirds");
-  
+
 
   console.log(UserData.data?.data, "UserData");
 
