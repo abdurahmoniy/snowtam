@@ -654,6 +654,10 @@ export default function RunwayConditionCreate() {
                       label: d.name,
                       value: d.id,
                     }))}
+                    allowClear
+                    onClear={() => {
+
+                    }}
                   />
                 </Form.Item>
               </h2>
@@ -1142,7 +1146,7 @@ export default function RunwayConditionCreate() {
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-between">
+        <div className="flex w-full items-center justify-start gap-4">
           <Button
             onClick={() => {
               setFinalRCRModalOpen(false);
