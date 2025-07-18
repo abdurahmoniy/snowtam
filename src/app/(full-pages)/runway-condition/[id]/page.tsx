@@ -1,9 +1,13 @@
 "use client";
 
+import Loading from "@/components/Loading";
+import { NotificationType, ProcedureType } from "@/consts/data";
+import { useUserMe } from "@/hooks/use-me";
+import { getAllDevices } from "@/services/device.services";
+import { GetRunWayConditionById } from "@/services/runway-condition.services";
 import {
   RunwayConditionCreateRequest,
-  RunwayConditionCreateResponse,
-  SituationalNotification,
+  RunwayConditionCreateResponse
 } from "@/types/runway-condition";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -16,27 +20,19 @@ import {
   InputNumber,
   Modal,
   Radio,
-  RadioChangeEvent,
   Row,
   Select,
-  Spin,
-  Steps,
+  Steps
 } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import dayjs from "dayjs";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { GetAlertTypes, GetProcedureTypes } from "../../../../services/enums";
+import useLocalStorage from "use-local-storage";
 import NewRunWay3 from "../_components/NewRunWay3";
 import { useCreateRunwayCondition } from "./fetch";
 import ReviewStep from "./steps/ReviewStep";
-import dayjs from "dayjs";
-import useLocalStorage from "use-local-storage";
-import { NotificationType, ProcedureType } from "@/consts/data";
-import { GetRunWayConditionById } from "@/services/runway-condition.services";
-import TextArea from "antd/es/input/TextArea";
-import { getAllDevices } from "@/services/device.services";
-import { useUserMe } from "@/hooks/use-me";
-import Loading from "@/components/Loading";
 
 type CheckboxData = {
   label: string;
@@ -102,6 +98,32 @@ const checkboxesLeft: CheckboxData[] = [
     ],
   },
 ];
+
+const twoDigitFields = new Set([
+  NotificationType.DEBRIS_ON_RUNWAY,
+  NotificationType.DEBRIS_ON_TAXIWAY,
+  NotificationType.DEBRIS_ON_RUNWAY_LEFT,
+  NotificationType.DEBRIS_ON_RUNWAY_RIGHT,
+  NotificationType.DEBRIS_ON_TAXIWAY_LEFT,
+  NotificationType.DEBRIS_ON_TAXIWAY_RIGHT,
+]);
+
+const getMaxLength = (field: string) => {
+  if (
+    field === NotificationType.DEBRIS_ON_RUNWAY_LEFT ||
+    field === NotificationType.DEBRIS_ON_RUNWAY_RIGHT ||
+    field === NotificationType.DEBRIS_ON_TAXIWAY_LEFT ||
+    field === NotificationType.DEBRIS_ON_TAXIWAY_RIGHT
+  ) {
+    return 2;
+  }
+  if (field === NotificationType.REDUCED_RUNWAY_LENGTH) {
+    return 4;
+  } else {
+    return 2
+  }
+};
+
 
 const checkboxesRight: CheckboxData[] = [
   {
@@ -381,35 +403,30 @@ export default function RunwayConditionCreate() {
                                   }}
                                 >
                                   <Input
-                                    value={
-                                      notificationFieldValues[item.field] || ""
-                                    }
+                                    value={notificationFieldValues[item.field] || ""}
+                                    maxLength={getMaxLength(item.field)}
                                     onChange={(e) => {
-                                      const value = e.target.value;
+                                      const raw = e.target.value.replace(/\D/g, ""); // Only digits
+                                      const maxLen = 4;
+                                      const trimmed = maxLen ? raw.slice(0, maxLen) : raw;
+
                                       setNotificationFieldValues((prev) => ({
                                         ...prev,
-                                        [item.field!]: value,
+                                        [item.field!]: trimmed,
                                       }));
 
-                                      // Обязательно отмечаем чекбокс, если пользователь что-то ввёл
-                                      if (
-                                        !checkedFields.includes(
-                                          String(item.field),
-                                        )
-                                      ) {
-                                        setCheckedFields((prev) => [
-                                          ...prev,
-                                          String(item.field),
-                                        ]);
+                                      if (!checkedFields.includes(String(item.field))) {
+                                        setCheckedFields((prev) => [...prev, String(item.field)]);
                                       }
 
                                       if (item.field !== undefined) {
                                         form.setFieldsValue({
-                                          [item.field]: value,
+                                          notification_details: {
+                                            ...form.getFieldValue("notification_details"),
+                                            [item.field]: trimmed,
+                                          },
                                         });
                                       }
-
-                                      // Обновляем значение в form тоже
                                     }}
                                     size="small"
                                     style={{ width: 80 }}
@@ -455,8 +472,30 @@ export default function RunwayConditionCreate() {
                                       <Input
                                         size="small"
                                         style={{ width: 60 }}
+                                        value={notificationFieldValues[sf.field] || ""}
+                                        maxLength={2}
+                                        onChange={(e) => {
+                                          const raw = e.target.value.replace(/\D/g, ""); // Remove non-digits
+                                          const trimmed = raw.slice(0, 2); // Keep max 2 digits
+                                          setNotificationFieldValues((prev) => ({
+                                            ...prev,
+                                            [sf.field]: trimmed,
+                                          }));
+
+                                          if (!checkedFields.includes(String(sf.field))) {
+                                            setCheckedFields((prev) => [...prev, String(sf.field)]);
+                                          }
+
+                                          form.setFieldsValue({
+                                            notification_details: {
+                                              ...form.getFieldValue("notification_details"),
+                                              [sf.field]: trimmed,
+                                            },
+                                          });
+                                        }}
                                         suffix={sf.suffix || ""}
                                       />
+
                                     </Form.Item>
                                   </span>
                                 ))}
@@ -600,7 +639,7 @@ export default function RunwayConditionCreate() {
               Какие процедуры по улучшению состояния ВПП были применены{" "}
             </h1>
             <h2 className="mb-4 flex gap-2 text-lg">
-              Время применения:{" "}
+              Время применения (UTC):{" "}
               <Form.Item
                 className="mb-0"
                 name={"applicationTime"}
@@ -786,8 +825,8 @@ export default function RunwayConditionCreate() {
                         ]}
                       >
                         <Radio.Group className="flex flex-col">
-                          <Radio value="HARD">Жидкая</Radio>
-                          <Radio value="LIQUID">Твердая</Radio>
+                          <Radio value="HARD">Твердая</Radio>
+                          <Radio value="LIQUID">Жидкая</Radio>
                         </Radio.Group>
                       </Form.Item>
                     </div>
@@ -934,9 +973,9 @@ export default function RunwayConditionCreate() {
               : "",
         notificationType: item,
         runwayConditionId: 0,
-        runwayLengthReductionM: 
+        runwayLengthReductionM:
           Number(FormValuesState.form2.notification_details?.[`${item}`]) ?? null,
-        
+
       })),
       runwayId: Number(FormValuesState.form1.VPP),
       initialName: String(FormValuesState.form1.initials),
@@ -1105,7 +1144,7 @@ export default function RunwayConditionCreate() {
     <div>
       <Modal
         centered
-        width={600}
+        width={1000}
         closeIcon={null}
         title={
           <div className="flex min-w-52 items-center justify-between pr-2">
@@ -1133,7 +1172,7 @@ export default function RunwayConditionCreate() {
         }}
       >
         <div className="flex justify-center">
-          <div className="flex flex-col gap-6 py-6">
+          <div className="flex flex-col gap-6 py-6 text-2xl">
             {finalRCRModalIsEnglish ? (
               <div>
                 <p style={{ whiteSpace: "pre-line" }}>{CreateResponse?.data.finalRCR}</p>
