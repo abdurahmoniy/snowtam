@@ -75,7 +75,7 @@ export default function EditUserModal({
         airportId: values.airportId,
         email: values.email,
         password: values.password || undefined,
-        role: Number(values.role),
+        role: values.role,
         status: values.status,
       });
     });

@@ -38,7 +38,7 @@ interface UpdateUserDto {
   password: string;
   position: string;
   airportId: number;
-  role: number;
+  role: string;
 }
 
 export async function GetAllUsers(params: PaginationParams) {

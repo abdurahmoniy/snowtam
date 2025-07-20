@@ -55,7 +55,7 @@ export default function UsersPage() {
 
   const RoleOptions = RolesData.data?.data.map((role) => ({
     label: role.name,
-    value: role.id.toString(),
+    value: role.name,
   }));
 
 
