@@ -8,7 +8,11 @@ export enum ROUTES {
 }
 
 export const defaultRoutes: Record<ROLES, string> = {
-  ROLE_USER: "/",
   OPERATOR: "/",
   SUPER_ADMIN: "/airports",
+  ADMIN: "/airports",
+  DISPETCHER: "/airports",
+  SAI: "/airports",
+  SPECIALIST: "/airports",
+
 };
