@@ -2,7 +2,7 @@ import SigninWithPassword from "../SigninWithPassword";
 
 export default function Signin() {
   return (
-    <>
+    <div className="flex min-h-[80vh] justify-center items-center">
       {/* <GoogleSigninButton text="Tizimga kirish" />
 
       <div className="my-6 flex items-center justify-center">
@@ -13,7 +13,7 @@ export default function Signin() {
         <span className="block h-px w-full bg-stroke dark:bg-dark-3"></span>
       </div> */}
 
-      <div>
+      <div className="flex flex-col w-full h-full">
         <SigninWithPassword />
       </div>
 
@@ -25,6 +25,6 @@ export default function Signin() {
           </Link>
         </p>
       </div> */}
-    </>
+    </div>
   );
 }
