@@ -1,5 +1,7 @@
+import { ROLES } from "@/consts/role-based-routing";
+
 export interface IUser {
-  id: string;
+  id: number;
   email: string;
   fullname: string;
   status: string;
@@ -16,7 +18,7 @@ export interface IUser {
     updatedAt: string;
     runwayDtos: IUserRunway[];
   };
-  role: string[];
+  role: ROLES[];
 }
 
 export interface IUserRunway {

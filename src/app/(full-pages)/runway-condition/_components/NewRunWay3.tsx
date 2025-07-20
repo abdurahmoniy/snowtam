@@ -36,6 +36,7 @@ const surfaceConditionColors: Record<string, string> = {
   DRY_SNOW: "#9E9E9E",        // светло-серый
   MOISTURIZE_SNOW: "#00BCD4",// голубой
   HOARFROST: "#E91E63",       // розовый
+  COMPACTED_SNOW: "#e9da00",  // розовый
 };
 
 const sostoyanie = [
@@ -191,10 +192,6 @@ const RunwayThird = ({
                 disabled={value === 6}
                 size="large"
                 placeholder="Состояние"
-                // onSelect={(val) => {
-                //   onSurfaceConditionChange(val as SurfaceConditionType);
-                //   formInstance.setFieldValue([`surfaceCondition${orderIndex}`], val);
-                // }}
                 onChange={(val) => {
                   onSurfaceConditionChange(val as SurfaceConditionType);
                   formInstance.setFieldValue(`surfaceCondition${orderIndex}`, val);
@@ -206,7 +203,7 @@ const RunwayThird = ({
           )}
           <div style={{
             backgroundColor: surfaceConditionColors[formInstance.getFieldValue(`surfaceCondition${orderIndex}`)]
-          }} className={`rounded-full w-5 h-5`}></div>
+          }} className={`rounded-full w-5 h-5 border-[1px] border-[#00000079]`}></div>
         </div>
       </div>
 
@@ -598,7 +595,7 @@ const NewRunWay3 = ({ form, isCreateMode }: { form: FormInstance, isCreateMode: 
 
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex w-[150px]">Дата/Время: <br />(ДД-ММ ЧЧ:ММ)</div>
+            <div className="flex w-[150px]">Дата/Время (UTC):<br />(ДД-ММ ЧЧ:ММ)</div>
             <Form.Item layout="horizontal" label="" name={"datetime"} className="mb-0 w-[250px]">
               <Input readOnly value={currentTime}></Input>
             </Form.Item>

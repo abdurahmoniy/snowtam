@@ -1,66 +1,92 @@
-"use client"
+// src/app/[your-path]/AirportsPage.tsx
 
-import { useQuery } from "@tanstack/react-query";
-import { Alert, Button, DatePicker, Empty, Modal, Popover, Radio, Spin, Table } from "antd";
+"use client";
+
+import React, { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Button,
+  Modal,
+  Radio,
+  Table,
+} from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { GetAllRunWayCondition, GetAllRunWayConditionByPeriod } from "../../../services/runway-condition.services";
-import type { RunwayCondition } from "../../../types/runway-condition";
-
 import useLocalStorage from "use-local-storage";
+
+import ViewAirportModal from "./_components/ViewAirportModal";
+import { DeleteAirport, GetAllAirportsExtended } from "@/services/airport.services"; // если такого нет, нужно добавить
+
+
+import {
+  GetAllRunWayCondition,
+} from "../../../services/runway-condition.services";
 import { GetAllAirports } from "@/services/airport.services";
+
+import type { IAirport } from "@/types/airport";
+
 import AirportsMap from "./_components/AirportsMap";
+import AddAirportModal from "./_components/AddAirportModal";
+import EditAirportModal from "./_components/EditAirportModal";
+import { toast } from "sonner";
 
 function truncateText(text: string, maxLength = 12) {
-  if (!text) return '';
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+  if (!text) return "";
+  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 }
 
 export default function AirportsPage() {
-  const router = useRouter()
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const [RunWayData, setRunWayData] = useLocalStorage("runway-condition-draft", null);
-  console.log(RunWayData, "RunWayData");
-
+  const [RunWayData, setRunWayData] = useLocalStorage(
+    "runway-condition-draft",
+    null
+  );
   const [modalOpen, setModalOpen] = useState(false);
+  const [finalRCRModalIsEnglish, setFinalRCRModalIsEnglish] =
+    useState(false);
 
-    const [finalRCRModalIsEnglish, setFinalRCRModalIsEnglish] = useState(false);
-  
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingAirport, setEditingAirport] = useState<IAirport | null>(null);
 
-  const [rangePickerValue, setRangePickerValue] = useState<any>([dayjs().subtract(7, 'day'), dayjs()]);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedAirport, setSelectedAirport] = useState<IAirport | null>(null);
 
+
+
+
+
+  const [rangePickerValue, setRangePickerValue] = useState<any>([
+    dayjs().subtract(7, "day"),
+    dayjs(),
+  ]);
 
   const RWConditionData = useQuery({
-    queryFn: () => GetAllRunWayCondition({
-      page: page - 1,
-      size: pageSize,
-      // from: rangePickerValue[0].format('YYYY-MM-DD'),
-      // to: rangePickerValue[1].format('YYYY-MM-DD'),
-      // query: ""
-    }),
-    queryKey: [`rw-condition`, page, pageSize, rangePickerValue]
-  })
-
-
-
+    queryFn: () =>
+      GetAllRunWayCondition({
+        page: page - 1,
+        size: pageSize,
+      }),
+    queryKey: ["rw-condition", page, pageSize, rangePickerValue],
+  });
 
   const localStorageItem = localStorage.getItem("user");
   const user = localStorageItem ? JSON.parse(localStorageItem) : null;
 
-
   const AirportsData = useQuery({
-    queryKey: ['airports-list'],
-    queryFn: () => GetAllAirports({
-      page: 0,
-      size: 100
-    }),
+    queryKey: ["airports-list"],
+    queryFn: () =>
+      GetAllAirportsExtended({
+        page: 0,
+        size: 100,
+      }),
   });
-
-  console.log(AirportsData.data, "AirportsData");
-
 
   const regionFillColors: Record<number, string> = {
     1: "#a4edff",
@@ -79,14 +105,47 @@ export default function AirportsPage() {
     14: "#1695f2",
   };
 
+
+  const handleDeleteAirport = async (airportId: number) => {
+    try {
+      await DeleteAirport(airportId);
+      toast.success("Аэропорт удалён");
+      queryClient.invalidateQueries({ queryKey: ["airports-list"] });
+      setViewModalOpen(false);
+    } catch {
+      toast.error("Не удалось удалить аэропорт");
+    }
+  };
+
+  const handleEditAirport = (airport: IAirport) => {
+    setEditingAirport(airport);
+    setEditModalOpen(true);
+    setViewModalOpen(false);
+  };
+
+
   return (
     <>
-      <Modal closeIcon={null} open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} centered title={
+      {/* Кнопки управления */}
+      <div className="flex justify-end mb-4">
+        <Button type="primary" onClick={() => setAddModalOpen(true)}>
+          Добавить аэропорт
+        </Button>
+      </div>
+
+      {/* Модалка RCR */}
+      <Modal
+        closeIcon={null}
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        footer={null}
+        centered
+        title={
           <div className="flex min-w-52 items-center justify-between pr-2">
             <p>RCR:</p>{" "}
             <Radio.Group
               buttonStyle="solid"
-              value={finalRCRModalIsEnglish == true ? "ENG" : "RU"}
+              value={finalRCRModalIsEnglish ? "ENG" : "RU"}
               onChange={(e) => {
                 setFinalRCRModalIsEnglish(e.target.value === "ENG");
               }}
@@ -95,53 +154,115 @@ export default function AirportsPage() {
               <Radio.Button value={"ENG"}>ENG</Radio.Button>
             </Radio.Group>
           </div>
-        }>
-
-        {
-          finalRCRModalIsEnglish ? <p style={{ whiteSpace: "pre-line" }}>{"UTTT\n\n15071901RWY 08L 2/6/6 50/100/100 90/NR/NR ICE/СУХАЯ/СУХАЯ\n\n\nRUNWAY LENGTH REDUCED 3000M. BRUSHED. MEASURED FRICTION COEFFICIENTS: 50/50/50 ATT-ВПП."}</p> : <p style={{ whiteSpace: "pre-line" }}>{"UTTT\n\n16070109 ВПП 08L 6/6/6 100/100/100 NR/NR/NR СУХАЯ/СУХАЯ/СУХАЯ\n\n\nОБРАБОТАН ТВЁРДЫМ РЕАГЕНТОМ. ХИМИЧЕСКИ ОБРАБОТАН. ИЗМЕРЕННЫЕ КОЭФФИЦИЕНТЫ СЦЕПЛЕНИЯ: 0/0/0."}</p>
         }
+      >
+        {finalRCRModalIsEnglish ? (
+          <p style={{ whiteSpace: "pre-line" }}>
+            {
+              "UTTT\n\n15071901RWY 08L 2/6/6 50/100/100 90/NR/NR ICE/СУХАЯ/СУХАЯ\n\n\nRUNWAY LENGTH REDUCED 3000M. BRUSHED. MEASURED FRICTION COEFFICIENTS: 50/50/50 ATT-ВПП."
+            }
+          </p>
+        ) : (
+          <p style={{ whiteSpace: "pre-line" }}>
+            {
+              "UTTT\n\n16070109 ВПП 08L 6/6/6 100/100/100 NR/NR/NR СУХАЯ/СУХАЯ/СУХАЯ\n\n\nОБРАБОТАН ТВЁРДЫМ РЕАГЕНТОМ. ХИМИЧЕСКИ ОБРАБОТАН. ИЗМЕРЕННЫЕ КОЭФФИЦИЕНТЫ СЦЕПЛЕНИЯ: 0/0/0."
+            }
+          </p>
+        )}
       </Modal>
-      <div className="">
 
-        <div className="flex justify-center">
-          <div className="w-[700px]">
-            <AirportsMap onAirportClick={(id) => setModalOpen(true)} regionColors={regionFillColors} warehouses={AirportsData.data?.data ?? []}></AirportsMap>
-          </div>
-        </div>
+      {/* Модалки добавления и редактирования */}
+      <AddAirportModal
+        open={addModalOpen}
+        onClose={() => setAddModalOpen(false)}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["airports-list"] })}
+      />
+      <EditAirportModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["airports-list"] })}
+        airport={editingAirport}
+      />
 
-        <div className="mt-6 flex justify-center">
-          <Table
-            rowKey="id"
-            dataSource={AirportsData.data?.data.map(i => ({ ...i, key: i.id })) || []}
-            columns={[
-              { title: 'Aeroport nomi', dataIndex: 'initialName', key: 'initialName' },
-              { title: 'Температура воздуха', dataIndex: 'temperature', key: 'temperature' },
-              { title: 'Трети', dataIndex: 'runwayThirds', key: 'runwayThirds', render: (thirds, record) => record.runwayDtos?.length || 0 },
-              // { title: 'Ситуационные уведомления', dataIndex: 'situationalNotifications', key: 'situationalNotifications', render: (n) => n?.length || 0 },
-              // { title: 'Процедуры улучшения', dataIndex: 'improvementProcedures', key: 'improvementProcedures', render: (p) => p?.length || 0 },
-            ]}
-            pagination={{
-              current: page,
-              pageSize: pageSize,
-              total: AirportsData.data?.elements || 0,
-              onChange: (newPage, newPageSize) => {
-                setPage(newPage);
-                setPageSize(newPageSize);
-              },
-              showSizeChanger: true,
-              pageSizeOptions: [5, 10, 20, 50, 100],
-            }}
-            onRow={(record) => {
-              return {
-                onClick: () => {
-                  router.push(`/runway-condition/${""}`);
-                },
-                style: { cursor: 'pointer' },
-              };
-            }}
-            loading={RWConditionData.isLoading}
+      <ViewAirportModal
+        open={viewModalOpen}
+        airport={selectedAirport}
+        onClose={() => setViewModalOpen(false)}
+        onEdit={handleEditAirport}
+        onDelete={handleDeleteAirport}
+      />
+
+      <div className="flex justify-center">
+        <div className="w-[800px]">
+          <AirportsMap
+            onAirportClick={() => setModalOpen(true)}
+            regionColors={regionFillColors}
+            warehouses={AirportsData.data?.data ?? []}
           />
         </div>
+      </div>
+
+      <div className="mt-6 flex justify-center">
+        <Table
+          rowKey="id"
+          dataSource={
+            AirportsData.data?.data.map((i) => ({ ...i, key: i.id })) || []
+          }
+          columns={[
+
+            {
+              title: "Aeroport nomi",
+              dataIndex: "initialName",
+              key: "initialName",
+            },
+            {
+              title: "Температура воздуха",
+              dataIndex: "temperature",
+              key: "temperature",
+            },
+            {
+              title: "ВПП",
+              dataIndex: "runwayThirds",
+              key: "runwayThirds",
+              render: (_thirds, record) => <div>
+                {(record.runwayDtos?.length ? `${record.runwayDtos?.length}:` : 0)} {record.runwayDtos?.map((i) => i.runwayDesignation).join(", ") || ""}
+              </div>,
+            },
+            {
+              title: "Действия",
+              key: "actions",
+              render: (_, record) => (
+                <EditOutlined
+                  style={{ cursor: "pointer" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingAirport(record);
+                    setEditModalOpen(true);
+                  }}
+                />
+              ),
+            },
+          ]}
+          pagination={{
+            current: page,
+            pageSize: pageSize,
+            total: AirportsData.data?.elements || 0,
+            onChange: (newPage, newPageSize) => {
+              setPage(newPage);
+              setPageSize(newPageSize);
+            },
+            showSizeChanger: true,
+            pageSizeOptions: [5, 10, 20, 50, 100],
+          }}
+          onRow={(record) => ({
+            onClick: () => {
+              setSelectedAirport(record);
+              setViewModalOpen(true);
+            },
+            style: { cursor: "pointer" },
+          })}
+          loading={RWConditionData.isLoading}
+        />
       </div>
     </>
   );

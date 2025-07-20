@@ -79,7 +79,8 @@ export const authOptions: NextAuthOptions = {
 
         async session({ session, token }) {
             session.user = {
-              ...session.user,
+            //   ...session.user,
+                id: session.user.id,
               email: typeof token.email === "string" ? token.email : undefined,
               fullname: typeof token.fullname === "string" ? token.fullname : undefined,
               role: Array.isArray(token.role) ? token.role : [], // ✅ handle array of roles
@@ -112,8 +113,8 @@ export const authOptions: NextAuthOptions = {
     },
 
     pages: {
-        signIn: ROUTES.login,
-        signOut: ROUTES.login,
+        signIn: ROUTES.LOGIN,
+        signOut: ROUTES.LOGIN,
     },
 
     secret: process.env.NEXTAUTH_SECRET,

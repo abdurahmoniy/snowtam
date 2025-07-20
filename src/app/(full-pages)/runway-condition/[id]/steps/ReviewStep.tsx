@@ -104,7 +104,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
   ];
 
   console.log(thirds, "thirds");
-  
+
 
   const NotificationNames = {
     [NotificationType.OTHER]: "Другое",
@@ -271,7 +271,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex w-[150px]">Дата/Время: <br />(ДД-ММ ЧЧ:ММ)</div>
+              <div className="flex w-[150px]">Дата/Время (UTC):<br />(ДД-ММ ЧЧ:ММ)</div>
               <Form.Item layout="horizontal" label="" name={"datetime"} className="mb-0 w-[250px]">
                 <Input readOnly value={currentTime}></Input>
               </Form.Item>
@@ -390,77 +390,35 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
       </div>
 
-      {(form3["device-of-implementation"]) && (
-        // <Card title="Процедуры улучшения">
-        //   <Descriptions bordered column={1} size="small">
-        //     {(form3.improvementProcedure 
-        //     ? 
-        //     (!!form3.improvementProcedure.find(i => i == ProcedureType.CHEMICAL_TREATMENT) 
-        //     ? 
-        //       [...form3.improvementProcedure.filter(i => i != ProcedureType.CHEMICAL_TREATMENT), form3.details.chemicalType as any] 
-        //       : 
-        //       form3.improvementProcedure)?.map(i => ({
-        //       applicationTime: dayjs(form3.applicationTime).format('YYYY-MM-DDTHH:mm:ss'),
-        //       procedureType: i,
-        //     })) 
-        //     : [])
+      <Card title="Процедуры улучшения">
+        <Descriptions bordered column={1} size="small">
+          <Descriptions.Item label="Процедуры">
+            {(form3.improvementProcedure?.length == 0 || form3.improvementProcedure == null) ? (
+              <Text type="secondary">N/R</Text>
+            ) : (
+              form3.improvementProcedure
+                .map((type) => {
+                  if (type === ProcedureType.CHEMICAL_TREATMENT) {
+                    const chemicalType = ProcedureNames[form3.details.chemicalType || ""] ?? "N/R";
+                    return `${ProcedureNames[type]} (${chemicalType})`;
+                  }
+                  else if (type === ProcedureType.HARD || type === ProcedureType.LIQUID) {
+                    const chemicalType = ProcedureNames[type] ?? "N/R";
+                    return `Хим обработка  (${chemicalType})`;
+                  } 
+                  return ProcedureNames[type];
+                })
+                .join(", ")
+            )}
+          </Descriptions.Item>
 
+          <Descriptions.Item label="Устройство">
+            {AllDevicesData.data?.data.find(d => d.id === form3["device-of-implementation"])?.name
+              ?? <Text type="secondary">N/R</Text>}
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
 
-
-        //     .filter(i => i.procedureType != ProcedureType.CHEMICAL_TREATMENT).map((proc, idx) => {
-
-        //       if (proc.procedureType == ProcedureType.HARD || proc.procedureType == ProcedureType.LIQUID) {
-        //         return <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
-        //           <div className="space-y-1">
-        //             <div><strong>Тип(ы):</strong> {proc ? "Хим обработка" : <Text type="secondary">Нет</Text>}</div>
-        //             <div><strong>Тип химии:</strong> {ProcedureNames[proc.procedureType] ?? <Text type="secondary">N/R</Text>}</div>
-        //           </div>
-        //         </Descriptions.Item>
-        //       }
-
-        //       return (
-        //         <Descriptions.Item key={idx} label={`Процедура №${idx + 1}`}>
-        //           <div className="space-y-1">
-        //             <div><strong>Тип(ы):</strong> {proc ? ProcedureNames[proc.procedureType] : <Text type="secondary">Нет</Text>}</div>
-        //             <div><strong>Тип химии:</strong> {(<Text type="secondary">N/R</Text>)}</div>
-        //           </div>
-        //         </Descriptions.Item>
-        //       )
-        //     })}
-        //     <Descriptions.Item label="Устройство">
-        //       {AllDevicesData.data?.data.find(d => d.id === form3["device-of-implementation"])?.name
-
-        //         ?? <Text type="secondary">N/R</Text>}
-        //     </Descriptions.Item>
-        //   </Descriptions>
-        // </Card>
-        <Card title="Процедуры улучшения">
-          <Descriptions bordered column={1} size="small">
-            <Descriptions.Item label="Процедуры">
-              {(form3.improvementProcedure?.length == 0 || form3.improvementProcedure == null) ? (
-                <Text type="secondary">N/R</Text>
-              ) : (
-                form3.improvementProcedure
-                  .map((type) => {
-                    if (type === ProcedureType.CHEMICAL_TREATMENT) {
-                      const chemicalType = ProcedureNames[form3.details.chemicalType || ""] ?? "N/R";
-                      return `${ProcedureNames[type]} (${chemicalType})`;
-                    }
-                    return ProcedureNames[type];
-                  })
-                  .join(", ")
-              )}
-            </Descriptions.Item>
-
-            <Descriptions.Item label="Устройство">
-              {AllDevicesData.data?.data.find(d => d.id === form3["device-of-implementation"])?.name
-                ?? <Text type="secondary">N/R</Text>}
-            </Descriptions.Item>
-          </Descriptions>
-        </Card>
-
-
-      )}
 
     </div>
   );

@@ -15,6 +15,7 @@ import {
   Checkbox,
   Col,
   DatePicker,
+  Flex,
   Form,
   Input,
   InputNumber,
@@ -33,6 +34,7 @@ import useLocalStorage from "use-local-storage";
 import NewRunWay3 from "../_components/NewRunWay3";
 import { useCreateRunwayCondition } from "./fetch";
 import ReviewStep from "./steps/ReviewStep";
+import { ArrowLeftFromLine } from "lucide-react";
 
 type CheckboxData = {
   label: string;
@@ -347,8 +349,8 @@ export default function RunwayConditionCreate() {
     {
       title: "Ситуационные уведомления",
       content: (
-        <div>
-          <h1 className="mb-4 text-lg font-semibold">
+        <div className="flex flex-col text-lg items-center">
+          <h1 className="mb-4  font-semibold">
             Ситуационной осведомленности.
           </h1>
           <div>
@@ -360,33 +362,98 @@ export default function RunwayConditionCreate() {
                 }}
                 style={{ width: "100%" }}
               >
-                <Row gutter={[16, 16]}>
-                  <Col span={12}>
-                    <Row gutter={[0, 8]}>
-                      {checkboxesLeft.map((item, idx) => (
-                        <Col span={24} key={idx}>
-                          <Checkbox
-                            checked={
-                              !!item.field &&
-                              checkedFields.includes(String(item.field))
-                            }
-                            value={String(item.field)}
-                          >
-                            <div className="flex items-center text-lg">
-                              {item.label}
-                              {item.field && item.showInput === true ? (
+                <Flex className="!flex justify-center gap-8">
+                  <Flex className="flex flex-col max-w-[750px] gap-2">
+                    {checkboxesLeft.map((item, idx) => (
+                      <Checkbox
+                        checked={
+                          !!item.field &&
+                          checkedFields.includes(String(item.field))
+                        }
+                        value={String(item.field)}
+                      >
+                        <div className="flex items-center text-xl">
+                          {item.label}
+                          {item.field && item.showInput === true ? (
+                            <Form.Item
+                              name={["notification_details", item.field]}
+                              className="mb-0 ml-2 inline-block"
+                              rules={
+                                checkedFields.includes(String(item.field))
+                                  ? [
+                                    {
+                                      required: true,
+                                      message: "Обязательное поле",
+                                    },
+                                    ...(numberInputFields.includes(
+                                      item.field,
+                                    )
+                                      ? [
+                                        {
+                                          validator:
+                                            customNumberValidator,
+                                        },
+                                      ]
+                                      : []),
+                                  ]
+                                  : []
+                              }
+                              normalize={(value) => {
+                                return value.replace(/\D/g, ""); // Удаляет все НЕ цифры
+                              }}
+                            >
+                              <Input
+                                value={notificationFieldValues[item.field] || ""}
+                                maxLength={getMaxLength(item.field)}
+                                onChange={(e) => {
+                                  const raw = e.target.value.replace(/\D/g, ""); // Only digits
+                                  const maxLen = 4;
+                                  const trimmed = maxLen ? raw.slice(0, maxLen) : raw;
+
+                                  setNotificationFieldValues((prev) => ({
+                                    ...prev,
+                                    [item.field!]: trimmed,
+                                  }));
+
+                                  if (!checkedFields.includes(String(item.field))) {
+                                    setCheckedFields((prev) => [...prev, String(item.field)]);
+                                  }
+
+                                  if (item.field !== undefined) {
+                                    form.setFieldsValue({
+                                      notification_details: {
+                                        ...form.getFieldValue("notification_details"),
+                                        [item.field]: trimmed,
+                                      },
+                                    });
+                                  }
+                                }}
+                                size="small"
+                                style={{ width: 80 }}
+                                suffix={item.suffix || ""}
+                              />
+                            </Form.Item>
+                          ) : (
+                            ""
+                          )}
+                          {item.subFields &&
+                            item.subFields.map((sf, subIdx) => (
+                              <span key={subIdx} className="ml-2">
+                                {sf.label}
                                 <Form.Item
-                                  name={["notification_details", item.field]}
-                                  className="mb-0 ml-2 inline-block"
+                                  name={["notification_details", sf.field]}
+                                  className="mb-0 ml-1 inline-block"
                                   rules={
-                                    checkedFields.includes(String(item.field))
+                                    checkedFields.includes(
+                                      String(item.field),
+                                    )
                                       ? [
                                         {
                                           required: true,
                                           message: "Обязательное поле",
                                         },
                                         ...(numberInputFields.includes(
-                                          item.field,
+                                          item.field as any,
                                         )
                                           ? [
                                             {
@@ -403,225 +470,152 @@ export default function RunwayConditionCreate() {
                                   }}
                                 >
                                   <Input
-                                    value={notificationFieldValues[item.field] || ""}
-                                    maxLength={getMaxLength(item.field)}
+                                    size="small"
+                                    style={{ width: 60 }}
+                                    value={notificationFieldValues[sf.field] || ""}
+                                    maxLength={2}
                                     onChange={(e) => {
-                                      const raw = e.target.value.replace(/\D/g, ""); // Only digits
-                                      const maxLen = 4;
-                                      const trimmed = maxLen ? raw.slice(0, maxLen) : raw;
-
+                                      const raw = e.target.value.replace(/\D/g, ""); // Remove non-digits
+                                      const trimmed = raw.slice(0, 2); // Keep max 2 digits
                                       setNotificationFieldValues((prev) => ({
                                         ...prev,
-                                        [item.field!]: trimmed,
+                                        [sf.field]: trimmed,
                                       }));
 
-                                      if (!checkedFields.includes(String(item.field))) {
-                                        setCheckedFields((prev) => [...prev, String(item.field)]);
+                                      if (!checkedFields.includes(String(sf.field))) {
+                                        setCheckedFields((prev) => [...prev, String(sf.field)]);
                                       }
 
-                                      if (item.field !== undefined) {
-                                        form.setFieldsValue({
-                                          notification_details: {
-                                            ...form.getFieldValue("notification_details"),
-                                            [item.field]: trimmed,
-                                          },
-                                        });
-                                      }
+                                      form.setFieldsValue({
+                                        notification_details: {
+                                          ...form.getFieldValue("notification_details"),
+                                          [sf.field]: trimmed,
+                                        },
+                                      });
                                     }}
-                                    size="small"
-                                    style={{ width: 80 }}
-                                    suffix={item.suffix || ""}
+                                    suffix={sf.suffix || ""}
                                   />
+
                                 </Form.Item>
-                              ) : (
-                                ""
-                              )}
-                              {item.subFields &&
-                                item.subFields.map((sf, subIdx) => (
-                                  <span key={subIdx} className="ml-2">
-                                    {sf.label}
-                                    <Form.Item
-                                      name={["notification_details", sf.field]}
-                                      className="mb-0 ml-1 inline-block"
-                                      rules={
-                                        checkedFields.includes(
-                                          String(item.field),
-                                        )
-                                          ? [
-                                            {
-                                              required: true,
-                                              message: "Обязательное поле",
-                                            },
-                                            ...(numberInputFields.includes(
-                                              item.field as any,
-                                            )
-                                              ? [
-                                                {
-                                                  validator:
-                                                    customNumberValidator,
-                                                },
-                                              ]
-                                              : []),
-                                          ]
-                                          : []
-                                      }
-                                      normalize={(value) => {
-                                        return value.replace(/\D/g, ""); // Удаляет все НЕ цифры
-                                      }}
-                                    >
-                                      <Input
-                                        size="small"
-                                        style={{ width: 60 }}
-                                        value={notificationFieldValues[sf.field] || ""}
-                                        maxLength={2}
-                                        onChange={(e) => {
-                                          const raw = e.target.value.replace(/\D/g, ""); // Remove non-digits
-                                          const trimmed = raw.slice(0, 2); // Keep max 2 digits
-                                          setNotificationFieldValues((prev) => ({
-                                            ...prev,
-                                            [sf.field]: trimmed,
-                                          }));
-
-                                          if (!checkedFields.includes(String(sf.field))) {
-                                            setCheckedFields((prev) => [...prev, String(sf.field)]);
-                                          }
-
-                                          form.setFieldsValue({
-                                            notification_details: {
-                                              ...form.getFieldValue("notification_details"),
-                                              [sf.field]: trimmed,
-                                            },
-                                          });
-                                        }}
-                                        suffix={sf.suffix || ""}
-                                      />
-
-                                    </Form.Item>
-                                  </span>
-                                ))}
-                            </div>
-                          </Checkbox>
-                        </Col>
-                      ))}
-                    </Row>
-                  </Col>
-                  <Col span={12}>
-                    <Row gutter={[0, 8]}>
-                      {checkboxesRight.map((item, idx) => (
-                        <Col span={24} key={idx}>
-                          <Checkbox
-                            className="flex !items-start"
-                            value={String(item.field)}
-                          >
-                            <div
-                              className={`flex !flex-wrap items-center gap-1 text-lg ${item.field == NotificationType.OTHER && "!flex-col !items-start !justify-start"}`}
-                            >
-                              {/* До инпута — часть до пробела */}
-                              <span>{item.label.split(" ")[0]}</span>
-
-                              {item.field &&
-                                item.field == NotificationType.OTHER ? (
-                                <>
-                                  <Form.Item
-                                    name={["notification_details", item.field]}
-                                    className="mb-0 inline-block"
-                                    rules={
-                                      checkedFields.includes(String(item.field))
-                                        ? [
-                                          {
-                                            required: true,
-                                            message: "Обязательное поле",
-                                          },
-                                          ...(numberInputFields.includes(
-                                            item.field,
-                                          )
-                                            ? [
-                                              {
-                                                validator:
-                                                  customNumberValidator,
-                                              },
-                                            ]
-                                            : []),
-                                        ]
-                                        : []
-                                    }
-                                  >
-                                    <TextArea
-                                      style={{
-                                        width: "100%",
-                                        resize: "both",
-                                        minHeight: "60px",
-                                      }}
-                                      size="small"
-                                      onChange={(e) => {
-                                        if (e.target.value.trim() !== "") {
-                                          setCheckedFields((prev) =>
-                                            prev.includes(String(item.field))
-                                              ? prev
-                                              : [...prev, String(item.field)],
-                                          );
-                                        }
-                                      }}
-                                    ></TextArea>
-                                  </Form.Item>
-                                </>
-                              ) : (
-                                item.showInput === true && (
-                                  <Form.Item
-                                    name={[
-                                      "notification_details",
-                                      item.field as any,
-                                    ]}
-                                    className="mb-0 inline-block"
-                                    rules={
-                                      checkedFields.includes(String(item.field))
-                                        ? [
-                                          {
-                                            required: true,
-                                            message: "Обязательное поле",
-                                          },
-                                          ...(numberInputFields.includes(
-                                            item.field as any,
-                                          )
-                                            ? [
-                                              {
-                                                validator:
-                                                  customNumberValidator,
-                                              },
-                                            ]
-                                            : []),
-                                        ]
-                                        : []
-                                    }
-                                  // normalize={(value) => value.replace(/\d/g, "")}
-                                  >
-                                    <Input
-                                      size="small"
-                                      style={{ width: 80 }}
-                                      onChange={(e) => {
-                                        if (e.target.value.trim() !== "") {
-                                          setCheckedFields((prev) =>
-                                            prev.includes(String(item.field))
-                                              ? prev
-                                              : [...prev, String(item.field)],
-                                          );
-                                        }
-                                      }}
-                                    />
-                                  </Form.Item>
-                                )
-                              )}
-
-                              <span>
-                                {item.label.split(" ").slice(1).join(" ")}
                               </span>
-                            </div>
-                          </Checkbox>
-                        </Col>
-                      ))}
-                    </Row>
-                  </Col>
-                </Row>
+                            ))}
+                        </div>
+                      </Checkbox>
+                    ))}
+                  </Flex>
+                  <Flex className="flex flex-col max-w-[400px] gap-2">
+                    {checkboxesRight.map((item, idx) => (
+                      <Checkbox
+                        className="flex !items-start"
+                        value={String(item.field)}
+                      >
+                        <div
+                          className={`flex !flex-wrap items-center gap-1 text-xl ${item.field == NotificationType.OTHER && "!flex-col !items-start !justify-start"}`}
+                        >
+                          {/* До инпута — часть до пробела */}
+                          <span>{item.label.split(" ")[0]}</span>
+
+                          {item.field &&
+                            item.field == NotificationType.OTHER ? (
+                            <>
+                              <Form.Item
+                                name={["notification_details", item.field]}
+                                className="mb-0 inline-block"
+                                rules={
+                                  checkedFields.includes(String(item.field))
+                                    ? [
+                                      {
+                                        required: true,
+                                        message: "Обязательное поле",
+                                      },
+                                      ...(numberInputFields.includes(
+                                        item.field,
+                                      )
+                                        ? [
+                                          {
+                                            validator:
+                                              customNumberValidator,
+                                          },
+                                        ]
+                                        : []),
+                                    ]
+                                    : []
+                                }
+                              >
+                                <TextArea
+                                  style={{
+                                    width: "100%",
+                                    resize: "both",
+                                    minHeight: "60px",
+                                  }}
+                                  size="small"
+                                  onChange={(e) => {
+                                    if (e.target.value.trim() !== "") {
+                                      setCheckedFields((prev) =>
+                                        prev.includes(String(item.field))
+                                          ? prev
+                                          : [...prev, String(item.field)],
+                                      );
+                                    }
+                                  }}
+                                ></TextArea>
+                              </Form.Item>
+                            </>
+                          ) : (
+                            item.showInput === true && (
+                              <Form.Item
+                                name={[
+                                  "notification_details",
+                                  item.field as any,
+                                ]}
+                                className="mb-0 inline-block"
+                                rules={
+                                  checkedFields.includes(String(item.field))
+                                    ? [
+                                      {
+                                        required: true,
+                                        message: "Обязательное поле",
+                                      },
+                                      ...(numberInputFields.includes(
+                                        item.field as any,
+                                      )
+                                        ? [
+                                          {
+                                            validator:
+                                              customNumberValidator,
+                                          },
+                                        ]
+                                        : []),
+                                    ]
+                                    : []
+                                }
+                              // normalize={(value) => value.replace(/\d/g, "")}
+                              >
+                                <Input
+                                  size="small"
+                                  style={{ width: 80 }}
+                                  onChange={(e) => {
+                                    if (e.target.value.trim() !== "") {
+                                      setCheckedFields((prev) =>
+                                        prev.includes(String(item.field))
+                                          ? prev
+                                          : [...prev, String(item.field)],
+                                      );
+                                    }
+                                  }}
+                                />
+                              </Form.Item>
+                            )
+                          )}
+
+                          <span>
+                            {item.label.split(" ").slice(1).join(" ")}
+                          </span>
+                        </div>
+                      </Checkbox>
+                    ))}
+                  </Flex>
+                </Flex>
               </Checkbox.Group>
             </Form.Item>
           </div>
@@ -760,79 +754,38 @@ export default function RunwayConditionCreate() {
               </div>
             </div>
             <Form.Item name={["improvementProcedure"]}>
-              {/* <Radio.Group
-                onChange={(e) => {
-                  const selected = e.target.value;
-                  form.setFieldsValue({
-                    improvementProcedures: [{
-                      procedureType: selected
-                    }]
-                  });
-                  setChemicalTreatmentChecked(selected === ProcedureType.CHEMICAL_TREATMENT);
-                }}
-              >
-                <Row gutter={[0, 8]} className="flex flex-col !w-[340px] !max-w-[340px] !min-w-[340px] overflow-hidden">
-                  <Col span={24} className="">
-                    <Radio value={ProcedureType.CHEMICAL_TREATMENT} className="text-lg">
-                      Хим. обработка
-                    </Radio>
-                  </Col>
-                  {chemicalTreatmentChecked && (
-                    <Col span={24}>
-                      <div className="ml-6">
-                        <Form.Item className="w-full" rules={[{ required: true, message: "Обязательное поле" }]} name={["details", "chemicalType"]}>
-                          <Radio.Group
-                            className="flex flex-col !text-lg">
-                            <Radio value="HARD">Жидкая</Radio>
-                            <Radio value="LIQUID">Твердая</Radio>
-                          </Radio.Group>
-                        </Form.Item>
-                      </div>
-                    </Col>
-                  )}
-
-                  <Col span={24}>
-                    <Radio value={ProcedureType.BRUSHING} className="text-lg">
-                      Щеточ
-                    </Radio>
-                  </Col>
-                  <Col span={24}>
-                    <Radio value={ProcedureType.PLOWING} className="text-lg">
-                      Продув
-                    </Radio>
-                  </Col>
-                </Row>
-              </Radio.Group> */}
 
               <Checkbox.Group
                 onChange={(checkedValues: ProcedureType[]) => {
                   setChemicalTreatmentChecked(
                     checkedValues.includes(ProcedureType.CHEMICAL_TREATMENT),
                   );
+
                 }}
               >
-                <Row className="flex flex-col gap-2 text-lg">
-                  <Checkbox value={ProcedureType.CHEMICAL_TREATMENT}>
+                <Row className="flex flex-col gap-2 !text-2xl !min-w-[250px]">
+                  <Checkbox className="!text-lg" value={ProcedureType.CHEMICAL_TREATMENT}>
                     Хим. обработка
                   </Checkbox>
                   {chemicalTreatmentChecked && (
                     <div className="ml-6">
                       <Form.Item
                         className="w-full"
+                        initialValue="HARD"
                         name={["details", "chemicalType"]}
                         rules={[
                           { required: true, message: "Обязательное поле" },
                         ]}
                       >
-                        <Radio.Group className="flex flex-col">
-                          <Radio value="HARD">Твердая</Radio>
-                          <Radio value="LIQUID">Жидкая</Radio>
+                        <Radio.Group className="flex flex-col !text-xl" defaultValue={"HARD"}>
+                          <Radio className="!text-xl" value="HARD">Твердая</Radio>
+                          <Radio className="!text-xl" value="LIQUID">Жидкая</Radio>
                         </Radio.Group>
                       </Form.Item>
                     </div>
                   )}
-                  <Checkbox value={ProcedureType.BRUSHING}>Щеточ</Checkbox>
-                  <Checkbox value={ProcedureType.PLOWING}>Продув</Checkbox>
+                  <Checkbox className="!text-lg" value={ProcedureType.BRUSHING}>Щеточ</Checkbox>
+                  <Checkbox className="!text-lg" value={ProcedureType.PLOWING}>Продув</Checkbox>
                 </Row>
               </Checkbox.Group>
             </Form.Item>
@@ -1087,8 +1040,6 @@ export default function RunwayConditionCreate() {
         );
       }
 
-      // procedures -> form3
-      const firstProc = data.data.improvementProcedures;
 
       const form3: Form3Values = {
         "device-of-implementation": Number(data.data?.deviceDto?.id) ?? null,
@@ -1123,7 +1074,6 @@ export default function RunwayConditionCreate() {
         },
       });
 
-      // Перейти сразу на последний шаг (4)
       setCurrentStep(3);
     }
   }, [RunwayConditionDataById.data, isCreateMode]);
@@ -1148,7 +1098,7 @@ export default function RunwayConditionCreate() {
         closeIcon={null}
         title={
           <div className="flex min-w-52 items-center justify-between pr-2">
-            <p>RCR успешно создан</p>{" "}
+            <p className="text-xl">RCR успешно создан</p>{" "}
             <Radio.Group
               buttonStyle="solid"
               value={finalRCRModalIsEnglish == true ? "ENG" : "RU"}
@@ -1185,15 +1135,19 @@ export default function RunwayConditionCreate() {
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-start gap-4">
+        <div className="flex w-full items-center justify-end gap-4">
           <Button
             onClick={() => {
               setFinalRCRModalOpen(false);
             }}
+            size="large"
           >
             Назад
           </Button>
-          <Button type="primary">Отправить</Button>
+          <Button type="primary"
+            size="large"
+
+          >Отправить</Button>
         </div>
       </Modal>
       <Steps
@@ -1202,6 +1156,9 @@ export default function RunwayConditionCreate() {
         className="mb-8"
         items={steps.map((s) => ({ title: s.title }))}
       />
+     {isCreateMode &&  <div className="pl-5 flex mb-4">
+        <Button type="primary" onClick={() => router.back()} className="flex items-center" icon={<ArrowLeftFromLine size={15} className="mb-0"></ArrowLeftFromLine>}>Назад</Button>
+      </div>}
       <Form
         form={form}
         layout="vertical"

@@ -1,12 +1,14 @@
+import { ROLES } from "./role-based-routing";
+
 export enum ROUTES {
-    login = "/auth/sign-in",
-    signUp = "/auth/sign-up",
-    home = "/",
+  LOGIN = "/auth/sign-in",
+  SIGNUP = "/auth/sign-up",
+  HOME = "/",
+  AIRPORTS = "/airports",
 }
 
-export type UserRole =
-    "ROLE_USER"
-
-export const defaultRoutes: Record<string, string> = {
-    ROLE_USER: "/"
-}
+export const defaultRoutes: Record<ROLES, string> = {
+  ROLE_USER: "/",
+  OPERATOR: "/",
+  SUPER_ADMIN: "/airports",
+};

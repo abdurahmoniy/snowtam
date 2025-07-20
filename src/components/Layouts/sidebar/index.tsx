@@ -8,6 +8,8 @@ import { NAV_DATA } from "./data";
 import { ChevronUp } from "./icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
+import { accessibleUrls, ROLES } from "@/consts/role-based-routing";
+import { useUserMe } from "@/hooks/use-me";
 
 type NavSubItem = { title: string; url: string };
 type NavGroupItem = { title: string; icon: any; items: NavSubItem[] };
@@ -26,15 +28,27 @@ export function Sidebar() {
   const pathname = usePathname();
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const UserData = useUserMe();
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
 
   };
 
+  const AllowedUrls = accessibleUrls(UserData.data?.data.role[0] || ROLES.ROLE_USER);
+
+  const FilteredRoutes = NAV_DATA.filter((item) => {
+    if (AllowedUrls.includes(item.url)) {
+      return true
+    }
+    else {
+      return false;
+    }
+  });
+
   useEffect(() => {
     // Keep collapsible open, when it's subpage is active
-    (NAV_DATA as NavData).forEach((section) => {
+    (FilteredRoutes as NavData).forEach((section) => {
       if (isNavSection(section)) {
         section.items.forEach((item: NavGroupItem) => {
           if (isNavGroupItem(item)) {
@@ -88,7 +102,7 @@ export function Sidebar() {
 
           {/* Navigation */}
           <div className="custom-scrollbar mt-6 flex-1 overflow-y-auto pr-3 min-[850px]:mt-10">
-            {(NAV_DATA as NavData).map((section, idx) => {
+            {(FilteredRoutes as NavData).map((section, idx) => {
               if (isNavSection(section)) {
                 return (
                   <div key={section.label || idx} className="mb-6">
