@@ -127,11 +127,7 @@ export default function AirportsPage() {
   return (
     <>
       {/* Кнопки управления */}
-      <div className="flex justify-end mb-4">
-        <Button type="primary" onClick={() => setAddModalOpen(true)}>
-          Добавить аэропорт
-        </Button>
-      </div>
+    
 
       {/* Модалка RCR */}
       <Modal
@@ -171,7 +167,6 @@ export default function AirportsPage() {
         )}
       </Modal>
 
-      {/* Модалки добавления и редактирования */}
       <AddAirportModal
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
@@ -193,13 +188,18 @@ export default function AirportsPage() {
       />
 
       <div className="flex justify-center">
-        <div className="w-[800px]">
+        <div className="w-[1050px]">
           <AirportsMap
             onAirportClick={() => setModalOpen(true)}
             regionColors={regionFillColors}
             warehouses={AirportsData.data?.data ?? []}
           />
         </div>
+      </div>
+        <div className="flex justify-end mb-4">
+        <Button type="primary" onClick={() => setAddModalOpen(true)}>
+          Добавить аэропорт
+        </Button>
       </div>
 
       <div className="mt-6 flex justify-center">
@@ -211,7 +211,7 @@ export default function AirportsPage() {
           columns={[
 
             {
-              title: "Aeroport nomi",
+              title: "Аэропорт",
               dataIndex: "initialName",
               key: "initialName",
             },
@@ -225,7 +225,15 @@ export default function AirportsPage() {
               dataIndex: "runwayThirds",
               key: "runwayThirds",
               render: (_thirds, record) => <div>
-                {(record.runwayDtos?.length ? `${record.runwayDtos?.length}:` : 0)} {record.runwayDtos?.map((i) => i.runwayDesignation).join(", ") || ""}
+                {(record.runwayDtos?.length ? `${record.runwayDtos?.length}` : 0)}
+              </div>,
+            },
+            {
+              title: "ВПП",
+              dataIndex: "runwayThirds",
+              key: "runwayThirds",
+              render: (_thirds, record) => <div>
+                {record.runwayDtos?.map((i) => i.runwayDesignation).join(", ") || ""}
               </div>,
             },
             {

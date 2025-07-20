@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { type HTMLInputTypeAttribute, useId } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { type HTMLInputTypeAttribute, useId, useState } from "react";
 
 type InputGroupProps = {
   className?: string;
@@ -33,6 +34,8 @@ const InputGroup: React.FC<InputGroupProps> = ({
 }) => {
   const id = useId();
 
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className={className}>
       <label
@@ -53,7 +56,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
       >
         <input
           id={id}
-          type={type}
+          type={type === "password" ? (showPassword ? "text" : "password") : type}
           name={props.name}
           placeholder={placeholder}
           onChange={handleChange}
@@ -72,7 +75,22 @@ const InputGroup: React.FC<InputGroupProps> = ({
           data-active={active}
         />
 
-        {icon}
+        {type === "password" ? (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-0 top-1/2 -translate-y-1/2 text-dark-4 dark:text-white"
+            tabIndex={-1}
+          >
+            {showPassword ? (
+              <EyeOff />
+            ) : (
+              <Eye />
+            )}
+          </button>
+        ) : icon}
+
+
       </div>
     </div>
   );
