@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -88,6 +88,13 @@ export default function AirportsPage() {
       }),
   });
 
+
+  useEffect(() => {
+    if (!!selectedAirport) {
+      setSelectedAirport(AirportsData.data?.data.find((airport) => airport.id === selectedAirport.id) ?? selectedAirport);
+    }
+  }, [AirportsData.data, user]);
+
   const regionFillColors: Record<number, string> = {
     1: "#a4edff",
     2: "#a4edff",
@@ -127,7 +134,7 @@ export default function AirportsPage() {
   return (
     <>
       {/* Кнопки управления */}
-    
+
 
       {/* Модалка RCR */}
       <Modal
@@ -196,7 +203,7 @@ export default function AirportsPage() {
           />
         </div>
       </div>
-        <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-4">
         <Button type="primary" onClick={() => setAddModalOpen(true)}>
           Добавить аэропорт
         </Button>

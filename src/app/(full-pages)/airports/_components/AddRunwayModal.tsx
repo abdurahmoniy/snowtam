@@ -6,6 +6,7 @@ import { Modal, Form, Input, InputNumber, message } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateRunway } from "@/services/runway.services";
 import type { IRunwayCreateDto } from "@/types/runway";
+import { toast } from "sonner";
 
 interface AddRunwayModalProps {
   open: boolean;
@@ -24,14 +25,15 @@ export default function AddRunwayModal({
   const mutation = useMutation({
     mutationFn: (data: IRunwayCreateDto) => CreateRunway(data),
     onSuccess: () => {
-      message.success("ВПП добавлен");
+      toast.success("ВПП добавлен");
       form.resetFields();
       // обновим список аэропортов
       queryClient.invalidateQueries({ queryKey: ["airports-list"] });
+      queryClient.invalidateQueries();
       onClose();
     },
     onError: () => {
-      message.error("Не удалось добавить ВПП");
+      toast.error("Не удалось добавить ВПП");
     },
   });
 
