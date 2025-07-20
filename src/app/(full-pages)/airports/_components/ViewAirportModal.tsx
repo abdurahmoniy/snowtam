@@ -136,6 +136,7 @@ export default function ViewAirportModal({
                 open={addRunwayOpen}
                 onClose={() => setAddRunwayOpen(false)}
                 airportId={airport.id}
+                
             />
         </>
     );
