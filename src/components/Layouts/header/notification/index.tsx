@@ -9,9 +9,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BellIcon } from "./icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllNotificationData, MarkAsReadNotification } from "@/services/notification.services";
 import { Button } from "antd";
 import { Eye } from "lucide-react";
@@ -46,8 +46,9 @@ const notificationList = [
 
 export function Notification() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDotVisible, setIsDotVisible] = useState(true);
+  const [isDotVisible, setIsDotVisible] = useState(false);
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
 
   const NotificationsData = useQuery({
     queryKey: ["notification-data"],
@@ -61,6 +62,10 @@ export function Notification() {
   })
 
   console.log(NotificationsData.data, "NotificationsData");
+
+  useEffect(() => {
+    if(NotificationsData.data?.data.find((item) => !item.isRead)) setIsDotVisible(true);
+  }, [NotificationsData.data]);
 
 
   return (
@@ -99,17 +104,14 @@ export function Notification() {
           <span className="text-lg font-medium text-dark dark:text-white">
             Bildirishnomalar
           </span>
-          {/* <span className="rounded-md bg-primary px-[9px] py-0.5 text-xs font-medium text-white">
-            5 yangi
-          </span> */}
         </div>
 
         <ul className="mb-3 max-h-[23rem] space-y-1.5 overflow-y-auto">
           {NotificationsData.data?.data?.map((item, index) => (
             <li key={index} role="menuitem">
-              <Link
-                href="#"
-                onClick={() => setIsOpen(false)}
+              <div
+                // href="#"
+                // onClick={() => setIsOpen(false)}
                 className="flex items-center gap-4 rounded-lg px-2 py-1.5 outline-none hover:bg-gray-2 focus-visible:bg-gray-2 dark:hover:bg-dark-3 dark:focus-visible:bg-dark-3"
               >
 
@@ -122,14 +124,17 @@ export function Notification() {
                     {item.subTitle}
                   </span> */}
 
-                  <Button size={"small"} onClick={() => 
-                    
-                    // MarkAsRead.mutate(item.) 
+                 {!item.isRead &&  <Button className="px-2" size={"small"}  onClick={() =>
 
-                    {}
-                    }><Eye /></Button>
+                    MarkAsRead.mutate({
+                      notificationId: String(item.id)
+                    }, {
+                      onSuccess(data, variables, context) {
+                        queryClient.invalidateQueries();
+                      },
+                    })}><Eye size={16} /></Button>}
                 </div>
-              </Link>
+              </div>
             </li>
           ))}
         </ul>

@@ -1,3 +1,4 @@
+import { Users } from "lucide-react";
 import * as Icons from "../icons";
 
 export const NAV_DATA = [
@@ -17,13 +18,18 @@ export const NAV_DATA = [
   //   ]
   // },
   {
-    title: "Boshqaruv Paneli",
+    title: "Панель управления",
     icon: Icons.HomeIcon,
     url: "/",
   },
   {
-    title: "Aeroportlar",
+    title: "Аэропорты",
     icon: Icons.PlaneTakeOffIcon,
     url: "/airports",
-  }
+  },
+  {
+    title: "Пользователи",
+    icon: Users,
+    url: "/users",
+  },
 ];

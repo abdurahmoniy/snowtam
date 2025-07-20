@@ -22,3 +22,19 @@ export interface IAirport {
     }[
   ];
 }
+
+
+
+export interface IAirportCreateDto {
+  name: string;
+  initialName: string;
+  airportCode: string;
+  temperature: number;
+  longitude: string;
+  latitude: string;
+}
+
+
+export interface IAirportUpdateDto extends IAirportCreateDto {
+  id: number;
+}

@@ -11,10 +11,12 @@ import { Avatar } from 'antd';
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import { LogOutIcon } from "./icons";
+import { useRouter } from "next/navigation";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
+  const router = useRouter();
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/login" });
@@ -59,12 +61,12 @@ export function UserInfo() {
       </DropdownTrigger>
 
       <DropdownContent
-        className="border border-stroke bg-white shadow-md dark:border-dark-3 dark:bg-gray-dark min-[230px]:min-w-[17.5rem]"
+        className="border border-stroke bg-white shadow-md dark:border-dark-3 dark:bg-gray-dark min-[230px]:min-w-[17.5rem] overflow-hidden"
         align="end"
       >
         <h2 className="sr-only">Foydalanuvchi ma&apos;lumotlari</h2>
 
-        <figure className="flex items-center gap-2.5 px-5 py-3.5">
+        <figure className="flex items-center gap-2.5 px-5 py-3.5 hover:bg-slate-300 cursor-pointer" onClick={() => { router.push("/profile") }}>
           {/* <Image
             src={USER.img}
             className="size-12"
@@ -77,7 +79,7 @@ export function UserInfo() {
             {USER.name.slice(0, 1)}
           </Avatar>
 
-          <figcaption className="space-y-1 text-base font-medium">
+          <figcaption className="space-y-1 text-base font-medium " >
             <div className="mb-2 leading-none text-dark dark:text-white">
               {USER.name}
             </div>
