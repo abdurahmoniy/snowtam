@@ -13,7 +13,7 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (status === "loading") return; // Do nothing while loading
         if (status === "unauthenticated") {
-            router.replace(ROUTES.login);
+            router.replace(ROUTES.LOGIN);
         }
     }, [status, router]);
 

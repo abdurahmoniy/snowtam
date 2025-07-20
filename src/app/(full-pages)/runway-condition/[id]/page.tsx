@@ -366,6 +366,7 @@ export default function RunwayConditionCreate() {
                   <Flex className="flex flex-col max-w-[750px] gap-2">
                     {checkboxesLeft.map((item, idx) => (
                       <Checkbox
+                      key={item.value}
                         checked={
                           !!item.field &&
                           checkedFields.includes(String(item.field))
@@ -508,6 +509,7 @@ export default function RunwayConditionCreate() {
                       <Checkbox
                         className="flex !items-start"
                         value={String(item.field)}
+                        key={item.value}
                       >
                         <div
                           className={`flex !flex-wrap items-center gap-1 text-xl ${item.field == NotificationType.OTHER && "!flex-col !items-start !justify-start"}`}

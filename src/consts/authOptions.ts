@@ -3,12 +3,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { ROUTES } from "./routes";
 import { DefaultSession, DefaultUser } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
+import { ROLES } from "./role-based-routing";
 
 export interface IUser extends DefaultUser {
     email?: string;
     fullname?: string;
     role?: string[]; // ✅ array of roles
     status?: string;
+    
 }
 
 export interface ISession extends DefaultSession {
@@ -20,7 +22,7 @@ export interface ISession extends DefaultSession {
 export interface IJWT extends NextAuthJWT {
     email?: string;
     fullname?: string;
-    role?: string;
+    role: ROLES[];
     status?: string;
     accessToken?: string;
     accessTokenExpires?: number;

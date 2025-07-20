@@ -14,6 +14,7 @@ export default function Signup() {
         fullname: "",
         email: "",
         password: "",
+        fullName: "", roleId: "", position: "", airportId: "",
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -34,14 +35,18 @@ export default function Signup() {
         setLoading(true);
         setError(null);
         try {
-            const apires = await SignUp(data);
+            const apires = await SignUp({
+                ...data,
+                roleId: Number(data.roleId),
+                airportId: Number(data.airportId)
+            });
             console.log(apires)
             // check if api responds BAD_REQUEST or NOT_FOUND
             if (apires.status === 'BAD_REQUEST' || apires.status === 'NOT_FOUND') {
                 toast.info(apires.message)
             } else if (apires.status === 'OK') {
                 // On successful sign-up, redirect to the login page
-                router.push(ROUTES.login);
+                router.push(ROUTES.LOGIN);
             } else {
                 toast.error(apires.message)
             }

@@ -28,7 +28,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             setError(null);
             try {
                 const me = await getMe();
-                setUser(me.data);
+                setUser({
+                    ...me.data,
+                    id: String(me.data.id)
+                });
 
             } catch (err: any) {
                 setUser(null);
