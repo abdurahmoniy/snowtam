@@ -202,6 +202,7 @@ export interface RunwayCondition {
   deviceForImprovement: null | number;
   finalRCR: string;
   finalRCRru: string;
+  applicationStatus: string;
   runwayThirds: {
     id: number;
     runwayConditionId: number;

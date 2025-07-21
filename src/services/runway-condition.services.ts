@@ -103,7 +103,7 @@ export async function DeclineRunWayConditionById({
 
 
   const res = await httpClient.private.put<MainResponse<RunwayCondition>>(
-    `/runwayCondition/declineRUnwayCondition?${searchParams.toString()}`
+    `/runwayCondition/declineRunwayCondition?${searchParams.toString()}`
   );
   return res.data;
 

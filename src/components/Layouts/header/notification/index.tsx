@@ -102,7 +102,7 @@ export function Notification() {
       >
         <div className="mb-1 flex items-center justify-between px-2 py-1.5">
           <span className="text-lg font-medium text-dark dark:text-white">
-            Bildirishnomalar
+            Уведомления
           </span>
         </div>
 
