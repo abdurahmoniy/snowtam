@@ -1,7 +1,19 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Alert, Button, Card, DatePicker, Descriptions, Empty, Modal, Popover, Radio, Spin, Table } from "antd";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Alert,
+  Button,
+  Card,
+  DatePicker,
+  Descriptions,
+  Empty,
+  Modal,
+  Popover,
+  Radio,
+  Spin,
+  Table,
+} from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,7 +26,6 @@ import {
 import type { RunwayCondition } from "../../../types/runway-condition";
 
 import { StopOutlined } from "@ant-design/icons";
-
 
 import useLocalStorage from "use-local-storage";
 import Loading from "@/components/Loading";
@@ -34,17 +45,20 @@ export default function Home() {
   const [pageSize, setPageSize] = useState(10);
   const currentUser = useUserMe();
 
-  const [selectedRunwayCondition, setSelectedRunwayCondition] = useState<RunwayCondition | null>(null);
+  const [selectedRunwayCondition, setSelectedRunwayCondition] =
+    useState<RunwayCondition | null>(null);
   const [FinalRCRModalOpen, setFinalRCRModalOpen] = useState(false);
   const [finalRCRModalIsEnglish, setFinalRCRModalIsEnglish] = useState(false);
 
-
-  const isSAI = currentUser.data?.data.role.includes(ROLES.SAI)
+  const isSAI = currentUser.data?.data.role.includes(ROLES.SAI);
 
   const [RunWayData, setRunWayData] = useLocalStorage(
     "runway-condition-draft",
     null,
   );
+
+  const queryClient = useQueryClient();
+
   console.log(RunWayData, "RunWayData");
 
   const [rangePickerValue, setRangePickerValue] = useState<any>([
@@ -87,17 +101,25 @@ export default function Home() {
   const user = localStorageItem ? JSON.parse(localStorageItem) : null;
 
   const AcceptRCR = useMutation({
-    mutationFn: ({ }: {}) => AcceptRunWayConditionById({
-      id: Number(selectedRunwayCondition?.id)
-    })
+    mutationFn: ({ }: {}) =>
+      AcceptRunWayConditionById({
+        id: Number(selectedRunwayCondition?.id),
+      }),
   });
 
   const DeclineRCR = useMutation({
-    mutationFn: ({ }: {}) => DeclineRunWayConditionById({
-      id: Number(selectedRunwayCondition?.id)
-    })
-  })
+    mutationFn: ({ }: {}) =>
+      DeclineRunWayConditionById({
+        id: Number(selectedRunwayCondition?.id),
+      }),
+  });
 
+
+  useEffect(() => {
+    if (!!selectedRunwayCondition) {
+      setSelectedRunwayCondition(RWConditionData.data?.data.find(i => i.id == selectedRunwayCondition?.id) ?? selectedRunwayCondition)
+    }
+  }, [RWConditionData.data?.data])
 
   return (
     <div className="">
@@ -134,20 +156,22 @@ export default function Home() {
           <div className="flex flex-col gap-6 py-6 text-2xl">
             {finalRCRModalIsEnglish ? (
               <div>
-                <p style={{ whiteSpace: "pre-line" }}>{selectedRunwayCondition?.finalRCR}</p>
+                <p style={{ whiteSpace: "pre-line" }}>
+                  {selectedRunwayCondition?.finalRCR}
+                </p>
               </div>
             ) : (
               <div>
-                <p style={{ whiteSpace: "pre-line" }}>{selectedRunwayCondition?.finalRCRru}</p>
+                <p style={{ whiteSpace: "pre-line" }}>
+                  {selectedRunwayCondition?.finalRCRru}
+                </p>
               </div>
             )}
           </div>
-
         </div>
 
-
         <div className="flex w-full items-center justify-between gap-4">
-           <Button
+          <Button
             onClick={() => {
               setFinalRCRModalOpen(false);
             }}
@@ -155,34 +179,64 @@ export default function Home() {
           >
             Назад
           </Button>
-          <div className="flex items-center gap-4"><Button loading={AcceptRCR.isPending} type="primary" onClick={() => {
-            AcceptRCR.mutate("", {
-              onSuccess(data, variables, context) {
-                toast.success("Успешно подтвердил RCR")
-              },
-            })
-          }} className="flex items-center" icon={<Check size={15} className="mb-0"></Check>}>Подтвердить</Button>
-            <Button type="primary" loading={DeclineRCR.isPending} danger onClick={() => {
-              DeclineRCR.mutate("", {
-                onSuccess(data, variables, context) {
-                  toast.success("Успешно отклонил RCR")
+          <div className="flex items-center gap-4">
+            <Button
+              loading={AcceptRCR.isPending}
+              type="primary"
+              disabled={
+                selectedRunwayCondition?.applicationStatus == "FINISHED" ||
+                selectedRunwayCondition?.applicationStatus == "DECLINED"
+              }
+              onClick={() => {
+                AcceptRCR.mutate("", {
+                  onSuccess(data, variables, context) {
+                    toast.success("Успешно подтвердил RCR");
+                    queryClient.invalidateQueries();
 
-                },
-              })
-            }} className="flex items-center" icon={<StopOutlined size={15} className="mb-0"></StopOutlined>}>Отклонить</Button>    </div>
+                  },
+                });
+              }}
+              className="flex items-center"
+              icon={<Check size={15} className="mb-0"></Check>}
+            >
+              Подтвердить
+            </Button>
+            <Button
+              type="primary"
+              loading={DeclineRCR.isPending}
+              disabled={
+                selectedRunwayCondition?.applicationStatus == "FINISHED" ||
+                selectedRunwayCondition?.applicationStatus == "DECLINED"
+              }
+              danger
+              onClick={() => {
+                DeclineRCR.mutate("", {
+                  onSuccess(data, variables, context) {
+                    toast.success("Успешно отклонил RCR");
+                    queryClient.invalidateQueries();
+                  },
+                });
+              }}
+              className="flex items-center"
+              icon={<StopOutlined size={15} className="mb-0"></StopOutlined>}
+            >
+              Отклонить
+            </Button>{" "}
+          </div>
         </div>
       </Modal>
 
       <div className="flex justify-end">
-        {!isSAI && <Button
-          type="primary"
-          variant="solid"
-          size="large"
-          onClick={() => router.push("/runway-condition/create")}
-        >
-          Создать
-        </Button>}
-
+        {!isSAI && (
+          <Button
+            type="primary"
+            variant="solid"
+            size="large"
+            onClick={() => router.push("/runway-condition/create")}
+          >
+            Создать
+          </Button>
+        )}
       </div>
       <div className="mt-6 flex items-start justify-center">
         {RWConditionData.isLoading ? (
@@ -283,6 +337,22 @@ export default function Home() {
                 render: (p) => <div className="!text-lg">{p?.length || 0}</div>,
                 align: "center",
               },
+              {
+                title: "Статус",
+                dataIndex: "applicationStatus",
+                key: "applicationStatus",
+
+                render: (p) => (
+                  <Button type="default" className="!text-lg">
+                    {(p == "FINISHED" || p == "ACCEPTED")
+                      ? "Подтверждено"
+                      : p == "PENDING"
+                        ? "В процессе"
+                        : "Отклонено"}
+                  </Button>
+                ),
+                align: "center",
+              },
             ]}
             pagination={{
               current: page,
@@ -301,10 +371,8 @@ export default function Home() {
                   if (isSAI) {
                     setFinalRCRModalOpen(true);
                     setSelectedRunwayCondition(record);
-                  }
-                  else {
+                  } else {
                     router.push(`/runway-condition/${record.id}`);
-
                   }
                 },
                 style: { cursor: "pointer" },
