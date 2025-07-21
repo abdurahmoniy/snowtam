@@ -8,10 +8,12 @@ import { getAllDevices } from "@/services/device.services";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Card, Descriptions, Form, FormInstance, Input, InputNumber, Radio, Select, Typography } from "antd";
 import dayjs from "dayjs";
-import { ArrowLeftFromLine, MoveLeft } from "lucide-react";
+import { ArrowLeftFromLine, Check, MoveLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 const { Title, Text } = Typography;
+
+import {StopOutlined} from "@ant-design/icons";
 
 interface ReviewStepProps {
   values: {
@@ -194,9 +196,12 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-6">
-        {!isCreateMode && <Button type="primary" onClick={() => router.back()} className="flex items-center" icon={<ArrowLeftFromLine size={15} className="mb-0"></ArrowLeftFromLine>}>Назад</Button>}
+      <div className="flex items-center justify-between">
+       <div className="flex items-center gap-6">
+         {!isCreateMode && <Button type="primary" onClick={() => router.back()} className="flex items-center" icon={<ArrowLeftFromLine size={15} className="mb-0"></ArrowLeftFromLine>}>Назад</Button>}
         <Title level={4} className="!mb-0">Обзор состояния ВПП</Title>
+       </div>
+       
       </div>
 
       {/* <Card title="Состояние ВПП по третям">

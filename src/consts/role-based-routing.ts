@@ -17,6 +17,7 @@ export const superAdminAccess = [
 export const userAccess = ["/", "/profile", "/runway-condition"];
 
 export const operatorAccess = ["/", "/profile", "/runway-condition"];
+export const saiAccess = ["/", "/profile"];
 
 export function accessibleUrls(role: ROLES) {
   switch (role) {
@@ -26,6 +27,11 @@ export function accessibleUrls(role: ROLES) {
     case ROLES.OPERATOR: {
       return operatorAccess;
     }
+
+    case ROLES.SAI: {
+      return saiAccess;
+    }
+
 
     default: {
       return ["/"];

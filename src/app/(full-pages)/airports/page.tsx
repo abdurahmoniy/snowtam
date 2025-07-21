@@ -195,7 +195,7 @@ export default function AirportsPage() {
       />
 
       <div className="flex justify-center">
-        <div className="w-[1050px]">
+        <div className="w-[900px]">
           <AirportsMap
             onAirportClick={() => setModalOpen(true)}
             regionColors={regionFillColors}

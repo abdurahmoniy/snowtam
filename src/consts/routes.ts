@@ -12,7 +12,7 @@ export const defaultRoutes: Record<ROLES, string> = {
   SUPER_ADMIN: "/airports",
   ADMIN: "/airports",
   DISPETCHER: "/airports",
-  SAI: "/airports",
+  SAI: "/",
   SPECIALIST: "/airports",
 
 };
