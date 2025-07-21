@@ -14,6 +14,7 @@ import IAirportRunaway, { IAirport } from "@/types/airport";
 import { IRunway } from "@/types/runway"
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import AddRunwayModal from "./AddRunwayModal";
+import { Edit, Trash } from "lucide-react";
 
 interface ViewAirportModalProps {
     open: boolean;
@@ -51,6 +52,14 @@ export default function ViewAirportModal({
         { title: "Ширина (м)", dataIndex: "width", key: "width" },
         { title: "Долгота", dataIndex: "longitude", key: "longitude" },
         { title: "Широта", dataIndex: "latitude", key: "latitude" },
+        {
+            title: "Действия", dataIndex: "action", key: "action", render: () => {
+                return <div>
+                    <Button><Trash /></Button>
+                    <Button><Edit /></Button>
+                </div>
+            }
+        },
     ];
 
     return (
@@ -59,7 +68,7 @@ export default function ViewAirportModal({
                 title={`Информация об аэропорте: ${airport.initialName}`}
                 open={open}
                 onCancel={onClose}
-                width={1000}
+                width={1100}
                 footer={
                     <div className="flex justify-end gap-3">
                         <Button onClick={() => setAddRunwayOpen(true)}>
@@ -89,7 +98,7 @@ export default function ViewAirportModal({
             >
                 <div style={{ display: "flex", gap: 22 }}>
                     {/* Левая колонка: описания */}
-                    <div style={{ }}>
+                    <div style={{}}>
                         <Descriptions column={1} bordered size="small">
                             <Descriptions.Item label="Название">
                                 {airport.name}
@@ -136,7 +145,7 @@ export default function ViewAirportModal({
                 open={addRunwayOpen}
                 onClose={() => setAddRunwayOpen(false)}
                 airportId={airport.id}
-                
+
             />
         </>
     );

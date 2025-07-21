@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  console.log(token?.role, "token");
+  console.log(token?.role, token?.role[0], "token");
 
   const expectedRoutes = defaultRoutes;
 
@@ -22,6 +22,8 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.some((route) =>
     pathname.startsWith(route),
   );
+  console.log(isPublicRoute, "isPublicRoute", !!token?.role[0]);
+  
 
   // If the user is logged in and trying to access a public-only route,
   // redirect them to the home page.
@@ -43,9 +45,15 @@ export async function middleware(request: NextRequest) {
     const defaultUrl = expectedRoutes[token?.role[0]];
     const allowedUrls = accessibleUrls(token?.role[0]);
 
-    if(pathname.slice(1, pathname.length) === "") {
+    console.log("token check pass", defaultUrl, pathname.slice(1, pathname.length), pathname.slice(1, pathname.length) === "");
+    
+
+    if(pathname != "/" && pathname.slice(1, pathname.length) === "") {
       return NextResponse.redirect(new URL(defaultUrl, request.url));
     }
+
+    console.log("pathname check pass", defaultUrl);
+
 
     const isAllowedUrl = allowedUrls.some((route) =>
       pathname
