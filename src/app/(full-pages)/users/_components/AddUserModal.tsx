@@ -21,7 +21,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  roleOptions: { label: string; value: string }[];
+  roleOptions: { label: string; value: number }[];
 }
 
 export default function AddUserModal({

@@ -4,12 +4,12 @@ import Loading from "@/components/Loading";
 import { NotificationType, ProcedureType } from "@/consts/data";
 import { useUserMe } from "@/hooks/use-me";
 import { getAllDevices } from "@/services/device.services";
-import { GetRunWayConditionById } from "@/services/runway-condition.services";
+import { GetRunWayConditionById, SendRunWayConditionById } from "@/services/runway-condition.services";
 import {
   RunwayConditionCreateRequest,
   RunwayConditionCreateResponse
 } from "@/types/runway-condition";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Button,
   Checkbox,
@@ -366,7 +366,7 @@ export default function RunwayConditionCreate() {
                   <Flex className="flex flex-col max-w-[750px] gap-2">
                     {checkboxesLeft.map((item, idx) => (
                       <Checkbox
-                      key={item.value}
+                        key={item.value}
                         checked={
                           !!item.field &&
                           checkedFields.includes(String(item.field))
@@ -827,6 +827,12 @@ export default function RunwayConditionCreate() {
     setCurrentStep(currentStep - 1);
   };
 
+  const SendRCR = useMutation({
+    mutationFn: ({ id }: { id: number }) => SendRunWayConditionById({
+      id
+    })
+  })
+
   const handleFinish = async (values: any) => {
     const processedNotificationTypes: NotificationType[] = [];
 
@@ -1148,7 +1154,11 @@ export default function RunwayConditionCreate() {
           </Button>
           <Button type="primary"
             size="large"
-
+            onClick={() => {
+              SendRCR.mutate({
+                id: Number(CreateResponse?.data.id)
+              })
+            }}
           >Отправить</Button>
         </div>
       </Modal>
@@ -1158,7 +1168,7 @@ export default function RunwayConditionCreate() {
         className="mb-8"
         items={steps.map((s) => ({ title: s.title }))}
       />
-     {isCreateMode &&  <div className="pl-5 flex mb-4">
+      {isCreateMode && <div className="pl-5 flex mb-4">
         <Button type="primary" onClick={() => router.back()} className="flex items-center" icon={<ArrowLeftFromLine size={15} className="mb-0"></ArrowLeftFromLine>}>Назад</Button>
       </div>}
       <Form

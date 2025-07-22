@@ -12,12 +12,14 @@ interface AddRunwayModalProps {
   open: boolean;
   onClose: () => void;
   airportId: number;
+  onSuccess: () => void;  
 }
 
 export default function AddRunwayModal({
   open,
   onClose,
   airportId,
+  onSuccess
 }: AddRunwayModalProps) {
   const [form] = Form.useForm<IRunwayCreateDto>();
   const queryClient = useQueryClient();
@@ -30,6 +32,7 @@ export default function AddRunwayModal({
       // обновим список аэропортов
       queryClient.invalidateQueries({ queryKey: ["airports-list"] });
       queryClient.invalidateQueries();
+      onSuccess();
       onClose();
     },
     onError: () => {

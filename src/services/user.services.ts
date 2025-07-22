@@ -10,6 +10,7 @@ interface PaginationParams {
   page?: number;
   size?: number;
   userStatus?: UserStatus;
+  airportId?: number
 }
 
 interface BanUserDto {
@@ -47,6 +48,7 @@ export async function GetAllUsers(params: PaginationParams) {
   if (params.page !== undefined) searchParams.set("page", String(params.page));
   if (params.size !== undefined) searchParams.set("size", String(params.size));
   if (params.userStatus) searchParams.set("userStatus", params.userStatus);
+  if (params.airportId) searchParams.set("airportId", String(params.airportId));
 
   const res = await httpClient.private.get<MainResponse<IUser[]>>(
     `/users/getAllUser?${searchParams.toString()}`,
@@ -107,6 +109,17 @@ export async function UpdateUser(data: UpdateUserDto) {
   const res = await httpClient.private.put<MainResponse<IUser>>(
     `/users/updateUser?${searchParams.toString()}`,
     data
+  );
+  return res.data;
+}
+
+
+
+
+
+export async function GetAllUsersList() {
+  const res = await httpClient.private.get<MainResponse<IUser[]>>(
+    "/users/list",
   );
   return res.data;
 }

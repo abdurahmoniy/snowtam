@@ -14,7 +14,7 @@ export function Header() {
   const { toggleSidebar, isMobile } = useSidebarContext();
 
   const CurrentUser = useUserMe();
-  const NeedToShowMenu = CurrentUser.data?.data.role.includes(ROLES.SUPER_ADMIN);
+  const NeedToShowMenu = CurrentUser.data?.data.role.includes(ROLES.SUPER_ADMIN) || CurrentUser.data?.data.role.includes(ROLES.ADMIN);
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stroke bg-white px-4 py-2 shadow-1 dark:border-stroke-dark dark:bg-gray-dark md:px-5 2xl:px-10">

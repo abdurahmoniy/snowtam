@@ -133,10 +133,6 @@ export default function AirportsPage() {
 
   return (
     <>
-      {/* Кнопки управления */}
-
-
-      {/* Модалка RCR */}
       <Modal
         closeIcon={null}
         open={modalOpen}
@@ -193,7 +189,11 @@ export default function AirportsPage() {
         onEdit={handleEditAirport}
         onDelete={handleDeleteAirport}
       />
-
+      <div className="flex justify-end mb-4">
+        <Button type="primary" onClick={() => setAddModalOpen(true)}>
+          Добавить аэропорт
+        </Button>
+      </div>
       <div className="flex justify-center">
         <div className="w-[900px]">
           <AirportsMap
@@ -203,11 +203,7 @@ export default function AirportsPage() {
           />
         </div>
       </div>
-      <div className="flex justify-end mb-4">
-        <Button type="primary" onClick={() => setAddModalOpen(true)}>
-          Добавить аэропорт
-        </Button>
-      </div>
+
 
       <div className="mt-6 flex justify-center">
         <Table
@@ -271,8 +267,9 @@ export default function AirportsPage() {
           }}
           onRow={(record) => ({
             onClick: () => {
-              setSelectedAirport(record);
-              setViewModalOpen(true);
+              // setSelectedAirport(record);
+              // setViewModalOpen(true);
+              router.push("/airports/" + record.id);
             },
             style: { cursor: "pointer" },
           })}
