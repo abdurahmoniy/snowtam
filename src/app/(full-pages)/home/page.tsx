@@ -43,7 +43,10 @@ export default function Home() {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
   const currentUser = useUserMe();
+  const isOperator = currentUser.data?.data.role.includes(ROLES.OPERATOR);
+
 
   const [selectedRunwayCondition, setSelectedRunwayCondition] =
     useState<RunwayCondition | null>(null);

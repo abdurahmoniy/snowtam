@@ -83,3 +83,11 @@ export async function GetAllAirportsExtended({
   );
   return res.data;
 }
+
+
+export async function GetAirportById(id: number) {
+  const res = await httpClient.private.get<MainResponse<IAirport>>(
+    `/airport/getById?id=${id}`
+  );
+  return res.data;
+}

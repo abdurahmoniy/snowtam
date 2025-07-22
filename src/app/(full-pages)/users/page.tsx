@@ -11,6 +11,8 @@ import AddUserModal from "./_components/AddUserModal";
 import ViewUserModal from "./_components/ViewUserModal";
 import EditUserModal from "./_components/EditUserModal";
 import { GetAllRoles } from "@/services/role.services";
+import { useUserMe } from "@/hooks/use-me";
+import { ROLES } from "@/consts/role-based-routing";
 
 const statusOptions = [
   { label: "Все", value: "All" },
@@ -33,9 +35,13 @@ export default function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>();
 
+  const CurrentUser = useUserMe();
+  const isAirportAdmin = CurrentUser.data?.data.role.includes(ROLES.ADMIN);
+
   const { data: usersData, refetch, isLoading } = useQuery({
-    queryKey: ["users", statusFilter],
-    queryFn: () => GetAllUsers({ page: 0, size: 100, userStatus: statusFilter as any }),
+    queryKey: ["users", statusFilter, CurrentUser.data?.data, isAirportAdmin],
+    queryFn: () => GetAllUsers({ page: 0, size: 100, ...(statusFilter == "All" ? {} : { userStatus: statusFilter as any }), ...(isAirportAdmin ? { airportId: CurrentUser.data?.data.airportDto.id } : {}) }),
+    enabled: !!CurrentUser.data
   });
 
   const openView = (user: IUser) => {
@@ -55,6 +61,11 @@ export default function UsersPage() {
 
   const RoleOptions = RolesData.data?.data.map((role) => ({
     label: role.name,
+    value: role.id,
+  }));
+
+  const RoleOptionsForUpdate = RolesData.data?.data.map((role) => ({
+    label: role.name,
     value: role.name,
   }));
 
@@ -71,6 +82,7 @@ export default function UsersPage() {
           onChange={(value) => setStatusFilter(value)}
           style={{ width: 200 }}
           placeholder="Статус пользователя"
+          defaultValue={"All"}
         />
         <Button type="primary" onClick={() => setAddModalOpen(true)}>
           Добавить пользователя
@@ -119,7 +131,7 @@ export default function UsersPage() {
           refetch()
         }}
         user={selectedUser}
-        roleOptions={RoleOptions ?? []}
+        roleOptions={RoleOptionsForUpdate ?? []}
         statusOptions={statusOptions}
       />
 

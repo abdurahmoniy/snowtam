@@ -88,7 +88,6 @@ export async function AcceptRunWayConditionById({
     `/runwayCondition/acceptRunwayCondition?${searchParams.toString()}`
   );
   return res.data;
-
 }
 
 
@@ -108,3 +107,21 @@ export async function DeclineRunWayConditionById({
   return res.data;
 
 }
+
+
+
+export async function SendRunWayConditionById({
+  id
+}:{
+  id: number;
+}){
+  const searchParams = new URLSearchParams();
+  id && searchParams.set("id", String(id));
+
+
+  const res = await httpClient.private.put<MainResponse<RunwayCondition>>(
+    `/runwayCondition/sendRunwayCondition?${searchParams.toString()}`
+  );
+  return res.data;
+}
+

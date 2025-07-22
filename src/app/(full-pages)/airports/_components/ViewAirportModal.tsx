@@ -136,6 +136,7 @@ export default function ViewAirportModal({
                             size="small"
                             bordered
                             title={() => "Список ВПП"}
+                            
                         />
                     </div>
                 </div>
@@ -145,7 +146,7 @@ export default function ViewAirportModal({
                 open={addRunwayOpen}
                 onClose={() => setAddRunwayOpen(false)}
                 airportId={airport.id}
-
+                            onSuccess={() => setAddRunwayOpen(false)}
             />
         </>
     );

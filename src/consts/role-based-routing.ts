@@ -4,7 +4,7 @@ export enum ROLES {
   SPECIALIST = "SPECIALIST",
   SAI = "SAI",
   ADMIN = "ADMIN",
-  DISPETCHER = "DISPETCHER"
+  DISPETCHER = "DISPETCHER",
 }
 
 export const superAdminAccess = [
@@ -14,10 +14,12 @@ export const superAdminAccess = [
   "/profile",
 ];
 
-export const userAccess = ["/", "/profile", "/runway-condition"];
+export const adminAccess = ["/users", "/profile"];
 
-export const operatorAccess = ["/", "/profile", "/runway-condition"];
-export const saiAccess = ["/", "/profile"];
+export const userAccess = ["/", "/profile", "/runway-condition", "/home"];
+
+export const operatorAccess = ["/", "/profile", "/runway-condition", "/home"];
+export const saiAccess = ["/", "/profile", "/home"];
 
 export function accessibleUrls(role: ROLES) {
   switch (role) {
@@ -32,6 +34,9 @@ export function accessibleUrls(role: ROLES) {
       return saiAccess;
     }
 
+    case ROLES.ADMIN: {
+      return adminAccess;
+    }
 
     default: {
       return ["/"];
