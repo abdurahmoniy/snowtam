@@ -24,7 +24,7 @@ console.log(raw, "raw");
 
 interface WarehousesMapProps {
     warehouses: IAirport[] | any[];
-    onAirportClick?: (id: number) => void;
+     onAirportClick?: (airport: IAirport) => void;
     onAirportSelect?: (IairportIAirport: IAirport) => void;
     onRegionSelect?: (regionId: number | null) => void;
     regionColors?: Record<number, string>;
@@ -363,7 +363,7 @@ export default function AirportsMap({
                                     fill={fillColor}
                                     stroke="#FFF" strokeWidth={0.5}
                                     style={{ cursor: "pointer" }}
-                                    onClick={(e) => { e.stopPropagation(); onAirportSelect?.(w); onAirportClick?.(w.id) }}
+                                    onClick={(e) => { e.stopPropagation(); onAirportSelect?.(w); onAirportClick?.(w) }}
                                 />
                             </Popover>
                         );

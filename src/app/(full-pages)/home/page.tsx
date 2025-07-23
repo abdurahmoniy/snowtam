@@ -62,6 +62,7 @@ export default function Home() {
 
   const currentUser = useUserMe();
   const isOperator = currentUser.data?.data.role.includes(ROLES.OPERATOR);
+  const isDispatcher = currentUser.data?.data.role.includes(ROLES.DISPETCHER);
 
 
   const [selectedRunwayCondition, setSelectedRunwayCondition] =
@@ -94,7 +95,7 @@ export default function Home() {
   );
 
   console.log(selectedRunwayCondition, "selectedRunwayCondition");
-  
+
 
   useEffect(() => {
     const updateTableSize = () => {
@@ -116,13 +117,13 @@ export default function Home() {
       GetAllRunWayCondition({
         page: page - 1,
         size: pageSize,
-        ...(isSAI && { applicationStatus: "SEND" }),
-        applicationStatus: statusFilter
+        applicationStatus: statusFilter,
         // from: rangePickerValue[0].format('YYYY-MM-DD'),
         // to: rangePickerValue[1].format('YYYY-MM-DD'),
         // query: ""
       }),
-    queryKey: [`rw-condition`, page, pageSize, rangePickerValue, isSAI, statusFilter],
+    queryKey: [`rw-condition`, page, pageSize, rangePickerValue, isSAI, statusFilter, currentUser.data?.data],
+    enabled: !!currentUser.data
   });
 
   const localStorageItem = localStorage.getItem("user");
@@ -147,7 +148,13 @@ export default function Home() {
     if (!!selectedRunwayCondition) {
       setSelectedRunwayCondition(RWConditionData.data?.data.find(i => i.id == selectedRunwayCondition?.id) ?? selectedRunwayCondition)
     }
-  }, [RWConditionData.data])
+  }, [RWConditionData.data,])
+
+  useEffect(() => {
+    if (isSAI) {
+      setStatusFilter("SEND")
+    }
+  }, [isSAI, currentUser.data?.data])
 
   useEffect(() => {
     if (selectedRunwayCondition) {
@@ -216,7 +223,7 @@ export default function Home() {
           >
             Назад
           </Button>
-          <div className="flex items-center gap-4">
+          {!isSAI && <div className="flex items-center gap-4">
             <Button
               loading={AcceptRCR.isPending}
               type="primary"
@@ -264,14 +271,15 @@ export default function Home() {
             >
               Отклонить
             </Button>{" "}
-          </div>
+          </div>}
+
         </div>
       </Modal>
 
 
 
       <div className="flex justify-end">
-        {!isSAI && (
+        {(!isSAI && !isDispatcher) && (
           <Button
             type="primary"
             variant="solid"
@@ -284,6 +292,7 @@ export default function Home() {
       </div>
       <Tabs
         activeKey={statusFilter}
+
         onChange={(key) =>
           setStatusFilter(key as "PENDING" | "ACCEPTED" | "DECLINED" | "SEND")
         }
@@ -324,7 +333,7 @@ export default function Home() {
                   render(value, record, index) {
                     return (
                       <div className="!text-lg">
-                        {record.runwayDto.airportDto.airportCode}
+                        {record.runwayDto?.airportDto?.airportCode}
                       </div>
                     );
                   },
@@ -443,3 +452,28 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
