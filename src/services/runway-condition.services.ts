@@ -16,14 +16,16 @@ export async function createRunwayCondition(
 } 
 
 export async function GetAllRunWayCondition({
-  page, size
+  page, size, applicationStatus
 }:{
   page: number;
   size: number;
+  applicationStatus?: string;
 }){
   const searchParams = new URLSearchParams();
   page && searchParams.set("page", String(page));
   size && searchParams.set("size", String(size));
+  applicationStatus && searchParams.set("applicationStatus", String(applicationStatus));
 
   const res = await httpClient.private.get<MainResponse<RunwayCondition[]>>(
     `/runwayCondition/getAll?${searchParams.toString()}`

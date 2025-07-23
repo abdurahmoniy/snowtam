@@ -798,7 +798,7 @@ export default function RunwayConditionCreate() {
     {
       title: "Общие сведения",
       content: (
-        <ReviewStep formInstance={form} values={FormValuesState as any} />
+        <ReviewStep applicationId={RunwayConditionDataById.data?.data?.id ?? 0} applicationStatus={RunwayConditionDataById?.data?.data?.applicationStatus ?? ""} formInstance={form} values={FormValuesState as any} />
       ),
     },
   ];

@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -72,6 +72,7 @@ export default function AirportsPage() {
       GetAllRunWayCondition({
         page: page - 1,
         size: pageSize,
+        
       }),
     queryKey: ["rw-condition", page, pageSize, rangePickerValue],
   });
@@ -87,6 +88,42 @@ export default function AirportsPage() {
         size: 100,
       }),
   });
+
+
+    const statusByAirport = useMemo(() => {
+        return AirportsData.data?.data.reduce<Record<number, string>>((acc, airport) => {
+            // 1) get only the runways with a real latestRunwayCondition
+            const valid = airport.runwayDtos.filter(
+                (r) => r.latestRunwayCondition != null
+            );
+
+            // 2) if none, mark N/A
+            if (valid.length === 0) {
+                acc[airport.id] = "0";
+                return acc;
+            }
+
+            // 3) otherwise pick the runway with the max updatedAt
+            const newest = valid.reduce((a, b) => {
+                return new Date(b.latestRunwayCondition!.updatedAt).getTime() >
+                    new Date(a.latestRunwayCondition!.updatedAt).getTime()
+                    ? b
+                    : a;
+            });
+
+            // 4) store its applicationStatus
+            acc[airport.id] = newest.latestRunwayCondition!.applicationStatus;
+            return acc;
+        }, {});
+    }, [AirportsData.data?.data]);
+
+     const data = AirportsData.data?.data.map((warehouse) => ({
+        ...warehouse,
+        status: statusByAirport?.[warehouse.id],
+    }));
+
+    console.log(data, statusByAirport, statusByAirport?.[1], "AAAAAAAAAAAAAAAAA");
+    
 
 
   useEffect(() => {
@@ -199,7 +236,7 @@ export default function AirportsPage() {
           <AirportsMap
             onAirportClick={() => setModalOpen(true)}
             regionColors={regionFillColors}
-            warehouses={AirportsData.data?.data ?? []}
+            warehouses={data ?? []}
           />
         </div>
       </div>
@@ -212,7 +249,6 @@ export default function AirportsPage() {
             AirportsData.data?.data.map((i) => ({ ...i, key: i.id })) || []
           }
           columns={[
-
             {
               title: "Аэропорт",
               dataIndex: "initialName",
@@ -243,14 +279,16 @@ export default function AirportsPage() {
               title: "Действия",
               key: "actions",
               render: (_, record) => (
-                <EditOutlined
-                  style={{ cursor: "pointer" }}
-                  onClick={(e) => {
+                <div className="flex justify-center">
+                  <Button size="small" onClick={(e) => {
                     e.stopPropagation();
                     setEditingAirport(record);
                     setEditModalOpen(true);
-                  }}
-                />
+                  }}><EditOutlined
+                      style={{ cursor: "pointer" }}
+
+                    /></Button>
+                </div>
               ),
             },
           ]}
