@@ -5,7 +5,7 @@
 import { NotificationType, ProcedureType } from "@/consts/data";
 import { useUserMe } from "@/hooks/use-me";
 import { getAllDevices } from "@/services/device.services";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button, Card, Descriptions, Form, FormInstance, Input, InputNumber, Radio, Select, Typography } from "antd";
 import dayjs from "dayjs";
 import { ArrowLeftFromLine, Check, MoveLeft } from "lucide-react";
@@ -13,7 +13,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 const { Title, Text } = Typography;
 
-import {StopOutlined} from "@ant-design/icons";
+import { StopOutlined } from "@ant-design/icons";
+import { SendRunWayConditionById } from "@/services/runway-condition.services";
 
 interface ReviewStepProps {
   values: {
@@ -51,7 +52,9 @@ interface ReviewStepProps {
       RCRru: string | null;
     };
   };
-  formInstance: FormInstance
+  formInstance: FormInstance;
+  applicationStatus: string;
+  applicationId: number
 }
 
 
@@ -65,7 +68,7 @@ const surfaceConditionColors: Record<string, string> = {
 };
 
 
-const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
+const ReviewStep = ({ values, formInstance, applicationStatus, applicationId }: ReviewStepProps) => {
   const { form1, form2, form3 } = values;
   const router = useRouter();
   const [currentTime, setCurrentTime] = useState(dayjs().format("DD-MM HH:mm"));
@@ -191,17 +194,34 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
 
   console.log(formInstance.getFieldsValue(), "DDDDD");
 
+  const SendRCR = useMutation({
+    mutationFn: ({ id }: { id: number }) => SendRunWayConditionById({
+      id
+    })
+  })
 
 
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-       <div className="flex items-center gap-6">
-         {!isCreateMode && <Button type="primary" onClick={() => router.back()} className="flex items-center" icon={<ArrowLeftFromLine size={15} className="mb-0"></ArrowLeftFromLine>}>Назад</Button>}
-        <Title level={4} className="!mb-0">Обзор состояния ВПП</Title>
-       </div>
-       
+        <div className="flex items-center gap-6">
+          {!isCreateMode && <Button type="primary" onClick={() => router.back()} className="flex items-center" icon={<ArrowLeftFromLine size={15} className="mb-0"></ArrowLeftFromLine>}>Назад</Button>}
+          <Title level={4} className="!mb-0">Обзор состояния ВПП</Title>
+        </div>
+
+        <div>
+          {applicationStatus == "PENDING" && <Button type="primary"
+            size="large"
+            onClick={() => {
+              SendRCR.mutate({
+                id: Number(applicationId)
+              })
+            }}
+            loading={SendRCR.isPending}
+          >Отправить</Button>}
+        </div>
+
       </div>
 
       {/* <Card title="Состояние ВПП по третям">
@@ -410,7 +430,7 @@ const ReviewStep = ({ values, formInstance }: ReviewStepProps) => {
                   else if (type === ProcedureType.HARD || type === ProcedureType.LIQUID) {
                     const chemicalType = ProcedureNames[type] ?? "N/R";
                     return `Хим обработка  (${chemicalType})`;
-                  } 
+                  }
                   return ProcedureNames[type];
                 })
                 .join(", ")

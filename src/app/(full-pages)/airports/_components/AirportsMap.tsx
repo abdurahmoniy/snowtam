@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, {
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import { geoMercator, geoPath, GeoPermissibleObjects } from "d3-geo";
 import geoData from "@/assets/uzbekistan_regional.json";
 
@@ -10,17 +16,14 @@ import { REGION_COORDINATES } from "@/lib/mapUtils";
 
 import regionDataRaw from "@/assets/uzb_geo-data_regions.json";
 
-
 import raw from "@/assets/uzbekistan_regional.json";
 import { IAirport } from "@/types/airport";
+import { GetAllAirportsExtended } from "@/services/airport.services";
+import { useQuery } from "@tanstack/react-query";
 console.log(raw, "raw");
 
-
-
-
-
 interface WarehousesMapProps {
-    warehouses: IAirport[];
+    warehouses: IAirport[] | any[];
     onAirportClick?: (id: number) => void;
     onAirportSelect?: (IairportIAirport: IAirport) => void;
     onRegionSelect?: (regionId: number | null) => void;
@@ -34,28 +37,133 @@ export default function AirportsMap({
     onAirportSelect,
     onRegionSelect,
     regionColors,
-    regionSelection
+    regionSelection,
 }: WarehousesMapProps) {
     const SVG_WIDTH = 412;
     const SVG_HEIGHT = 268;
     const CENTER_X = SVG_WIDTH / 2;
     const CENTER_Y = SVG_HEIGHT / 2;
-    const ZOOM_SCALE = 2;            // во сколько масштабируем
+    const ZOOM_SCALE = 2; // во сколько масштабируем
     const TRANSITION = "transform 0.4s ease";
     const PADDING = 0.8;
+
+
+    // const statusByAirport = useMemo(() => {
+    //     return warehouses.reduce<Record<number, string>>((acc, w) => {
+    //         // only keep runways with a real latestRunwayCondition
+    //         const withCondition = w.runwayDtos.filter(
+    //             (r) => !!r.latestRunwayCondition
+    //         );
+    //         if (withCondition.length === 0) {
+    //             acc[w.id] = "N/A";
+    //         } else {
+    //             // among those, pick the one whose updatedAt is greatest
+    //             const newest = withCondition.reduce((best, curr) => {
+    //                 const bestTs = new Date(
+    //                     best.latestRunwayCondition!.updatedAt
+    //                 ).getTime();
+    //                 const currTs = new Date(
+    //                     curr.latestRunwayCondition!.updatedAt
+    //                 ).getTime();
+    //                 return currTs > bestTs ? curr : best;
+    //             });
+    //             acc[w.id] = newest.latestRunwayCondition!.applicationStatus;
+    //         }
+    //         return acc;
+    //     }, {});
+    // }, [warehouses]);
+
+
+
+    // const statusByAirport = useMemo(() => {
+    //     return warehouses.reduce<Record<number, string>>((acc, airport) => {
+    //         // 1) get only the runways with a real latestRunwayCondition
+    //         const valid = airport.runwayDtos.filter(
+    //             (r) => r.latestRunwayCondition != null
+    //         );
+
+    //         // 2) if none, mark N/A
+    //         if (valid.length === 0) {
+    //             acc[airport.id] = "N/A";
+    //             return acc;
+    //         }
+
+    //         // 3) otherwise pick the runway with the max updatedAt
+    //         const newest = valid.reduce((a, b) => {
+    //             return new Date(b.latestRunwayCondition!.updatedAt).getTime() >
+    //                 new Date(a.latestRunwayCondition!.updatedAt).getTime()
+    //                 ? b
+    //                 : a;
+    //         });
+
+    //         // 4) store its applicationStatus
+    //         acc[airport.id] = newest.latestRunwayCondition!.applicationStatus;
+    //         return acc;
+    //     }, {});
+    // }, [warehouses]);
+
+
+
+
+    const AirportsData = useQuery({
+        queryKey: ["airports-list"],
+        queryFn: () =>
+            GetAllAirportsExtended({
+                page: 0,
+                size: 100,
+            }),
+    });
+
+
+
+    // 1) fetch every runway conditio
+
+    // // 2) build a map runwayId -> most recent condition
+    // const latestByRunway = useMemo(() => {
+    //     return (AirportsData.data?.data || []).reduce<any>((acc, cond) => {
+    //         const rid = cond.runwayDtos[0].id
+    //         if (!acc[rid] || new Date(cond.updatedAt) > new Date(acc[rid].updatedAt)) {
+    //             acc[rid] = cond
+    //         }
+    //         return acc
+    //     }, {})
+    // }, [AirportsData.data])
+
+    // // 3) enrich your warehouses with that field
+    // const enrichedWarehouses = useMemo(() =>
+    //     warehouses.map(w => ({
+    //         ...w,
+    //         runwayDtos: w.runwayDtos.map((r: any) => ({
+    //             ...r,
+    //             // splice in the condition if we found one, else null
+    //             latestRunwayCondition: latestByRunway[r.id] || null
+    //         }))
+    //     }))
+    //     , [warehouses, latestByRunway])
+
+    // 4) now run your statusByAirport on that enriched array
+  
+
+
 
 
 
     const regionRef = useRef<SVGGElement>(null);
     const overlayRegionRef = useRef<SVGPathElement>(null);
-    const [mapBox, setMapBox] = useState<{ x: number; y: number; width: number; height: number } | null | any>(null);
+    const [mapBox, setMapBox] = useState<
+        { x: number; y: number; width: number; height: number } | null | any
+    >(null);
 
-    const [selectedWarehouse, setSelectedWarehouse] = useState<IAirport | null>(null);
+    const [selectedWarehouse, setSelectedWarehouse] = useState<IAirport | null>(
+        null,
+    );
     const [hoveredRegion, setHoveredRegion] = useState<number | null>(null);
     const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
 
     const overlayPathRef = useRef<SVGPathElement>(null);
     const [overlayBox, setOverlayBox] = useState<DOMRect | null>(null);
+
+    console.log("🚩 warehouses coming in:", warehouses);
 
     useEffect(() => {
         if (regionRef.current) {
@@ -75,27 +183,19 @@ export default function AirportsMap({
         return { tx, ty, k };
     }, [mapBox]);
 
-
     const projection = useMemo(
-        () =>
-            geoMercator()
-                .fitSize([SVG_WIDTH, SVG_HEIGHT], regionDataRaw as any),
-        []
+        () => geoMercator().fitSize([SVG_WIDTH, SVG_HEIGHT], regionDataRaw as any),
+        [],
     );
 
     const pathGen = useMemo(() => geoPath().projection(projection), [projection]);
-
 
     // const byRegion = warehouses.reduce<Record<number, Warehouse[]>>((acc, w) => {
     //     (acc[w.regionId] = acc[w.regionId] || []).push(w);
     //     return acc;
     // }, {});
 
-
     console.log(geoData, "geoData");
-
-
-
 
     const overlayTransform = useMemo(() => {
         if (selectedRegion == null) return { x: 0, y: 0, k: 1 };
@@ -127,9 +227,16 @@ export default function AirportsMap({
         }
     }, [selectedRegion]);
 
+
+
+
     return (
         <div>
-            <svg viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} width="100%" height="auto">
+            <svg
+                viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
+                width="100%"
+                height="auto"
+            >
                 <g id="regions">
                     {regionDataRaw.features.map((feat, i) => {
                         const rid = feat.properties.REGION_ID; // or whatever your ID field is
@@ -145,22 +252,34 @@ export default function AirportsMap({
                         );
                     })}
                 </g>
-                <g id="warehouses">
+                {/* <g id="warehouses">
                     {warehouses.map((w) => {
-                        const [x, y] = projection([Number(w.longitude), Number(w.latitude)]) as [number, number];
+                        const [x, y] = projection([
+                            Number(w.longitude),
+                            Number(w.latitude),
+                        ]) as [number, number];
+
+                        const MarkColor = getAirportStatus(w.id);
+                        console.log(MarkColor, "MarkColor");
+
+                        const color = statusByAirport[w.id];
+                        console.log(color, w.id, "color-color");
+                        
+
+
                         return (
                             <Popover
                                 key={w.id}
-                                content={w.name}
+                                content={w.name + " - " + statusByAirport[w.id]}
                                 placement="right"
                                 mouseEnterDelay={0.3}
                             >
                                 <circle
+                                    key={w.id}
                                     cx={x}
                                     cy={y}
                                     r={2.5}
-
-                                    fill={(w.id == 22 || w.id == 9) ? "#36be00" : "#FF6B6B"}
+                                    fill={MarkColor == "PENDING" ? "#ffe100" : MarkColor == "ACCEPTED" ? "#36be00" : "#FF6B6B"}
                                     stroke="#FFF"
                                     strokeWidth={0.5}
                                     style={{ cursor: "pointer" }}
@@ -168,19 +287,89 @@ export default function AirportsMap({
                                         e.stopPropagation();
                                         setSelectedWarehouse(w);
                                         console.log(w, "selected-warehouse");
-                                        onAirportSelect?.(w)
+                                        onAirportSelect?.(w);
                                         onAirportClick?.(w.id);
                                     }}
                                 />
                             </Popover>
                         );
                     })}
+                </g> */}
+
+                {/* <g id="warehouses">
+                    {warehouses.map((w) => {
+                        const [x, y] = projection([+w.longitude, +w.latitude]) as [number, number];
+
+                        // grab the one status-string for this airport
+                        const status = statusByAirport[w.id] || "N/A";
+
+
+                        // pick a color
+                        const fillColor =
+                            status === "PENDING" ? "#ffe100" :
+                                status === "ACCEPTED" ? "#36be00" :
+                                    status === "REJECTED" ? "#FF6B6B" :
+                                        "#999";
+
+                        return (
+                            <Popover
+                                key={w.id}
+                                content={`${w.name} — ${status}`}
+                                placement="right"
+                                mouseEnterDelay={0.3}
+                            >
+                                <circle
+                                    cx={x}
+                                    cy={y}
+                                    r={2.5}
+                                    fill={fillColor}
+                                    stroke="#FFF"
+                                    strokeWidth={0.5}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onAirportSelect?.(w);
+                                        onAirportClick?.(w.id);
+                                    }}
+                                />
+                            </Popover>
+                        );
+                    })}
+                </g> */}
+
+
+                <g id="warehouses">
+                    {warehouses.map((w) => {
+                        const status = w.status || "N/A";
+                        const fillColor =
+                            status === "PENDING" ? "#ffe100" :
+                                (status === "ACCEPTED" || status == "FINISHED") ? "#58ff16" :
+                                    status === "REJECTED" ? "#FF6B6B" :
+                                        "#999";
+
+                        const info = warehouses.find(i => i.id == w.id);
+
+                        const [x, y] = projection([+w.longitude, +w.latitude]) as [number, number];
+
+                        return (
+                            <Popover
+                                key={w.id}
+                                content={`${w.name}`}
+                                placement="right"
+                                mouseEnterDelay={0.3}
+                            >
+                                <circle
+                                    cx={x} cy={y} r={2.5}
+                                    fill={fillColor}
+                                    stroke="#FFF" strokeWidth={0.5}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => { e.stopPropagation(); onAirportSelect?.(w); onAirportClick?.(w.id) }}
+                                />
+                            </Popover>
+                        );
+                    })}
                 </g>
             </svg>
-
-
-
-
 
             {/* {regionSelection && (
                 selectedRegion != null && (

@@ -1,3 +1,5 @@
+import { RunwayCondition } from "./runway-condition";
+
 export interface IAirport {
   id: number;
   name: string;
@@ -22,6 +24,7 @@ export default interface IAirportRunaway {
   airportDto: null;
   createdAt: string;
   updatedAt: string;
+  latestRunwayCondition: RunwayCondition
 }
 
 export interface IAirportCreateDto {

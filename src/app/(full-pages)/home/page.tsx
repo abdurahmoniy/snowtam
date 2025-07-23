@@ -13,6 +13,7 @@ import {
   Radio,
   Spin,
   Table,
+  Tabs,
 } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
@@ -33,6 +34,21 @@ import { useUserMe } from "@/hooks/use-me";
 import { ROLES } from "@/consts/role-based-routing";
 import { Check } from "lucide-react";
 import { toast } from "sonner";
+
+
+const tabs = [
+  { key: "PENDING", label: "В Процессе" },
+  { key: "ACCEPTED", label: "Подтверждённые" },
+  { key: "DECLINED", label: "Отклонённые" },
+  { key: "SEND", label: "Отправлено" },
+  { key: "FINISHED", label: "Завершенные" },
+];
+
+const SAItabs = [
+  { key: "SEND", label: "Отправлено" },
+  { key: "DECLINED", label: "Отклонённые" },
+  { key: "FINISHED", label: "Завершенные" },
+]
 
 function truncateText(text: string, maxLength = 12) {
   if (!text) return "";
@@ -55,6 +71,10 @@ export default function Home() {
 
   const isSAI = currentUser.data?.data.role.includes(ROLES.SAI);
 
+  const [statusFilter, setStatusFilter] = useState<
+    "PENDING" | "ACCEPTED" | "DECLINED" | "SEND" | "FINISHED"
+  >(isSAI ? "SEND" : "PENDING");
+
   const [RunWayData, setRunWayData] = useLocalStorage(
     "runway-condition-draft",
     null,
@@ -72,6 +92,9 @@ export default function Home() {
   const [tableSize, setTableSize] = useState<"small" | "middle" | "large">(
     "middle",
   );
+
+  console.log(selectedRunwayCondition, "selectedRunwayCondition");
+  
 
   useEffect(() => {
     const updateTableSize = () => {
@@ -93,11 +116,13 @@ export default function Home() {
       GetAllRunWayCondition({
         page: page - 1,
         size: pageSize,
+        ...(isSAI && { applicationStatus: "SEND" }),
+        applicationStatus: statusFilter
         // from: rangePickerValue[0].format('YYYY-MM-DD'),
         // to: rangePickerValue[1].format('YYYY-MM-DD'),
         // query: ""
       }),
-    queryKey: [`rw-condition`, page, pageSize, rangePickerValue],
+    queryKey: [`rw-condition`, page, pageSize, rangePickerValue, isSAI, statusFilter],
   });
 
   const localStorageItem = localStorage.getItem("user");
@@ -122,7 +147,16 @@ export default function Home() {
     if (!!selectedRunwayCondition) {
       setSelectedRunwayCondition(RWConditionData.data?.data.find(i => i.id == selectedRunwayCondition?.id) ?? selectedRunwayCondition)
     }
-  }, [RWConditionData.data?.data])
+  }, [RWConditionData.data])
+
+  useEffect(() => {
+    if (selectedRunwayCondition) {
+      const updated = RWConditionData.data?.data.find(
+        (i) => i.id === selectedRunwayCondition.id
+      );
+      if (updated) setSelectedRunwayCondition(updated);
+    }
+  }, [RWConditionData.data]);
 
   return (
     <div className="">
@@ -195,7 +229,8 @@ export default function Home() {
                   onSuccess(data, variables, context) {
                     toast.success("Успешно подтвердил RCR");
                     queryClient.invalidateQueries();
-
+                    RWConditionData.refetch();
+                    setFinalRCRModalOpen(false);
                   },
                 });
               }}
@@ -217,6 +252,10 @@ export default function Home() {
                   onSuccess(data, variables, context) {
                     toast.success("Успешно отклонил RCR");
                     queryClient.invalidateQueries();
+                    RWConditionData.refetch();
+                    setFinalRCRModalOpen(false);
+
+
                   },
                 });
               }}
@@ -228,6 +267,8 @@ export default function Home() {
           </div>
         </div>
       </Modal>
+
+
 
       <div className="flex justify-end">
         {!isSAI && (
@@ -241,7 +282,16 @@ export default function Home() {
           </Button>
         )}
       </div>
-      <div className="mt-6 flex items-start justify-center">
+      <Tabs
+        activeKey={statusFilter}
+        onChange={(key) =>
+          setStatusFilter(key as "PENDING" | "ACCEPTED" | "DECLINED" | "SEND")
+        }
+        items={(isSAI ? SAItabs : tabs).map((t) => ({ key: t.key, label: t.label }))}
+        style={{}}
+        className="!mb-0"
+      />
+      <div className="mt-2 flex items-start justify-center">
         {RWConditionData.isLoading ? (
           // <Spin size="large" />
           <div className="flex items-start justify-center">
@@ -255,136 +305,139 @@ export default function Home() {
           />
         ) : RWConditionData.data?.data &&
           RWConditionData.data.data.length > 0 ? (
-          <Table
-            size={"large"}
-            className={[
-              tableSize == "small"
-                ? "!min-w-[600px]"
-                : "!min-w-[1200px] !text-lg",
-            ].join(" ")}
-            rowKey="id"
-            dataSource={RWConditionData.data.data as RunwayCondition[]}
-            columns={[
-              {
-                title: "Код аэропорта",
-                dataIndex: "airportCode",
-                key: "airportCode",
-                render(value, record, index) {
-                  return (
-                    <div className="!text-lg">
-                      {record.runwayDto.airportDto.airportCode}
-                    </div>
-                  );
-                },
-                align: "center",
-              },
-              {
-                title: "Обозначение ВПП",
-                dataIndex: "initials",
-                key: "initials",
+          <div>
 
-                align: "center",
-                render(value, record, index) {
-                  return (
-                    <div className="!text-lg">
-                      {record.runwayDto.runwayDesignation}
-                    </div>
-                  );
+            <Table
+              size={"large"}
+              className={[
+                tableSize == "small"
+                  ? "!min-w-[600px]"
+                  : "!min-w-[1200px] !text-lg",
+              ].join(" ")}
+              rowKey="id"
+              dataSource={RWConditionData.data.data as RunwayCondition[]}
+              columns={[
+                {
+                  title: "Код аэропорта",
+                  dataIndex: "airportCode",
+                  key: "airportCode",
+                  render(value, record, index) {
+                    return (
+                      <div className="!text-lg">
+                        {record.runwayDto.airportDto.airportCode}
+                      </div>
+                    );
+                  },
+                  align: "center",
                 },
-              },
-              {
-                title: "Дата и время отчёта",
-                dataIndex: "createdAt",
-                key: "createdAt",
-                render: (date) => {
-                  return (
-                    <div className="!text-lg">
-                      {date.length != 0
-                        ? dayjs(date).format("YYYY-MM-DD HH:mm:ss")
-                        : date}
-                    </div>
-                  );
-                },
-                align: "center",
-              },
-              {
-                title: "Инициалы",
-                dataIndex: "initialName",
-                key: "initialName",
-                render: (initialName) => (
-                  <div className="!text-lg">{initialName}</div>
-                ),
-                align: "center",
-              },
-              {
-                title: "Температура воздуха",
-                dataIndex: "ambientTemperature",
-                key: "ambientTemperature",
-                align: "center",
-                render(value, record, index) {
-                  return <div className="!text-lg">{value}</div>;
-                },
-              },
+                {
+                  title: "Обозначение ВПП",
+                  dataIndex: "initials",
+                  key: "initials",
 
-              {
-                title: "Ситуационные уведомления",
-                dataIndex: "situationalNotifications",
-                key: "situationalNotifications",
-                render: (n) => <div className="!text-lg">{n?.length || 0}</div>,
-                align: "center",
-              },
-              {
-                title: "Процедуры улучшения",
-                dataIndex: "improvementProcedures",
-                key: "improvementProcedures",
-                render: (p) => <div className="!text-lg">{p?.length || 0}</div>,
-                align: "center",
-              },
-              {
-                title: "Статус",
-                dataIndex: "applicationStatus",
-                key: "applicationStatus",
-
-                render: (p) => (
-                  <Button type="default" className="!text-lg">
-                    {(p == "FINISHED" || p == "ACCEPTED")
-                      ? "Подтверждено"
-                      : p == "PENDING"
-                        ? "В процессе"
-                        : "Отклонено"}
-                  </Button>
-                ),
-                align: "center",
-              },
-            ]}
-            pagination={{
-              current: page,
-              pageSize: pageSize,
-              total: RWConditionData.data?.elements || 0,
-              onChange: (newPage, newPageSize) => {
-                setPage(newPage);
-                setPageSize(newPageSize);
-              },
-              showSizeChanger: true,
-              pageSizeOptions: [5, 10, 20, 50, 100],
-            }}
-            onRow={(record) => {
-              return {
-                onClick: () => {
-                  if (isSAI) {
-                    setFinalRCRModalOpen(true);
-                    setSelectedRunwayCondition(record);
-                  } else {
-                    router.push(`/runway-condition/${record.id}`);
-                  }
+                  align: "center",
+                  render(value, record, index) {
+                    return (
+                      <div className="!text-lg">
+                        {record.runwayDto.runwayDesignation}
+                      </div>
+                    );
+                  },
                 },
-                style: { cursor: "pointer" },
-              };
-            }}
-            loading={RWConditionData.isLoading}
-          />
+                {
+                  title: "Дата и время отчёта",
+                  dataIndex: "createdAt",
+                  key: "createdAt",
+                  render: (date) => {
+                    return (
+                      <div className="!text-lg">
+                        {date.length != 0
+                          ? dayjs(date).format("YYYY-MM-DD HH:mm:ss")
+                          : date}
+                      </div>
+                    );
+                  },
+                  align: "center",
+                },
+                {
+                  title: "Инициалы",
+                  dataIndex: "initialName",
+                  key: "initialName",
+                  render: (initialName) => (
+                    <div className="!text-lg">{initialName}</div>
+                  ),
+                  align: "center",
+                },
+                {
+                  title: "Температура воздуха",
+                  dataIndex: "ambientTemperature",
+                  key: "ambientTemperature",
+                  align: "center",
+                  render(value, record, index) {
+                    return <div className="!text-lg">{value}</div>;
+                  },
+                },
+
+                {
+                  title: "Ситуационные уведомления",
+                  dataIndex: "situationalNotifications",
+                  key: "situationalNotifications",
+                  render: (n) => <div className="!text-lg">{n?.length || 0}</div>,
+                  align: "center",
+                },
+                {
+                  title: "Процедуры улучшения",
+                  dataIndex: "improvementProcedures",
+                  key: "improvementProcedures",
+                  render: (p) => <div className="!text-lg">{p?.length || 0}</div>,
+                  align: "center",
+                },
+                {
+                  title: "Статус",
+                  dataIndex: "applicationStatus",
+                  key: "applicationStatus",
+
+                  render: (p) => (
+                    <Button type="default" className="!text-lg">
+                      {(p == "FINISHED" || p == "ACCEPTED")
+                        ? "Подтверждено"
+                        : (p == "PENDING" || p == "SEND")
+                          ? "В процессе"
+                          : "Отклонено"}
+                    </Button>
+                  ),
+                  align: "center",
+                },
+              ]}
+              pagination={{
+                current: page,
+                pageSize: pageSize,
+                total: RWConditionData.data?.elements || 0,
+                onChange: (newPage, newPageSize) => {
+                  setPage(newPage);
+                  setPageSize(newPageSize);
+                },
+                showSizeChanger: true,
+                pageSizeOptions: [5, 10, 20, 50, 100],
+              }}
+              onRow={(record) => {
+                return {
+                  onClick: () => {
+                    if (isSAI) {
+                      setFinalRCRModalOpen(true);
+                      setSelectedRunwayCondition(record);
+                    } else {
+                      router.push(`/runway-condition/${record.id}`);
+                    }
+                  },
+                  style: { cursor: "pointer" },
+                };
+              }}
+              loading={RWConditionData.isLoading}
+            />
+          </div>
         ) : (
-          <Empty description="No runway condition data found" />
+          <Empty description="Нет данных о состоянии ВПП" />
         )}
       </div>
     </div>
