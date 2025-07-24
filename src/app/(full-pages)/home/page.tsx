@@ -61,7 +61,7 @@ export default function Home() {
   const [pageSize, setPageSize] = useState(10);
 
   const currentUser = useUserMe();
-  const isOperator = currentUser.data?.data.role.includes(ROLES.OPERATOR);
+  const isWorker = currentUser.data?.data.role.includes(ROLES.WORKER);
   const isDispatcher = currentUser.data?.data.role.includes(ROLES.DISPETCHER);
 
 
@@ -284,9 +284,10 @@ export default function Home() {
             type="primary"
             variant="solid"
             size="large"
+            className="text-lg"
             onClick={() => router.push("/runway-condition/create")}
           >
-            Создать
+            Создать RCR
           </Button>
         )}
       </div>

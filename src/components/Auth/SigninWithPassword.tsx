@@ -79,9 +79,9 @@ export default function SigninWithPassword() {
     <form onSubmit={handleSubmit}>
       <InputGroup
         type="email"
-        label="Elektron pochta"
+        label="Электрон почта"
         className="mb-4 [&_input]:py-[15px]"
-        placeholder="Elektron pochtangizni kiriting"
+        placeholder="Введите электронную почту"
         name="email"
         handleChange={handleChange}
         value={data.email}
@@ -90,9 +90,9 @@ export default function SigninWithPassword() {
 
       <InputGroup
         type="password"
-        label="Parol"
+        label="Пароль"
         className="mb-5 [&_input]:py-[15px]"
-        placeholder="Parolingizni kiriting"
+        placeholder="Введите пароль"
         name="password"
         handleChange={handleChange}
         value={data.password}
@@ -105,7 +105,7 @@ export default function SigninWithPassword() {
           type="submit"
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
         >
-          Tizimga kirish
+          Вход в систему
           {loading && (
             <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-t-transparent dark:border-primary dark:border-t-transparent" />
           )}

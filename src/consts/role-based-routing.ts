@@ -1,6 +1,6 @@
 export enum ROLES {
   SUPER_ADMIN = "SUPER_ADMIN",
-  OPERATOR = "OPERATOR",
+  WORKER = "WORKER",
   SPECIALIST = "SPECIALIST",
   SAI = "SAI",
   ADMIN = "ADMIN",
@@ -18,7 +18,7 @@ export const adminAccess = ["/users", "/profile"];
 
 export const userAccess = ["/", "/profile", "/runway-condition", "/home"];
 
-export const operatorAccess = ["/", "/profile", "/runway-condition", "/home"];
+export const workerAccess = ["/", "/profile", "/runway-condition", "/home"];
 export const saiAccess = ["/", "/profile", "/home"];
 
 export function accessibleUrls(role: ROLES) {
@@ -26,8 +26,8 @@ export function accessibleUrls(role: ROLES) {
     case ROLES.SUPER_ADMIN: {
       return superAdminAccess;
     }
-    case ROLES.OPERATOR: {
-      return operatorAccess;
+    case ROLES.WORKER: {
+      return workerAccess;
     }
 
     case ROLES.SAI: {
