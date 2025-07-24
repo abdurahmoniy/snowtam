@@ -384,16 +384,16 @@ export default function RunwayConditionCreate() {
                                   ? [
                                     {
                                       required: true,
-                                      message: "Обязательное поле",
+                                      message: "",
                                     },
                                     ...(numberInputFields.includes(
                                       item.field,
                                     )
                                       ? [
-                                        {
-                                          validator:
-                                            customNumberValidator,
-                                        },
+                                        // {
+                                        //   validator:
+                                        //     customNumberValidator,
+                                        // },
                                       ]
                                       : []),
                                   ]
@@ -451,7 +451,7 @@ export default function RunwayConditionCreate() {
                                       ? [
                                         {
                                           required: true,
-                                          message: "Обязательное поле",
+                                          message: "",
                                         },
                                         ...(numberInputFields.includes(
                                           item.field as any,
@@ -528,7 +528,7 @@ export default function RunwayConditionCreate() {
                                     ? [
                                       {
                                         required: true,
-                                        message: "Обязательное поле",
+                                        message: "",
                                       },
                                       ...(numberInputFields.includes(
                                         item.field,
@@ -576,7 +576,7 @@ export default function RunwayConditionCreate() {
                                     ? [
                                       {
                                         required: true,
-                                        message: "Обязательное поле",
+                                        message: "",
                                       },
                                       ...(numberInputFields.includes(
                                         item.field as any,
@@ -755,7 +755,27 @@ export default function RunwayConditionCreate() {
                 </p>
               </div>
             </div>
-            <Form.Item name={["improvementProcedure"]}>
+            <Form.Item
+            className="!max-w-[200px]"
+              name={["improvementProcedure"]}
+              dependencies={["applicationTime"]}
+              rules={[
+                ({ getFieldValue }) => ({
+                  validator(_, procedures: ProcedureType[] = []) {
+                    const appTime = getFieldValue("applicationTime");
+                    // if user has filled in applicationTime …
+                    if (appTime) {
+                      // … but did *not* choose CHEMICAL_TREATMENT, reject
+                      if (!procedures.includes(ProcedureType.CHEMICAL_TREATMENT)) {
+                        return Promise.reject(
+                          new Error("При указании времени применения обязательно выберите «Хим. обработка»")
+                        );
+                      }
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}>
 
               <Checkbox.Group
                 onChange={(checkedValues: ProcedureType[]) => {

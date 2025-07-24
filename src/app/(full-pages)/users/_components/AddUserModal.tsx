@@ -16,11 +16,12 @@ import { GetAllAirports } from "@/services/airport.services";
 import type { IAirport } from "@/types/airport";
 import type { SignUpRequest } from "@/types/auth";
 import { toast } from "sonner";
+import { IUser } from "@/types/user.auth";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (newUser: IUser) => void;
   roleOptions: { label: string; value: number }[];
 }
 
@@ -39,10 +40,10 @@ export default function AddUserModal({
 
   const mutation = useMutation({
     mutationFn: SignUp,
-    onSuccess: () => {
+    onSuccess: (res) => {
       toast.success("Пользователь зарегистрирован");
       form.resetFields();
-      onSuccess();
+      onSuccess(res.data);
       onClose();
     },
     onError: () => {
@@ -110,7 +111,7 @@ export default function AddUserModal({
           <Form.Item
             name="airportId"
             label="Аэропорт"
-            rules={[{ required: true }]}
+            rules={[{ required: false }]}
             className="mb-3"
           >
             <Select
