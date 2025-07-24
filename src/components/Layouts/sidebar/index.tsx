@@ -35,7 +35,7 @@ export function Sidebar() {
 
   };
 
-  const AllowedUrls = accessibleUrls(UserData.data?.data.role[0] || ROLES.OPERATOR);
+  const AllowedUrls = accessibleUrls(UserData.data?.data.role[0] || ROLES.WORKER);
 
   const FilteredRoutes = NAV_DATA.filter((item) => {
     if (AllowedUrls.includes(item.url)) {

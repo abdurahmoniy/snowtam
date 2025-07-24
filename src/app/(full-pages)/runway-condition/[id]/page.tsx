@@ -988,17 +988,17 @@ export default function RunwayConditionCreate() {
       form.setFieldsValue({});
 
       form.setFieldsValue({
-        airport: data.data.runwayDto.airportDto.name,
+        airport: data?.data?.runwayDto?.airportDto?.name,
         datetime: dayjs(
-          data.data.createdAt,
+          data?.data?.createdAt,
         ).format("DD-MM HH:mm"),
-        VPP: data.data.runwayDto.runwayDesignation,
-        temperature: Number(data.data.ambientTemperature),
-        initials: data.data.initialName,
-        position: data.data.position,
+        VPP: data?.data?.runwayDto?.runwayDesignation,
+        temperature: Number(data?.data?.ambientTemperature),
+        initials: data?.data?.initialName,
+        position: data?.data?.position,
       });
 
-      const thirds = data.data.runwayThirds || [];
+      const thirds = data?.data?.runwayThirds || [];
       const getThird = (index: number) =>
         thirds.find((t) => t.partNumber === index);
 
@@ -1018,16 +1018,16 @@ export default function RunwayConditionCreate() {
         depth3: String(getThird(3)?.depthMm ?? ""),
         coveragePercentage3: thirds[2]?.coveragePercentage ?? "",
 
-        airport: data.data.airportCode,
-        datetime: data.data.reportDateTime,
-        VPP: data.data.runwayDto.runwayDesignation,
-        temperature: data.data.ambientTemperature,
-        initials: data.data.initialName,
-        position: data.data.position,
+        airport: data?.data?.airportCode,
+        datetime: data?.data?.reportDateTime,
+        VPP: data?.data?.runwayDto.runwayDesignation,
+        temperature: data?.data?.ambientTemperature,
+        initials: data?.data?.initialName,
+        position: data?.data?.position,
       };
 
       // situationalNotifications -> form2
-      const notifs = data.data.situationalNotifications || [];
+      const notifs = data?.data?.situationalNotifications || [];
 
       const form2: Form2Values = {
         notificationType: notifs.map((n) => n.notificationType),
@@ -1051,22 +1051,22 @@ export default function RunwayConditionCreate() {
 
       const form3: Form3Values = {
         "device-of-implementation": Number(data.data?.deviceDto?.id) ?? null,
-        improvementProcedure: data.data.improvementProcedures
+        improvementProcedure: data?.data?.improvementProcedures
           .filter((i) => i.procedureType != ProcedureType.CHEMICAL_TREATMENT)
           .map((i) => i.procedureType),
         details: {
           chemicalType: "HARD",
-          coefficient1: data.data.runwayThirds[0]?.frictionCoefficient,
-          coefficient2: data.data.runwayThirds[1]?.frictionCoefficient,
-          coefficient3: data.data.runwayThirds[2]?.frictionCoefficient,
+          coefficient1: data?.data?.runwayThirds[0]?.frictionCoefficient,
+          coefficient2: data?.data?.runwayThirds[1]?.frictionCoefficient,
+          coefficient3: data?.data?.runwayThirds[2]?.frictionCoefficient,
         },
-        RCR: data.data.finalRCR,
-        RCRru: data.data.finalRCRru,
+        RCR: data?.data?.finalRCR,
+        RCRru: data?.data?.finalRCRru,
         applicationTime:
-          data.data.improvementProcedures?.[0]?.applicationTime ?? null,
+          data?.data?.improvementProcedures?.[0]?.applicationTime ?? null,
       };
 
-      console.log(data.data.runwayThirds, "data.data.runwayThirds[0]");
+      console.log(data?.data?.runwayThirds, "data.data.runwayThirds[0]");
 
       setFormValuesState({
         form1,
