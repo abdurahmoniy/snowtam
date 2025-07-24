@@ -1,6 +1,6 @@
 import { UserData } from "next-auth/providers/42-school";
 import { Session as NextAuthSession } from "next-auth";
-import { IUser } from "@/consts/authOptions";
+import { IUser } from "./user.auth";
 
 export interface LoggedUser {
   user: IUser;
@@ -30,6 +30,7 @@ export interface SignUpRequest {
 export interface RegisterRequest {
   status: string;
   message: string;
+  data: IUser
 }
 
 export interface Session extends NextAuthSession {

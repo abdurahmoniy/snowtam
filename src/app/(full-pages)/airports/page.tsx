@@ -72,7 +72,7 @@
 //       GetAllRunWayCondition({
 //         page: page - 1,
 //         size: pageSize,
-        
+
 //       }),
 //     queryKey: ["rw-condition", page, pageSize, rangePickerValue],
 //   });
@@ -123,7 +123,7 @@
 //     }));
 
 //     console.log(data, statusByAirport, statusByAirport?.[1], "AAAAAAAAAAAAAAAAA");
-    
+
 
 
 //   useEffect(() => {
@@ -335,22 +335,22 @@
 
 
 
-  const regionFillColors: Record<number, string> = {
-    1: "#a4edff",
-    2: "#a4edff",
-    3: "#a4edff",
-    4: "#0069c0",
-    5: "#1890ff",
-    6: "#1890ff",
-    7: "#0069c0",
-    8: "#26c2ff",
-    9: "#26c2ff",
-    10: "#0069c0",
-    11: "#1695f2",
-    12: "#a4edff",
-    13: "#0069c0",
-    14: "#1695f2",
-  };
+const regionFillColors: Record<number, string> = {
+  1: "#a4edff",
+  2: "#a4edff",
+  3: "#a4edff",
+  4: "#0069c0",
+  5: "#1890ff",
+  6: "#1890ff",
+  7: "#0069c0",
+  8: "#26c2ff",
+  9: "#26c2ff",
+  10: "#0069c0",
+  11: "#1695f2",
+  12: "#a4edff",
+  13: "#0069c0",
+  14: "#1695f2",
+};
 
 // src/app/[your-path]/AirportsPage.tsx
 
@@ -387,7 +387,7 @@ export default function AirportsPage() {
   const [pageSize, setPageSize] = useState(10);
 
   // runway-condition-draft (unused here)
-  const [ , setRunWayData ] = useLocalStorage("runway-condition-draft", null);
+  const [, setRunWayData] = useLocalStorage("runway-condition-draft", null);
 
   // map-modal
   const [condModalOpen, setCondModalOpen] = useState(false);
@@ -426,9 +426,9 @@ export default function AirportsPage() {
       if (!withCond.length) {
         acc[airport.id] = "N/A";
       } else {
-        const newest = withCond.reduce((a, b) => 
+        const newest = withCond.reduce((a, b) =>
           new Date(b.latestRunwayCondition!.updatedAt).getTime() >
-          new Date(a.latestRunwayCondition!.updatedAt).getTime()
+            new Date(a.latestRunwayCondition!.updatedAt).getTime()
             ? b
             : a
         );
@@ -475,7 +475,16 @@ export default function AirportsPage() {
     <>
       {/* Runway-Condition preview modal */}
       <Modal
-        title={`RCR для: ${selectedAirport?.initialName}`}
+        title={<div className="flex justify-between w-full pr-8"><p>RCR для: {selectedAirport?.initialName}</p>
+          <Radio.Group
+            style={{ marginBottom: 8 }}
+            buttonStyle="solid"
+            value={finalRCRModalIsEnglish ? "ENG" : "RU"}
+            onChange={e => setFinalRCRModalIsEnglish(e.target.value === "ENG")}
+          >
+            <Radio.Button value="RU">RU</Radio.Button>
+            <Radio.Button value="ENG">ENG</Radio.Button>
+          </Radio.Group></div>}
         open={condModalOpen}
         onCancel={() => setCondModalOpen(false)}
         width={800}
@@ -490,19 +499,11 @@ export default function AirportsPage() {
               new Date(a.latestRunwayCondition!.updatedAt).getTime()
             )
             .map(r => (
-              <div key={r.id} style={{ marginBottom: 24 }}>
-                <h4>ВПП {r.runwayDesignation} (обновлён:{" "}
+              <div key={r.id} style={{ marginBottom: 24 , fontSize: 18}}>
+                {/* <h4>ВПП {r.runwayDesignation} (обновлён:{" "}
                   {dayjs(r.latestRunwayCondition!.updatedAt).format("YYYY-MM-DD HH:mm")}
-                )</h4>
-                <Radio.Group
-                  style={{ marginBottom: 8 }}
-                  buttonStyle="solid"
-                  value={finalRCRModalIsEnglish ? "ENG" : "RU"}
-                  onChange={e => setFinalRCRModalIsEnglish(e.target.value === "ENG")}
-                >
-                  <Radio.Button value="RU">RU</Radio.Button>
-                  <Radio.Button value="ENG">ENG</Radio.Button>
-                </Radio.Group>
+                  )</h4> */}
+
                 <pre style={{ whiteSpace: "pre-wrap", background: "#f7f7f7", padding: 12 }}>
                   {finalRCRModalIsEnglish
                     ? r.latestRunwayCondition!.finalRCR
