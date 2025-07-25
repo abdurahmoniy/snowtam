@@ -120,7 +120,9 @@ export default function UsersPage() {
       <AddUserModal
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
-        onSuccess={refetch}
+        onSuccess={(newUser) => {
+          refetch();
+        }}
         roleOptions={RoleOptions ?? []}
       />
 
