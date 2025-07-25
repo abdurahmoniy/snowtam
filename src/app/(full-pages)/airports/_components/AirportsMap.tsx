@@ -342,7 +342,7 @@ export default function AirportsMap({
                     {warehouses.map((w) => {
                         const status = w.status || "N/A";
                         const fillColor =
-                            status === "PENDING" ? "#ffe100" :
+                            (status === "PENDING" || status == "SEND") ? "#ffe100" :
                                 (status === "ACCEPTED" || status == "FINISHED") ? "#58ff16" :
                                     status === "REJECTED" ? "#FF6B6B" :
                                         "#999";
