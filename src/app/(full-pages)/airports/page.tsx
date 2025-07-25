@@ -438,6 +438,9 @@ export default function AirportsPage() {
     }, {});
   }, [AirportsData.data]);
 
+  console.log(statusByAirport, "statusByAirport");
+  
+
   // flatten for map, attaching status
   const mapData = useMemo(() => {
     return AirportsData.data?.data.map(a => ({
@@ -492,12 +495,12 @@ export default function AirportsPage() {
         centered
       >
         {selectedAirport?.runwayDtos.length ? (
-          selectedAirport.runwayDtos
+          [selectedAirport.runwayDtos
             .filter(r => r.latestRunwayCondition)
             .sort((a, b) =>
               new Date(b.latestRunwayCondition!.updatedAt).getTime() -
               new Date(a.latestRunwayCondition!.updatedAt).getTime()
-            )
+            )?.[0]]
             .map(r => (
               <div key={r.id} style={{ marginBottom: 24 , fontSize: 18}}>
                 {/* <h4>ВПП {r.runwayDesignation} (обновлён:{" "}
