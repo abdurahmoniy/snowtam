@@ -245,7 +245,7 @@ export default function Home() {
             >
               Назад
             </Button>
-            {!isSAI && <div className="flex items-center gap-4">
+            {!!isSAI && <div className="flex items-center gap-4">
               <Button
                 loading={AcceptRCR.isPending}
                 type="primary"
