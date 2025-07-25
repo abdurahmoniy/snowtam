@@ -756,7 +756,7 @@ export default function RunwayConditionCreate() {
               </div>
             </div>
             <Form.Item
-            className="!max-w-[200px]"
+              className="!max-w-[200px]"
               name={["improvementProcedure"]}
               dependencies={["applicationTime"]}
               rules={[
@@ -1174,9 +1174,17 @@ export default function RunwayConditionCreate() {
           </Button>
           <Button type="primary"
             size="large"
+            loading={SendRCR.isPending}
             onClick={() => {
               SendRCR.mutate({
                 id: Number(CreateResponse?.data.id)
+              }, {
+                onSuccess: (res) => {
+                  setFinalRCRModalOpen(false);
+                  // toast.success("Runway condition created successfully!");
+                  toast.success(res.message);
+                  router.push("/");
+                }
               })
             }}
           >Отправить</Button>
